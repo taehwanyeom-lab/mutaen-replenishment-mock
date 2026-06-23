@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCM-Hub · 무탠 재고 보충 요청 (Mock)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    background: #f5f6f8; color: #1f2329; font-size: 13px;
+  }
+  .topbar {
+    height: 44px; background: #1f2329; color: #fff; display: flex; align-items: center;
+    justify-content: space-between; padding: 0 20px; font-weight: 600;
+  }
+  .topbar .user { font-weight: 400; font-size: 12px; opacity: .85; }
+  .wrap { padding: 18px 22px; }
+  h1 { font-size: 19px; font-weight: 700; margin-bottom: 14px; }
+
+  /* tabs */
+  .tabs { display: flex; gap: 4px; border-bottom: 2px solid #e5e7eb; margin-bottom: 16px; }
+  .tab {
+    padding: 9px 18px; cursor: pointer; font-weight: 600; color: #6b7280;
+    border-bottom: 2px solid transparent; margin-bottom: -2px; font-size: 14px;
+  }
+  .tab.active { color: #2563eb; border-bottom-color: #2563eb; }
+  .tab .cnt { color:#9ca3af; font-weight:500; margin-left:4px; }
+
+  /* filter bar */
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; }
+  .filters select, .filters input[type=text] {
+    height: 32px; border: 1px solid #d1d5db; border-radius: 6px; padding: 0 10px;
+    background: #fff; font-size: 12px; color: #374151;
+  }
+  .filters input[type=text]{ width: 150px; }
+  .btn {
+    height: 32px; border-radius: 6px; padding: 0 14px; font-size: 12px; cursor: pointer;
+    border: 1px solid #d1d5db; background: #fff; font-weight: 600; color:#374151;
+  }
+  .btn.primary { background: #2563eb; border-color: #2563eb; color: #fff; }
+  .btn.green { background: #16a34a; border-color:#16a34a; color:#fff; }
+  .btn.red { background: #dc2626; border-color:#dc2626; color:#fff; }
+  .btn.ghost { background:#fff; }
+  .btn:disabled { opacity:.45; cursor:not-allowed; }
+  .btn.sm { height: 26px; padding: 0 9px; font-size: 11px; }
+
+  /* info cards */
+  .cards { display: flex; gap: 12px; margin-bottom: 16px; }
+  .card {
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px 16px; min-width: 190px;
+  }
+  .card .lbl { font-size: 11px; color: #6b7280; margin-bottom: 5px; }
+  .card .val { font-size: 15px; font-weight: 700; }
+  .card .sub { color: #dc2626; font-weight: 600; font-size: 12px; margin-left:6px; }
+
+  /* grid header actions */
+  .gridhead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .gridhead .left { display:flex; align-items:center; gap:12px; }
+  .gridhead .total { font-weight: 700; }
+  .gridhead .right { display:flex; align-items:center; gap:10px; }
+  .chk-inline { display:flex; align-items:center; gap:5px; color:#374151; font-size:12px; cursor:pointer; }
+
+  /* table */
+  .tablewrap { background:#fff; border:1px solid #e5e7eb; border-radius:8px; overflow:auto; }
+  table { border-collapse: collapse; width: 100%; white-space: nowrap; }
+  th, td { padding: 9px 10px; border-bottom: 1px solid #f0f1f3; text-align: left; font-size: 12px; }
+  th { background:#f9fafb; color:#6b7280; font-weight:600; position: sticky; top:0; z-index:1; }
+  tbody tr:hover { background:#fafbff; }
+  td.num, th.num { text-align: right; }
+  td.center, th.center { text-align: center; }
+
+  .badge { display:inline-block; padding:2px 8px; border-radius:11px; font-size:11px; font-weight:700; }
+  .badge.y { background:#dcfce7; color:#15803d; }
+  .badge.n { background:#f3f4f6; color:#6b7280; }
+  .badge.chodo { background:#dbeafe; color:#1d4ed8; }
+
+  .qty-input {
+    width: 60px; height: 28px; border: 1px solid #d1d5db; border-radius: 5px; text-align: right;
+    padding: 0 7px; font-size: 12px;
+  }
+  .qty-input.req { background:#fef2f2; border-color:#fca5a5; }
+  .qty-input:disabled { background:#f3f4f6; color:#9ca3af; }
+  .reason { color:#9ca3af; font-size:11px; }
+  .muted { color:#9ca3af; }
+  .footnote { margin-top:14px; color:#9ca3af; font-size:11px; line-height:1.6; }
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background:#1f2329; color:#fff; padding:11px 20px; border-radius:8px; font-size:13px;
+    opacity:0; transition:opacity .25s; pointer-events:none; z-index:50; box-shadow:0 6px 20px rgba(0,0,0,.25);
+  }
+  .toast.show { opacity:1; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <span>SCM-Hub</span>
+  <span class="user">ⓣ taehwan.yeom@musinsa.com</span>
+</div>
+
+<div class="wrap">
+  <h1>무탠 재고 보충 요청 <span class="muted" style="font-size:12px;font-weight:400;">/ 무탠 스토어 관리 · MOCK</span></h1>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="req" onclick="switchTab('req')">보충 요청 <span class="cnt" id="cnt-req"></span></div>
+    <div class="tab" data-tab="appr" onclick="switchTab('appr')">승인 <span class="cnt" id="cnt-appr"></span></div>
+  </div>
+
+  <!-- ================= TAB 1: 보충 요청 ================= -->
+  <div id="tab-req">
+    <div class="filters">
+      <select><option>플랫폼: 무신사</option></select>
+      <select><option>담당 MD: 전체</option></select>
+      <select><option>브랜드: 무신사 스탠다드</option></select>
+      <select><option>스토어: 전체</option></select>
+      <input type="text" placeholder="SKU번호 / 대표스타일">
+      <select id="f-auto" onchange="renderReq()">
+        <option value="all">자동보충여부: 전체</option>
+        <option value="Y">자동보충 Y</option>
+        <option value="N">자동보충 N</option>
+      </select>
+      <select id="f-chodo" onchange="renderReq()">
+        <option value="all">초도 입고: 전체</option>
+        <option value="Y">초도 Y</option>
+        <option value="N">초도 N</option>
+      </select>
+      <button class="btn primary" onclick="renderReq()">검색</button>
+      <button class="btn" onclick="resetReq()">초기화 ↻</button>
+    </div>
+
+    <div class="cards">
+      <div class="card"><div class="lbl">스토어 입고일</div><div class="val">26.06.24 (수)</div></div>
+      <div class="card"><div class="lbl">확정 마감일시</div><div class="val">06.23 (화) 18:15<span class="sub" id="countdown">--</span></div></div>
+      <div class="card"><div class="lbl">다음 스토어 입고일</div><div class="val">26.06.25 (목)</div></div>
+    </div>
+
+    <div class="gridhead">
+      <div class="left">
+        <span class="total">전체 <span id="req-total">0</span>건</span>
+        <button class="btn primary" id="btn-confirm" onclick="confirmReq()">보충확정</button>
+      </div>
+      <div class="right">
+        <label class="chk-inline"><input type="checkbox" id="f-stock1" onchange="renderReq()"> 보충 가능 재고 1이상 보기</label>
+        <button class="btn ghost" onclick="toast('엑셀 양식 업로드 모달 (mock)')">⬆ 일괄 업로드</button>
+        <button class="btn ghost" onclick="toast('전체 엑셀 다운로드 (mock)')">⬇ 전체 엑셀 다운로드</button>
+      </div>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="center"><input type="checkbox" id="chk-all" onclick="toggleAll(this)"></th>
+            <th class="center">자동보충여부</th>
+            <th>스토어명</th>
+            <th>SKU번호</th>
+            <th>SKU명</th>
+            <th>대표스타일</th>
+            <th>컬러</th>
+            <th>사이즈</th>
+            <th class="num">보충 지시<br>완료 수량</th>
+            <th class="num">보충 요청 수량</th>
+            <th class="center">최대</th>
+            <th class="num">보충 가능 재고</th>
+            <th class="center">초도</th>
+            <th>브랜드</th>
+            <th>카테고리</th>
+            <th>바코드</th>
+          </tr>
+        </thead>
+        <tbody id="req-body"></tbody>
+      </table>
+    </div>
+    <div class="footnote">
+      · <b>자동보충 Y</b> = Autonomation 자동출고 산출 건 (요청 수량 추천값 자동 채움) · <b>N</b> = 운영중이나 자동출고 제외(추천≤0/매핑제외/재고부족 drop)된 건, 수동 입력 보충<br>
+      · 추천 산식(무탠 자동출고): 보충 요청 수량 = 목표재고(향후 3일 예상판매) − (매장 현재고 + 이동중 재고) · 무탠은 전량 PB(1P)라 매입형태 컬럼 없음
+    </div>
+  </div>
+
+  <!-- ================= TAB 2: 승인 ================= -->
+  <div id="tab-appr" style="display:none;">
+    <div class="filters">
+      <select><option>요청매장: 전체</option></select>
+      <input type="text" placeholder="SKU번호 / 대표스타일">
+      <input type="text" placeholder="요청일자">
+      <button class="btn primary" onclick="renderAppr()">검색</button>
+      <button class="btn" onclick="renderAppr()">초기화 ↻</button>
+    </div>
+
+    <div class="gridhead">
+      <div class="left">
+        <span class="total">매장 요청 <span id="appr-total">0</span>건</span>
+        <button class="btn green" onclick="approve()">승인</button>
+        <button class="btn red" onclick="reject()">반려</button>
+      </div>
+      <div class="right muted" style="font-size:11px;">※ 승인 = 즉시 보충확정(MWMS 출고지시)</div>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="center"><input type="checkbox" id="chk-all-appr" onclick="toggleAllAppr(this)"></th>
+            <th>요청매장</th>
+            <th>SKU번호</th>
+            <th>SKU명</th>
+            <th>대표스타일</th>
+            <th>컬러</th>
+            <th>사이즈</th>
+            <th class="num">보충 요청 수량</th>
+            <th class="num">보충 가능 재고</th>
+            <th>브랜드</th>
+            <th>카테고리</th>
+            <th>바코드</th>
+          </tr>
+        </thead>
+        <tbody id="appr-body"></tbody>
+      </table>
+    </div>
+    <div class="footnote">· 승인 클릭 시 보충 가능 재고·컷오프 마감을 검증한 뒤 즉시 출고지시 · 반려 시 사유를 입력해 매장(MOSS)에 회신</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ---------------- mock data ----------------
+const reqData = [
+  { auto:'Y', store:'무신사 대구', sku:'S001', name:'무탠 베이직 크루넥 티셔츠', style:'MTSS-001', color:'블랙', size:'M', done:0, req:5, stock:42, chodo:'N', brand:'무신사 스탠다드', cat:'상의>티셔츠', barcode:'8809000000001' },
+  { auto:'Y', store:'무신사 대구', sku:'S003', name:'무탠 와이드 슬랙스', style:'MBPS-014', color:'네이비', size:'30', done:2, req:6, stock:18, chodo:'N', brand:'무신사 스탠다드', cat:'하의>슬랙스', barcode:'8809000000023' },
+  { auto:'Y', store:'무신사 강남', sku:'S005', name:'무탠 오버핏 후디', style:'MHDS-220', color:'그레이', size:'L', done:0, req:8, stock:25, chodo:'Y', brand:'무신사 스탠다드', cat:'상의>후드', barcode:'8809000000045' },
+  { auto:'N', store:'무신사 대구', sku:'S002', name:'무탠 스탠다드 셔츠', style:'MSHS-008', color:'화이트', size:'95', done:0, req:null, stock:0, chodo:'N', brand:'무신사 스탠다드', cat:'상의>셔츠', barcode:'8809000000012', reason:'재고부족' },
+  { auto:'N', store:'무신사 잠실', sku:'S008', name:'무탠 데일리 양말 3p', style:'MSCS-301', color:'멀티', size:'FREE', done:0, req:null, stock:120, chodo:'N', brand:'무신사 스탠다드', cat:'ACC>양말', barcode:'8809000000088', reason:'추천≤0(재고충분)' },
+  { auto:'N', store:'무신사 용산', sku:'S011', name:'무탠 카고 조거팬츠', style:'MBPS-077', color:'베이지', size:'32', done:1, req:null, stock:9, chodo:'N', brand:'무신사 스탠다드', cat:'하의>조거', barcode:'8809000000111', reason:'매핑제외' },
+  { auto:'Y', store:'무신사 강남', sku:'S014', name:'무탠 미니멀 볼캡', style:'MCPS-455', color:'블랙', size:'FREE', done:0, req:3, stock:14, chodo:'N', brand:'무신사 스탠다드', cat:'ACC>모자', barcode:'8809000000144' },
+];
+
+const apprData = [
+  { store:'무신사 대구', sku:'S002', name:'무탠 스탠다드 셔츠', style:'MSHS-008', color:'화이트', size:'95', req:4, stock:6, brand:'무신사 스탠다드', cat:'상의>셔츠', barcode:'8809000000012' },
+  { store:'무신사 잠실', sku:'S005', name:'무탠 오버핏 후디', style:'MHDS-220', color:'그레이', size:'M', req:6, stock:25, brand:'무신사 스탠다드', cat:'상의>후드', barcode:'8809000000046' },
+  { store:'무신사 용산', sku:'S014', name:'무탠 미니멀 볼캡', style:'MCPS-455', color:'블랙', size:'FREE', req:10, stock:8, brand:'무신사 스탠다드', cat:'ACC>모자', barcode:'8809000000144' },
+];
+
+// ---------------- tab ----------------
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach(e=>e.classList.toggle('active', e.dataset.tab===t));
+  document.getElementById('tab-req').style.display = t==='req'?'block':'none';
+  document.getElementById('tab-appr').style.display = t==='appr'?'block':'none';
+}
+
+// ---------------- tab1 render ----------------
+function getReqFiltered(){
+  const fa=document.getElementById('f-auto').value;
+  const fc=document.getElementById('f-chodo').value;
+  const fs=document.getElementById('f-stock1').checked;
+  return reqData.filter(r=>
+    (fa==='all'||r.auto===fa) &&
+    (fc==='all'||r.chodo===fc) &&
+    (!fs || r.stock>=1)
+  );
+}
+function renderReq(){
+  const rows=getReqFiltered();
+  const tb=document.getElementById('req-body'); tb.innerHTML='';
+  rows.forEach((r)=>{
+    const i = reqData.indexOf(r);
+    const reqVal = r.req===null ? '' : r.req;
+    const autoBadge = r.auto==='Y' ? '<span class="badge y">Y</span>' : '<span class="badge n">N</span>';
+    const reasonTxt = r.auto==='N' && r.reason ? `<div class="reason">${r.reason}</div>` : '';
+    const chodoBadge = r.chodo==='Y' ? '<span class="badge chodo">초도</span>' : '<span class="muted">-</span>';
+    tb.insertAdjacentHTML('beforeend', `
+      <tr>
+        <td class="center"><input type="checkbox" class="row-chk" data-i="${i}"></td>
+        <td class="center">${autoBadge}${reasonTxt}</td>
+        <td>${r.store}</td>
+        <td>${r.sku}</td>
+        <td>${r.name}</td>
+        <td>${r.style}</td>
+        <td>${r.color}</td>
+        <td>${r.size}</td>
+        <td class="num">${r.done>0?r.done:'<span class="muted">-</span>'}</td>
+        <td class="num"><input type="number" min="0" max="${r.stock}" value="${reqVal}" class="qty-input ${reqVal!==''&&reqVal>0?'req':''}" data-i="${i}" onchange="onQty(this)"></td>
+        <td class="center"><button class="btn sm" onclick="setMax(${i})">최대</button></td>
+        <td class="num">${r.stock}</td>
+        <td class="center">${chodoBadge}</td>
+        <td>${r.brand}</td>
+        <td>${r.cat}</td>
+        <td>${r.barcode}</td>
+      </tr>`);
+  });
+  document.getElementById('req-total').textContent=rows.length;
+  document.getElementById('cnt-req').textContent=`(${reqData.length})`;
+  document.getElementById('chk-all').checked=false;
+}
+function onQty(el){
+  const i=+el.dataset.i; let v=parseInt(el.value);
+  if(isNaN(v)||v<0){ v=0; }
+  if(v>reqData[i].stock){ v=reqData[i].stock; toast('보충 가능 재고를 초과할 수 없습니다.'); }
+  el.value=v; reqData[i].req=v;
+  el.classList.toggle('req', v>0);
+}
+function setMax(i){ reqData[i].req=reqData[i].stock; renderReq(); }
+function toggleAll(el){ document.querySelectorAll('.row-chk').forEach(c=>c.checked=el.checked); }
+function resetReq(){
+  document.getElementById('f-auto').value='all';
+  document.getElementById('f-chodo').value='all';
+  document.getElementById('f-stock1').checked=false;
+  renderReq();
+}
+function confirmReq(){
+  const sel=[...document.querySelectorAll('.row-chk:checked')].map(c=>reqData[+c.dataset.i]);
+  if(!sel.length){ toast('확정할 행을 선택해 주세요.'); return; }
+  const qty=sel.reduce((s,r)=>s+(r.req||0),0);
+  if(qty<=0){ toast('보충 요청 수량이 0인 건은 확정할 수 없습니다.'); return; }
+  toast(`✅ ${sel.length}개 SKU · 총 ${qty}개 보충확정 → MWMS 출고지시 전송 (mock)`);
+}
+
+// ---------------- tab2 render ----------------
+function renderAppr(){
+  const tb=document.getElementById('appr-body'); tb.innerHTML='';
+  apprData.forEach((r,i)=>{
+    const over = r.req>r.stock ? ' style="color:#dc2626;font-weight:700;"' : '';
+    tb.insertAdjacentHTML('beforeend', `
+      <tr>
+        <td class="center"><input type="checkbox" class="appr-chk" data-i="${i}"></td>
+        <td>${r.store}</td>
+        <td>${r.sku}</td>
+        <td>${r.name}</td>
+        <td>${r.style}</td>
+        <td>${r.color}</td>
+        <td>${r.size}</td>
+        <td class="num"${over}>${r.req}</td>
+        <td class="num">${r.stock}</td>
+        <td>${r.brand}</td>
+        <td>${r.cat}</td>
+        <td>${r.barcode}</td>
+      </tr>`);
+  });
+  document.getElementById('appr-total').textContent=apprData.length;
+  document.getElementById('cnt-appr').textContent=`(${apprData.length})`;
+  document.getElementById('chk-all-appr').checked=false;
+}
+function toggleAllAppr(el){ document.querySelectorAll('.appr-chk').forEach(c=>c.checked=el.checked); }
+function approve(){
+  const sel=[...document.querySelectorAll('.appr-chk:checked')].map(c=>apprData[+c.dataset.i]);
+  if(!sel.length){ toast('승인할 요청을 선택해 주세요.'); return; }
+  const over=sel.filter(r=>r.req>r.stock);
+  if(over.length){ toast(`⚠ ${over.length}건은 요청수량 > 보충 가능 재고 — 승인 불가 (가용 초과)`); return; }
+  toast(`✅ ${sel.length}건 승인 → 즉시 보충확정·MWMS 출고지시 (mock)`);
+}
+function reject(){
+  const sel=[...document.querySelectorAll('.appr-chk:checked')];
+  if(!sel.length){ toast('반려할 요청을 선택해 주세요.'); return; }
+  toast(`⛔ ${sel.length}건 반려 → 사유 입력 모달 (mock)`);
+}
+
+// ---------------- toast & countdown ----------------
+let toastTimer;
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2600);
+}
+// countdown to demo deadline (now + 7h47m)
+const deadline = Date.now() + (7*3600+47*60)*1000;
+function tick(){
+  let s=Math.max(0,Math.floor((deadline-Date.now())/1000));
+  const h=Math.floor(s/3600), m=Math.floor((s%3600)/60);
+  document.getElementById('countdown').textContent = s>0?`(${h}시간 ${m}분 남음)`:'(마감)';
+  document.getElementById('btn-confirm').disabled = s<=0;
+}
+setInterval(tick,1000); tick();
+
+// init
+renderReq(); renderAppr();
+</script>
+</body>
+</html>
