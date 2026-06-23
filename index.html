@@ -111,7 +111,18 @@
     <div class="filters">
       <select><option>플랫폼: 무신사</option></select>
       <select><option>담당 MD: 전체</option></select>
-      <select><option>브랜드: 무신사 스탠다드</option></select>
+      <select id="f-brand" onchange="renderReq()">
+        <option value="all">브랜드: 전체</option>
+        <option value="무신사 스탠다드">무신사 스탠다드</option>
+        <option value="무신사 스탠다드 뷰티">무신사 스탠다드 뷰티</option>
+        <option value="무신사스탠다드 지비지에이치">무신사스탠다드 지비지에이치</option>
+        <option value="무신사 스탠다드 홈">무신사 스탠다드 홈</option>
+        <option value="무신사 스탠다드 키즈">무신사 스탠다드 키즈</option>
+        <option value="무신사 스탠다드 오프라인">무신사 스탠다드 오프라인</option>
+        <option value="무신사 스탠다드 스포츠">무신사 스탠다드 스포츠</option>
+        <option value="무신사 스탠다드 우먼">무신사 스탠다드 우먼</option>
+        <option value="무탠홈매입">무탠홈매입</option>
+      </select>
       <select><option>스토어: 전체</option></select>
       <input type="text" placeholder="SKU번호 / 대표스타일">
       <select id="f-auto" onchange="renderReq()">
@@ -233,6 +244,10 @@ const reqData = [
   { auto:'N', store:'무신사 잠실', sku:'S008', name:'무탠 데일리 양말 3p', style:'MSCS-301', color:'멀티', size:'FREE', done:0, req:null, stock:120, chodo:'N', brand:'무신사 스탠다드', cat:'ACC>양말', barcode:'8809000000088', reason:'추천≤0(재고충분)' },
   { auto:'N', store:'무신사 용산', sku:'S011', name:'무탠 카고 조거팬츠', style:'MBPS-077', color:'베이지', size:'32', done:1, req:null, stock:9, chodo:'N', brand:'무신사 스탠다드', cat:'하의>조거', barcode:'8809000000111', reason:'매핑제외' },
   { auto:'Y', store:'무신사 강남', sku:'S014', name:'무탠 미니멀 볼캡', style:'MCPS-455', color:'블랙', size:'FREE', done:0, req:3, stock:14, chodo:'N', brand:'무신사 스탠다드', cat:'ACC>모자', barcode:'8809000000144' },
+  { auto:'Y', store:'무신사 강남', sku:'S020', name:'스탠다드 톤업 선크림', style:'MBTS-101', color:'-', size:'50ml', done:0, req:4, stock:30, chodo:'N', brand:'무신사 스탠다드 뷰티', cat:'뷰티>선케어', barcode:'8809000000200' },
+  { auto:'Y', store:'무신사 잠실', sku:'S025', name:'스탠다드 우먼 크롭 가디건', style:'MWTS-330', color:'아이보리', size:'S', done:0, req:5, stock:16, chodo:'Y', brand:'무신사 스탠다드 우먼', cat:'상의>가디건', barcode:'8809000000250' },
+  { auto:'N', store:'무신사 대구', sku:'S030', name:'스탠다드 홈 워싱 베개커버', style:'MHMS-077', color:'그레이', size:'50x70', done:0, req:null, stock:8, chodo:'N', brand:'무탠홈매입', cat:'홈>침구', barcode:'8809000000300', reason:'추천≤0(재고충분)' },
+  { auto:'Y', store:'무신사 용산', sku:'S033', name:'스탠다드 키즈 기모 맨투맨', style:'MKDS-210', color:'네이비', size:'130', done:1, req:6, stock:22, chodo:'N', brand:'무신사 스탠다드 키즈', cat:'키즈>상의', barcode:'8809000000333' },
 ];
 
 const apprData = [
@@ -252,10 +267,12 @@ function switchTab(t){
 function getReqFiltered(){
   const fa=document.getElementById('f-auto').value;
   const fc=document.getElementById('f-chodo').value;
+  const fb=document.getElementById('f-brand').value;
   const fs=document.getElementById('f-stock1').checked;
   return reqData.filter(r=>
     (fa==='all'||r.auto===fa) &&
     (fc==='all'||r.chodo===fc) &&
+    (fb==='all'||r.brand===fb) &&
     (!fs || r.stock>=1)
   );
 }
@@ -304,6 +321,7 @@ function toggleAll(el){ document.querySelectorAll('.row-chk').forEach(c=>c.check
 function resetReq(){
   document.getElementById('f-auto').value='all';
   document.getElementById('f-chodo').value='all';
+  document.getElementById('f-brand').value='all';
   document.getElementById('f-stock1').checked=false;
   renderReq();
 }
