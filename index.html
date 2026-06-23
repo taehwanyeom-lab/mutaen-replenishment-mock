@@ -123,7 +123,24 @@
         <option value="무신사 스탠다드 우먼">무신사 스탠다드 우먼</option>
         <option value="무탠홈매입">무탠홈매입</option>
       </select>
-      <select><option>스토어: 전체</option></select>
+      <select id="f-store" onchange="renderReq()">
+        <option value="all">스토어: 전체</option>
+        <option value="홍대">홍대</option>
+        <option value="강남">강남</option>
+        <option value="동성로">동성로</option>
+        <option value="서면">서면</option>
+        <option value="성수">성수</option>
+        <option value="명동">명동</option>
+        <option value="타임빌라스 수원">타임빌라스 수원</option>
+        <option value="현대백화점 중동">현대백화점 중동</option>
+        <option value="스타필드 수원">스타필드 수원</option>
+        <option value="AK플라자 분당">AK플라자 분당</option>
+        <option value="롯데몰 동부산">롯데몰 동부산</option>
+        <option value="롯데백화점 센텀">롯데백화점 센텀</option>
+        <option value="한남">한남</option>
+        <option value="갤러리아 광교">갤러리아 광교</option>
+        <option value="롯데프리미엄 아울렛 기흥점">롯데프리미엄 아울렛 기흥점</option>
+      </select>
       <input type="text" placeholder="SKU번호 / 대표스타일">
       <select id="f-auto" onchange="renderReq()">
         <option value="all">자동보충여부: 전체</option>
@@ -237,23 +254,23 @@
 <script>
 // ---------------- mock data ----------------
 const reqData = [
-  { auto:'Y', store:'무신사 대구', sku:'S001', name:'무탠 베이직 크루넥 티셔츠', style:'MTSS-001', color:'블랙', size:'M', done:0, req:5, stock:42, chodo:'N', brand:'무신사 스탠다드', cat:'상의>티셔츠', barcode:'8809000000001' },
-  { auto:'Y', store:'무신사 대구', sku:'S003', name:'무탠 와이드 슬랙스', style:'MBPS-014', color:'네이비', size:'30', done:2, req:6, stock:18, chodo:'N', brand:'무신사 스탠다드', cat:'하의>슬랙스', barcode:'8809000000023' },
-  { auto:'Y', store:'무신사 강남', sku:'S005', name:'무탠 오버핏 후디', style:'MHDS-220', color:'그레이', size:'L', done:0, req:8, stock:25, chodo:'Y', brand:'무신사 스탠다드', cat:'상의>후드', barcode:'8809000000045' },
-  { auto:'N', store:'무신사 대구', sku:'S002', name:'무탠 스탠다드 셔츠', style:'MSHS-008', color:'화이트', size:'95', done:0, req:null, stock:0, chodo:'N', brand:'무신사 스탠다드', cat:'상의>셔츠', barcode:'8809000000012', reason:'재고부족' },
-  { auto:'N', store:'무신사 잠실', sku:'S008', name:'무탠 데일리 양말 3p', style:'MSCS-301', color:'멀티', size:'FREE', done:0, req:null, stock:120, chodo:'N', brand:'무신사 스탠다드', cat:'ACC>양말', barcode:'8809000000088', reason:'추천≤0(재고충분)' },
-  { auto:'N', store:'무신사 용산', sku:'S011', name:'무탠 카고 조거팬츠', style:'MBPS-077', color:'베이지', size:'32', done:1, req:null, stock:9, chodo:'N', brand:'무신사 스탠다드', cat:'하의>조거', barcode:'8809000000111', reason:'매핑제외' },
-  { auto:'Y', store:'무신사 강남', sku:'S014', name:'무탠 미니멀 볼캡', style:'MCPS-455', color:'블랙', size:'FREE', done:0, req:3, stock:14, chodo:'N', brand:'무신사 스탠다드', cat:'ACC>모자', barcode:'8809000000144' },
-  { auto:'Y', store:'무신사 강남', sku:'S020', name:'스탠다드 톤업 선크림', style:'MBTS-101', color:'-', size:'50ml', done:0, req:4, stock:30, chodo:'N', brand:'무신사 스탠다드 뷰티', cat:'뷰티>선케어', barcode:'8809000000200' },
-  { auto:'Y', store:'무신사 잠실', sku:'S025', name:'스탠다드 우먼 크롭 가디건', style:'MWTS-330', color:'아이보리', size:'S', done:0, req:5, stock:16, chodo:'Y', brand:'무신사 스탠다드 우먼', cat:'상의>가디건', barcode:'8809000000250' },
-  { auto:'N', store:'무신사 대구', sku:'S030', name:'스탠다드 홈 워싱 베개커버', style:'MHMS-077', color:'그레이', size:'50x70', done:0, req:null, stock:8, chodo:'N', brand:'무탠홈매입', cat:'홈>침구', barcode:'8809000000300', reason:'추천≤0(재고충분)' },
-  { auto:'Y', store:'무신사 용산', sku:'S033', name:'스탠다드 키즈 기모 맨투맨', style:'MKDS-210', color:'네이비', size:'130', done:1, req:6, stock:22, chodo:'N', brand:'무신사 스탠다드 키즈', cat:'키즈>상의', barcode:'8809000000333' },
+  { auto:'Y', store:'홍대', sku:'S001', name:'무탠 베이직 크루넥 티셔츠', style:'MTSS-001', color:'블랙', size:'M', done:0, req:5, stock:42, chodo:'N', brand:'무신사 스탠다드', cat:'상의>티셔츠', barcode:'8809000000001' },
+  { auto:'Y', store:'강남', sku:'S003', name:'무탠 와이드 슬랙스', style:'MBPS-014', color:'네이비', size:'30', done:2, req:6, stock:18, chodo:'N', brand:'무신사 스탠다드', cat:'하의>슬랙스', barcode:'8809000000023' },
+  { auto:'Y', store:'성수', sku:'S005', name:'무탠 오버핏 후디', style:'MHDS-220', color:'그레이', size:'L', done:0, req:8, stock:25, chodo:'Y', brand:'무신사 스탠다드', cat:'상의>후드', barcode:'8809000000045' },
+  { auto:'N', store:'동성로', sku:'S002', name:'무탠 스탠다드 셔츠', style:'MSHS-008', color:'화이트', size:'95', done:0, req:null, stock:0, chodo:'N', brand:'무신사 스탠다드', cat:'상의>셔츠', barcode:'8809000000012', reason:'재고부족' },
+  { auto:'N', store:'서면', sku:'S008', name:'무탠 데일리 양말 3p', style:'MSCS-301', color:'멀티', size:'FREE', done:0, req:null, stock:120, chodo:'N', brand:'무신사 스탠다드', cat:'ACC>양말', barcode:'8809000000088', reason:'추천≤0(재고충분)' },
+  { auto:'N', store:'명동', sku:'S011', name:'무탠 카고 조거팬츠', style:'MBPS-077', color:'베이지', size:'32', done:1, req:null, stock:9, chodo:'N', brand:'무신사 스탠다드', cat:'하의>조거', barcode:'8809000000111', reason:'매핑제외' },
+  { auto:'Y', store:'한남', sku:'S014', name:'무탠 미니멀 볼캡', style:'MCPS-455', color:'블랙', size:'FREE', done:0, req:3, stock:14, chodo:'N', brand:'무신사 스탠다드', cat:'ACC>모자', barcode:'8809000000144' },
+  { auto:'Y', store:'강남', sku:'S020', name:'스탠다드 톤업 선크림', style:'MBTS-101', color:'-', size:'50ml', done:0, req:4, stock:30, chodo:'N', brand:'무신사 스탠다드 뷰티', cat:'뷰티>선케어', barcode:'8809000000200' },
+  { auto:'Y', store:'타임빌라스 수원', sku:'S025', name:'스탠다드 우먼 크롭 가디건', style:'MWTS-330', color:'아이보리', size:'S', done:0, req:5, stock:16, chodo:'Y', brand:'무신사 스탠다드 우먼', cat:'상의>가디건', barcode:'8809000000250' },
+  { auto:'N', store:'현대백화점 중동', sku:'S030', name:'스탠다드 홈 워싱 베개커버', style:'MHMS-077', color:'그레이', size:'50x70', done:0, req:null, stock:8, chodo:'N', brand:'무탠홈매입', cat:'홈>침구', barcode:'8809000000300', reason:'추천≤0(재고충분)' },
+  { auto:'Y', store:'스타필드 수원', sku:'S033', name:'스탠다드 키즈 기모 맨투맨', style:'MKDS-210', color:'네이비', size:'130', done:1, req:6, stock:22, chodo:'N', brand:'무신사 스탠다드 키즈', cat:'키즈>상의', barcode:'8809000000333' },
 ];
 
 const apprData = [
-  { store:'무신사 대구', sku:'S002', name:'무탠 스탠다드 셔츠', style:'MSHS-008', color:'화이트', size:'95', req:4, stock:6, brand:'무신사 스탠다드', cat:'상의>셔츠', barcode:'8809000000012' },
-  { store:'무신사 잠실', sku:'S005', name:'무탠 오버핏 후디', style:'MHDS-220', color:'그레이', size:'M', req:6, stock:25, brand:'무신사 스탠다드', cat:'상의>후드', barcode:'8809000000046' },
-  { store:'무신사 용산', sku:'S014', name:'무탠 미니멀 볼캡', style:'MCPS-455', color:'블랙', size:'FREE', req:10, stock:8, brand:'무신사 스탠다드', cat:'ACC>모자', barcode:'8809000000144' },
+  { store:'동성로', sku:'S002', name:'무탠 스탠다드 셔츠', style:'MSHS-008', color:'화이트', size:'95', req:4, stock:6, brand:'무신사 스탠다드', cat:'상의>셔츠', barcode:'8809000000012' },
+  { store:'AK플라자 분당', sku:'S005', name:'무탠 오버핏 후디', style:'MHDS-220', color:'그레이', size:'M', req:6, stock:25, brand:'무신사 스탠다드', cat:'상의>후드', barcode:'8809000000046' },
+  { store:'갤러리아 광교', sku:'S014', name:'무탠 미니멀 볼캡', style:'MCPS-455', color:'블랙', size:'FREE', req:10, stock:8, brand:'무신사 스탠다드', cat:'ACC>모자', barcode:'8809000000144' },
 ];
 
 // ---------------- tab ----------------
@@ -268,11 +285,13 @@ function getReqFiltered(){
   const fa=document.getElementById('f-auto').value;
   const fc=document.getElementById('f-chodo').value;
   const fb=document.getElementById('f-brand').value;
+  const fst=document.getElementById('f-store').value;
   const fs=document.getElementById('f-stock1').checked;
   return reqData.filter(r=>
     (fa==='all'||r.auto===fa) &&
     (fc==='all'||r.chodo===fc) &&
     (fb==='all'||r.brand===fb) &&
+    (fst==='all'||r.store===fst) &&
     (!fs || r.stock>=1)
   );
 }
@@ -322,6 +341,7 @@ function resetReq(){
   document.getElementById('f-auto').value='all';
   document.getElementById('f-chodo').value='all';
   document.getElementById('f-brand').value='all';
+  document.getElementById('f-store').value='all';
   document.getElementById('f-stock1').checked=false;
   renderReq();
 }
