@@ -267,9 +267,9 @@
         <table>
           <thead><tr>
             <th style="width:28px;"></th>
-            <th>스토어명</th><th>대표스타일</th><th>SKU번호</th><th>SKU명</th><th>컬러</th><th>사이즈</th>
-            <th class="num">보충 확정 수량</th><th class="num">출고 수량</th><th class="num">입고 수량</th>
-            <th>진행률</th><th class="center">물류상태</th><th>확정일시</th>
+            <th>스토어명</th><th>SKU번호</th><th>SKU명</th><th>옵션명</th><th>대표스타일</th><th>브랜드</th>
+            <th class="num">보충 확정 수량</th><th class="num">출고 확정 수량</th><th class="num">입고 확정 수량</th>
+            <th class="center">상태</th><th>출고센터 정보</th><th>마지막 상태 업데이트 일시</th>
           </tr></thead>
           <tbody id="status-body"></tbody>
         </table>
@@ -306,18 +306,18 @@ const apprData = [
 
 // ---------------- data: 보충 현황 ----------------
 const statusData = [
-  { store:'홍대', style:'MTSS-001', sku:'S001', name:'무탠 베이직 크루넥 티셔츠', color:'블랙', size:'M', conf:5, out:5, inq:5, status:'입고완료', at:'2026-06-23 18:10',
+  { store:'홍대', style:'MTSS-001', sku:'S001', name:'무탠 베이직 크루넥 티셔츠', brand:'무신사 스탠다드', color:'블랙', size:'M', conf:5, out:5, inq:5, status:'입고완료', at:'2026-06-23 18:10',
     centers:[ {center:'동탄 MFS', move:'MV2406001', out:'OUT500101', in:'IN300101', outQty:3, moveQty:3, inQty:3, status:'입고완료', at:'2026-06-24 07:05'},
               {center:'곤지암 MFS', move:'MV2406002', out:'OUT500102', in:'IN300102', outQty:2, moveQty:2, inQty:2, status:'입고완료', at:'2026-06-24 07:20'} ] },
-  { store:'강남', style:'MBPS-014', sku:'S003', name:'무탠 와이드 슬랙스', color:'네이비', size:'30', conf:6, out:6, inq:2, status:'이동중', at:'2026-06-23 18:11',
+  { store:'강남', style:'MBPS-014', sku:'S003', name:'무탠 와이드 슬랙스', brand:'무신사 스탠다드', color:'네이비', size:'30', conf:6, out:6, inq:2, status:'이동중', at:'2026-06-23 18:11',
     centers:[ {center:'동탄 MFS', move:'MV2406010', out:'OUT500110', in:'IN300110', outQty:4, moveQty:4, inQty:2, status:'이동중', at:'2026-06-24 06:50'},
               {center:'양지 MFS', move:'MV2406011', out:'OUT500111', in:'-', outQty:2, moveQty:2, inQty:0, status:'이동중', at:'2026-06-24 06:55'} ] },
-  { store:'성수', style:'MHDS-220', sku:'S005', name:'무탠 오버핏 후디', color:'그레이', size:'L', conf:8, out:5, inq:0, status:'출고대기', at:'2026-06-23 18:12',
+  { store:'성수', style:'MHDS-220', sku:'S005', name:'무탠 오버핏 후디', brand:'무신사 스탠다드', color:'그레이', size:'L', conf:8, out:5, inq:0, status:'출고대기', at:'2026-06-23 18:12',
     centers:[ {center:'동탄 MFS', move:'MV2406020', out:'OUT500120', in:'-', outQty:5, moveQty:0, inQty:0, status:'출고대기', at:'2026-06-24 05:30'},
               {center:'곤지암 MFS', move:'MV2406021', out:'-', in:'-', outQty:3, moveQty:0, inQty:0, status:'출고대기', at:'2026-06-24 05:10'} ] },
-  { store:'한남', style:'MCPS-455', sku:'S014', name:'무탠 미니멀 볼캡', color:'블랙', size:'FREE', conf:3, out:0, inq:0, status:'출고대기', at:'2026-06-23 18:15',
+  { store:'한남', style:'MCPS-455', sku:'S014', name:'무탠 미니멀 볼캡', brand:'무신사 스탠다드', color:'블랙', size:'FREE', conf:3, out:0, inq:0, status:'출고대기', at:'2026-06-23 18:15',
     centers:[ {center:'양지 MFS', move:'MV2406030', out:'-', in:'-', outQty:3, moveQty:0, inQty:0, status:'출고대기', at:'2026-06-24 05:00'} ] },
-  { store:'스타필드 수원', style:'MKDS-210', sku:'S033', name:'스탠다드 키즈 기모 맨투맨', color:'네이비', size:'130', conf:6, out:6, inq:6, status:'입고완료', at:'2026-06-23 18:09',
+  { store:'스타필드 수원', style:'MKDS-210', sku:'S033', name:'스탠다드 키즈 기모 맨투맨', brand:'무신사 스탠다드 키즈', color:'네이비', size:'130', conf:6, out:6, inq:6, status:'입고완료', at:'2026-06-23 18:09',
     centers:[ {center:'동탄 MFS', move:'MV2406040', out:'OUT500140', in:'IN300140', outQty:6, moveQty:6, inQty:6, status:'입고완료', at:'2026-06-24 07:00'} ] },
 ];
 
@@ -414,13 +414,13 @@ function renderStatus(){
   const tb=document.getElementById('status-body'); tb.innerHTML='';
   rows.forEach((r)=>{
     const i=statusData.indexOf(r);
-    const pct=Math.round(r.inq/r.conf*100);
+    const opt=[r.color,r.size].filter(x=>x&&x!=='-').join(' / ')||'-';
+    const centers=r.centers.map(c=>c.center).join(', ');
     tb.insertAdjacentHTML('beforeend',`<tr onclick="toggleSub(${i})" style="cursor:pointer;">
       <td class="center"><span class="exp-btn" id="exp-${i}">▸</span></td>
-      <td>${r.store}</td><td>${r.style}</td><td>${r.sku}</td><td>${r.name}</td><td>${r.color}</td><td>${r.size}</td>
+      <td>${r.store}</td><td>${r.sku}</td><td>${r.name}</td><td>${opt}</td><td>${r.style}</td><td>${r.brand}</td>
       <td class="num">${r.conf}</td><td class="num">${r.out}</td><td class="num">${r.inq}</td>
-      <td><div class="prog"><div class="bar"><i style="width:${pct}%"></i></div><span class="muted">${pct}%</span></div></td>
-      <td class="center"><span class="st ${stClass(r.status)}">${r.status}</span></td><td>${r.at}</td></tr>
+      <td class="center"><span class="st ${stClass(r.status)}">${r.status}</span></td><td>${centers}</td><td>${r.at}</td></tr>
       <tr class="subrow" id="sub-${i}" style="display:none;"><td colspan="13"><div class="subwrap">
         <table><thead><tr><th>출고센터</th><th>이동번호</th><th>출고번호</th><th>입고번호</th>
         <th class="num">출고</th><th class="num">이동</th><th class="num">입고</th><th class="center">물류상태</th><th>처리일시</th></tr></thead>
