@@ -238,6 +238,7 @@
             <th>대표스타일</th>
             <th>컬러</th>
             <th>사이즈</th>
+            <th class="num">매장보충 요청 수량</th>
             <th class="num">보충 확정 수량</th>
             <th class="num">보충 가능 재고</th>
             <th>브랜드</th>
@@ -273,9 +274,9 @@ const reqData = [
 ];
 
 const apprData = [
-  { store:'동성로', sku:'S002', name:'무탠 스탠다드 셔츠', style:'MSHS-008', color:'화이트', size:'95', req:4, stock:6, brand:'무신사 스탠다드', cat:'상의>셔츠', barcode:'8809000000012', requester:'최매장', lastAt:'2026-06-23 08:30', lastBy:'-' },
-  { store:'AK플라자 분당', sku:'S005', name:'무탠 오버핏 후디', style:'MHDS-220', color:'그레이', size:'M', req:6, stock:25, brand:'무신사 스탠다드', cat:'상의>후드', barcode:'8809000000046', requester:'정매장', lastAt:'2026-06-23 08:45', lastBy:'박운영' },
-  { store:'갤러리아 광교', sku:'S014', name:'무탠 미니멀 볼캡', style:'MCPS-455', color:'블랙', size:'FREE', req:10, stock:8, brand:'무신사 스탠다드', cat:'ACC>모자', barcode:'8809000000144', requester:'한매장', lastAt:'2026-06-23 09:05', lastBy:'-' },
+  { store:'동성로', sku:'S002', name:'무탠 스탠다드 셔츠', style:'MSHS-008', color:'화이트', size:'95', storeReq:4, req:4, stock:6, brand:'무신사 스탠다드', cat:'상의>셔츠', barcode:'8809000000012', requester:'최매장', lastAt:'2026-06-23 08:30', lastBy:'-' },
+  { store:'AK플라자 분당', sku:'S005', name:'무탠 오버핏 후디', style:'MHDS-220', color:'그레이', size:'M', storeReq:6, req:6, stock:25, brand:'무신사 스탠다드', cat:'상의>후드', barcode:'8809000000046', requester:'정매장', lastAt:'2026-06-23 08:45', lastBy:'박운영' },
+  { store:'갤러리아 광교', sku:'S014', name:'무탠 미니멀 볼캡', style:'MCPS-455', color:'블랙', size:'FREE', storeReq:10, req:10, stock:8, brand:'무신사 스탠다드', cat:'ACC>모자', barcode:'8809000000144', requester:'한매장', lastAt:'2026-06-23 09:05', lastBy:'-' },
 ];
 
 // ---------------- tab ----------------
@@ -375,6 +376,7 @@ function renderAppr(){
         <td>${r.style}</td>
         <td>${r.color}</td>
         <td>${r.size}</td>
+        <td class="num">${r.storeReq}</td>
         <td class="num"><input type="number" min="0" max="${r.stock}" value="${r.req}" class="qty-input ${over?'req':''}" data-i="${i}" onchange="onApprQty(this)"></td>
         <td class="num">${r.stock}</td>
         <td>${r.brand}</td>
