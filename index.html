@@ -352,7 +352,7 @@ function renderReq(){
     const opt=[r.color,r.size].filter(x=>x&&x!=='-').join(' / ')||'-';
     tb.insertAdjacentHTML('beforeend',`<tr>
       <td class="center"><input type="checkbox" class="row-chk" data-i="${i}"></td>
-      <td class="center">${autoBadge}${reasonTxt}</td><td>${r.store}</td><td>${r.sku}</td><td>${r.name}</td><td>${opt}</td><td>${r.style}</td>
+      <td class="center">${autoBadge}</td><td>${r.store}</td><td>${r.sku}</td><td>${r.name}</td><td>${opt}</td><td>${r.style}</td>
       <td class="num">${r.sales7}</td><td class="num">${r.sales14}</td><td class="num">${r.storeStock}</td><td class="num">${r.inbound}</td>
       <td class="num">${r.done>0?r.done:'<span class="muted">-</span>'}</td>
       <td class="num" style="white-space:nowrap;"><input type="number" min="0" max="${r.stock}" value="${reqVal}" class="qty-input ${reqVal!==''&&reqVal>0?'req':''}" data-i="${i}" onchange="onQty(this)"> <button class="btn sm" onclick="setMax(${i})">최대</button></td>
