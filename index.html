@@ -135,9 +135,7 @@
       <!-- TAB 1: 본사 요청 -->
       <div id="tab-req">
         <div class="filters">
-          <select><option>플랫폼: 무신사</option></select>
-          <select><option>담당 MD: 전체</option></select>
-          <select id="f-brand" onchange="renderReq()">
+          <select id="f-brand" onchange="renderReq()" title="멀티 선택">
             <option value="all">브랜드: 전체</option>
             <option value="무신사 스탠다드">무신사 스탠다드</option>
             <option value="무신사 스탠다드 뷰티">무신사 스탠다드 뷰티</option>
@@ -149,19 +147,20 @@
             <option value="무신사 스탠다드 우먼">무신사 스탠다드 우먼</option>
             <option value="무탠홈매입">무탠홈매입</option>
           </select>
-          <select id="f-store" onchange="renderReq()">
+          <select id="f-store" onchange="renderReq()" title="멀티 선택">
             <option value="all">스토어: 전체</option>
             <option>홍대</option><option>강남</option><option>동성로</option><option>서면</option><option>성수</option>
             <option>명동</option><option>타임빌라스 수원</option><option>현대백화점 중동</option><option>스타필드 수원</option>
             <option>AK플라자 분당</option><option>롯데몰 동부산</option><option>롯데백화점 센텀</option><option>한남</option>
             <option>갤러리아 광교</option><option>롯데프리미엄 아울렛 기흥점</option>
           </select>
-          <input type="text" placeholder="SKU번호 / 대표스타일">
+          <input type="text" placeholder="SKU번호">
+          <input type="text" placeholder="대표스타일">
           <select id="f-auto" onchange="renderReq()">
             <option value="all">자동보충여부: 전체</option><option value="Y">자동보충 Y</option><option value="N">자동보충 N</option>
           </select>
           <select id="f-chodo" onchange="renderReq()">
-            <option value="all">초도 입고: 전체</option><option value="Y">초도 Y</option><option value="N">초도 N</option>
+            <option value="all">초도 입고 여부: 전체</option><option value="Y">초도 Y</option><option value="N">초도 N</option>
           </select>
           <button class="btn primary" onclick="renderReq()">검색</button>
           <button class="btn" onclick="resetReq()">초기화 ↻</button>
@@ -186,10 +185,9 @@
           <table>
             <thead><tr>
               <th class="center"><input type="checkbox" id="chk-all" onclick="toggleAll(this)"></th>
-              <th class="center">자동보충여부</th><th>스토어명</th><th>SKU번호</th><th>SKU명</th>
-              <th>대표스타일</th><th>컬러</th><th>사이즈</th><th class="num">보충 지시<br>완료 수량</th>
-              <th class="num">보충 확정 수량</th><th class="center">최대</th><th class="num">보충 가능 재고</th>
-              <th class="center">초도</th><th>브랜드</th><th>카테고리</th><th>바코드</th><th>마지막 처리일시</th><th>처리자</th>
+              <th class="center">자동보충여부</th><th>스토어명</th><th>SKU번호</th><th>SKU명</th><th>옵션명</th><th>대표스타일</th>
+              <th class="num">보충 지시<br>완료 수량</th><th class="num">보충 확정 수량</th><th class="num">보충 가능 재고</th>
+              <th class="center">초도 입고 여부</th><th>브랜드</th><th>마지막 처리일시</th><th>처리자</th>
             </tr></thead>
             <tbody id="req-body"></tbody>
           </table>
@@ -350,14 +348,13 @@ function renderReq(){
     const autoBadge=r.auto==='Y'?'<span class="badge y">Y</span>':'<span class="badge n">N</span>';
     const reasonTxt=r.auto==='N'&&r.reason?`<div class="reason">${r.reason}</div>`:'';
     const chodoBadge=r.chodo==='Y'?'<span class="badge chodo">초도</span>':'<span class="muted">-</span>';
+    const opt=[r.color,r.size].filter(x=>x&&x!=='-').join(' / ')||'-';
     tb.insertAdjacentHTML('beforeend',`<tr>
       <td class="center"><input type="checkbox" class="row-chk" data-i="${i}"></td>
-      <td class="center">${autoBadge}${reasonTxt}</td><td>${r.store}</td><td>${r.sku}</td><td>${r.name}</td>
-      <td>${r.style}</td><td>${r.color}</td><td>${r.size}</td>
+      <td class="center">${autoBadge}${reasonTxt}</td><td>${r.store}</td><td>${r.sku}</td><td>${r.name}</td><td>${opt}</td><td>${r.style}</td>
       <td class="num">${r.done>0?r.done:'<span class="muted">-</span>'}</td>
-      <td class="num"><input type="number" min="0" max="${r.stock}" value="${reqVal}" class="qty-input ${reqVal!==''&&reqVal>0?'req':''}" data-i="${i}" onchange="onQty(this)"></td>
-      <td class="center"><button class="btn sm" onclick="setMax(${i})">최대</button></td>
-      <td class="num">${r.stock}</td><td class="center">${chodoBadge}</td><td>${r.brand}</td><td>${r.cat}</td><td>${r.barcode}</td>
+      <td class="num" style="white-space:nowrap;"><input type="number" min="0" max="${r.stock}" value="${reqVal}" class="qty-input ${reqVal!==''&&reqVal>0?'req':''}" data-i="${i}" onchange="onQty(this)"> <button class="btn sm" onclick="setMax(${i})">최대</button></td>
+      <td class="num">${r.stock}</td><td class="center">${chodoBadge}</td><td>${r.brand}</td>
       <td>${r.lastAt?r.lastAt:'<span class="muted">-</span>'}</td><td>${r.lastBy?r.lastBy:'<span class="muted">-</span>'}</td></tr>`);
   });
   document.getElementById('req-total').textContent=rows.length;
