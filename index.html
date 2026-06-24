@@ -3,58 +3,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SCM-Hub · 무탠 재고 보충 요청 (Mock)</title>
+<title>SCM-Hub · 무탠 재고 보충 (Mock)</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-    background: #f5f6f8; color: #1f2329; font-size: 13px;
-  }
-  .topbar {
-    height: 44px; background: #1f2329; color: #fff; display: flex; align-items: center;
-    justify-content: space-between; padding: 0 20px; font-weight: 600;
-  }
-  .topbar .user { font-weight: 400; font-size: 12px; opacity: .85; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; color: #1f2329; font-size: 13px; }
+  .app { display: flex; min-height: 100vh; }
+
+  /* sidebar */
+  .sidebar { width: 232px; background: #1f2329; color: #cbd2d9; flex-shrink: 0; }
+  .sidebar .logo { height: 52px; display:flex; align-items:center; padding: 0 18px; color:#fff; font-weight:700; font-size:15px; border-bottom:1px solid #2f3640; }
+  .nav-sec { padding: 14px 0 4px; }
+  .nav-sec .sec-title { padding: 6px 18px; font-size: 11px; color:#6b7785; font-weight:700; letter-spacing:.3px; }
+  .nav-item { padding: 9px 18px 9px 30px; cursor: pointer; font-size: 13px; color:#cbd2d9; display:flex; align-items:center; gap:6px; }
+  .nav-item:hover { background:#2a2f3a; color:#fff; }
+  .nav-item.active { background:#2563eb; color:#fff; font-weight:600; }
+  .nav-item.disabled { color:#5b6470; cursor:not-allowed; }
+  .nav-item.disabled:hover { background:transparent; color:#5b6470; }
+  .nav-item .tag { font-size:10px; background:#3a4150; color:#9aa4b1; border-radius:4px; padding:1px 5px; margin-left:auto; }
+
+  /* main */
+  .main { flex: 1; background:#f5f6f8; min-width:0; }
+  .topbar { height:52px; background:#fff; border-bottom:1px solid #e5e7eb; display:flex; align-items:center; justify-content:flex-end; padding:0 22px; }
+  .topbar .user { font-size:12px; color:#6b7280; }
   .wrap { padding: 18px 22px; }
+  .crumb { font-size:12px; color:#9ca3af; margin-bottom:4px; }
   h1 { font-size: 19px; font-weight: 700; margin-bottom: 14px; }
 
   /* tabs */
   .tabs { display: flex; gap: 4px; border-bottom: 2px solid #e5e7eb; margin-bottom: 16px; }
-  .tab {
-    padding: 9px 18px; cursor: pointer; font-weight: 600; color: #6b7280;
-    border-bottom: 2px solid transparent; margin-bottom: -2px; font-size: 14px;
-  }
+  .tab { padding: 9px 18px; cursor: pointer; font-weight: 600; color: #6b7280; border-bottom: 2px solid transparent; margin-bottom: -2px; font-size: 14px; }
   .tab.active { color: #2563eb; border-bottom-color: #2563eb; }
   .tab .cnt { color:#9ca3af; font-weight:500; margin-left:4px; }
 
-  /* filter bar */
+  /* filters */
   .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; }
-  .filters select, .filters input[type=text] {
-    height: 32px; border: 1px solid #d1d5db; border-radius: 6px; padding: 0 10px;
-    background: #fff; font-size: 12px; color: #374151;
-  }
+  .filters select, .filters input[type=text] { height: 32px; border: 1px solid #d1d5db; border-radius: 6px; padding: 0 10px; background: #fff; font-size: 12px; color: #374151; }
   .filters input[type=text]{ width: 150px; }
-  .btn {
-    height: 32px; border-radius: 6px; padding: 0 14px; font-size: 12px; cursor: pointer;
-    border: 1px solid #d1d5db; background: #fff; font-weight: 600; color:#374151;
-  }
+  .btn { height: 32px; border-radius: 6px; padding: 0 14px; font-size: 12px; cursor: pointer; border: 1px solid #d1d5db; background: #fff; font-weight: 600; color:#374151; }
   .btn.primary { background: #2563eb; border-color: #2563eb; color: #fff; }
   .btn.green { background: #16a34a; border-color:#16a34a; color:#fff; }
   .btn.red { background: #dc2626; border-color:#dc2626; color:#fff; }
-  .btn.ghost { background:#fff; }
   .btn:disabled { opacity:.45; cursor:not-allowed; }
   .btn.sm { height: 26px; padding: 0 9px; font-size: 11px; }
 
-  /* info cards */
+  /* cards */
   .cards { display: flex; gap: 12px; margin-bottom: 16px; }
-  .card {
-    background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px 16px; min-width: 190px;
-  }
+  .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px 16px; min-width: 190px; }
   .card .lbl { font-size: 11px; color: #6b7280; margin-bottom: 5px; }
   .card .val { font-size: 15px; font-weight: 700; }
   .card .sub { color: #dc2626; font-weight: 600; font-size: 12px; margin-left:6px; }
 
-  /* grid header actions */
+  /* grid head */
   .gridhead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
   .gridhead .left { display:flex; align-items:center; gap:12px; }
   .gridhead .total { font-weight: 700; }
@@ -74,191 +73,209 @@
   .badge.y { background:#dcfce7; color:#15803d; }
   .badge.n { background:#f3f4f6; color:#6b7280; }
   .badge.chodo { background:#dbeafe; color:#1d4ed8; }
+  /* 물류상태 */
+  .st { display:inline-block; padding:2px 9px; border-radius:11px; font-size:11px; font-weight:700; }
+  .st.지시 { background:#f3f4f6; color:#6b7280; }
+  .st.대기 { background:#dbeafe; color:#1d4ed8; }
+  .st.이동 { background:#ffedd5; color:#c2410c; }
+  .st.완료 { background:#dcfce7; color:#15803d; }
 
-  .qty-input {
-    width: 60px; height: 28px; border: 1px solid #d1d5db; border-radius: 5px; text-align: right;
-    padding: 0 7px; font-size: 12px;
-  }
+  .qty-input { width: 60px; height: 28px; border: 1px solid #d1d5db; border-radius: 5px; text-align: right; padding: 0 7px; font-size: 12px; }
   .qty-input.req { background:#fef2f2; border-color:#fca5a5; }
-  .qty-input:disabled { background:#f3f4f6; color:#9ca3af; }
   .reason { color:#9ca3af; font-size:11px; }
   .muted { color:#9ca3af; }
   .footnote { margin-top:14px; color:#9ca3af; font-size:11px; line-height:1.6; }
-  .toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-    background:#1f2329; color:#fff; padding:11px 20px; border-radius:8px; font-size:13px;
-    opacity:0; transition:opacity .25s; pointer-events:none; z-index:50; box-shadow:0 6px 20px rgba(0,0,0,.25);
-  }
+
+  /* progress bar */
+  .prog { display:flex; align-items:center; gap:6px; }
+  .prog .bar { width:70px; height:7px; background:#eef0f3; border-radius:4px; overflow:hidden; }
+  .prog .bar > i { display:block; height:100%; background:#16a34a; }
+  /* drilldown */
+  .exp-btn { cursor:pointer; user-select:none; color:#6b7280; font-weight:700; width:16px; display:inline-block; text-align:center; }
+  .subrow > td { background:#fbfcfe; padding:0; }
+  .subwrap { padding:8px 10px 12px 40px; }
+  .subwrap table { width:auto; min-width:680px; border:1px solid #e9ebef; border-radius:6px; }
+  .subwrap th { background:#f3f4f6; }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background:#1f2329; color:#fff; padding:11px 20px; border-radius:8px; font-size:13px; opacity:0; transition:opacity .25s; pointer-events:none; z-index:50; box-shadow:0 6px 20px rgba(0,0,0,.25); }
   .toast.show { opacity:1; }
 </style>
 </head>
 <body>
-<div class="topbar">
-  <span>SCM-Hub</span>
-  <span class="user">ⓣ taehwan.yeom@musinsa.com</span>
-</div>
-
-<div class="wrap">
-  <h1>무탠 재고 보충 요청 <span class="muted" style="font-size:12px;font-weight:400;">/ 무탠 스토어 관리 · MOCK</span></h1>
-
-  <div class="tabs">
-    <div class="tab active" data-tab="req" onclick="switchTab('req')">본사 요청 <span class="cnt" id="cnt-req"></span></div>
-    <div class="tab" data-tab="appr" onclick="switchTab('appr')">매장 요청 <span class="cnt" id="cnt-appr"></span></div>
-  </div>
-
-  <!-- ================= TAB 1: 보충 요청 ================= -->
-  <div id="tab-req">
-    <div class="filters">
-      <select><option>플랫폼: 무신사</option></select>
-      <select><option>담당 MD: 전체</option></select>
-      <select id="f-brand" onchange="renderReq()">
-        <option value="all">브랜드: 전체</option>
-        <option value="무신사 스탠다드">무신사 스탠다드</option>
-        <option value="무신사 스탠다드 뷰티">무신사 스탠다드 뷰티</option>
-        <option value="무신사스탠다드 지비지에이치">무신사스탠다드 지비지에이치</option>
-        <option value="무신사 스탠다드 홈">무신사 스탠다드 홈</option>
-        <option value="무신사 스탠다드 키즈">무신사 스탠다드 키즈</option>
-        <option value="무신사 스탠다드 오프라인">무신사 스탠다드 오프라인</option>
-        <option value="무신사 스탠다드 스포츠">무신사 스탠다드 스포츠</option>
-        <option value="무신사 스탠다드 우먼">무신사 스탠다드 우먼</option>
-        <option value="무탠홈매입">무탠홈매입</option>
-      </select>
-      <select id="f-store" onchange="renderReq()">
-        <option value="all">스토어: 전체</option>
-        <option value="홍대">홍대</option>
-        <option value="강남">강남</option>
-        <option value="동성로">동성로</option>
-        <option value="서면">서면</option>
-        <option value="성수">성수</option>
-        <option value="명동">명동</option>
-        <option value="타임빌라스 수원">타임빌라스 수원</option>
-        <option value="현대백화점 중동">현대백화점 중동</option>
-        <option value="스타필드 수원">스타필드 수원</option>
-        <option value="AK플라자 분당">AK플라자 분당</option>
-        <option value="롯데몰 동부산">롯데몰 동부산</option>
-        <option value="롯데백화점 센텀">롯데백화점 센텀</option>
-        <option value="한남">한남</option>
-        <option value="갤러리아 광교">갤러리아 광교</option>
-        <option value="롯데프리미엄 아울렛 기흥점">롯데프리미엄 아울렛 기흥점</option>
-      </select>
-      <input type="text" placeholder="SKU번호 / 대표스타일">
-      <select id="f-auto" onchange="renderReq()">
-        <option value="all">자동보충여부: 전체</option>
-        <option value="Y">자동보충 Y</option>
-        <option value="N">자동보충 N</option>
-      </select>
-      <select id="f-chodo" onchange="renderReq()">
-        <option value="all">초도 입고: 전체</option>
-        <option value="Y">초도 Y</option>
-        <option value="N">초도 N</option>
-      </select>
-      <button class="btn primary" onclick="renderReq()">검색</button>
-      <button class="btn" onclick="resetReq()">초기화 ↻</button>
+<div class="app">
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="logo">SCM-Hub</div>
+    <div class="nav-sec">
+      <div class="sec-title">무탠 스토어 관리</div>
+      <div class="nav-item active" data-page="request" onclick="goPage('request')">무탠 재고 보충 요청/승인</div>
+      <div class="nav-item" data-page="status" onclick="goPage('status')">무탠 재고 보충 현황</div>
     </div>
-
-    <div class="cards">
-      <div class="card"><div class="lbl">스토어 입고일</div><div class="val">26.06.24 (수)</div></div>
-      <div class="card"><div class="lbl">확정 마감일시</div><div class="val">06.23 (화) 18:15<span class="sub" id="countdown">--</span></div></div>
-      <div class="card"><div class="lbl">다음 스토어 입고일</div><div class="val">26.06.25 (목)</div></div>
+    <div class="nav-sec">
+      <div class="sec-title">편집샵 스토어 관리</div>
+      <div class="nav-item disabled">편집샵 재고 보충 요청 <span class="tag">예정</span></div>
+      <div class="nav-item disabled">편집샵 재고 보충 현황 <span class="tag">예정</span></div>
     </div>
+  </aside>
 
-    <div class="gridhead">
-      <div class="left">
-        <span class="total">전체 <span id="req-total">0</span>건</span>
-        <button class="btn primary" id="btn-confirm" onclick="confirmReq()">보충확정</button>
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+    <div class="topbar"><span class="user">ⓣ taehwan.yeom@musinsa.com</span></div>
+
+    <!-- ===== PAGE 1: 보충 요청/승인 ===== -->
+    <div class="wrap" id="page-request">
+      <div class="crumb">무탠 스토어 관리 › 무탠 재고 보충 요청/승인</div>
+      <h1>무탠 재고 보충 요청/승인 <span class="muted" style="font-size:12px;font-weight:400;">· MOCK</span></h1>
+
+      <div class="tabs">
+        <div class="tab active" data-tab="req" onclick="switchTab('req')">본사 요청 <span class="cnt" id="cnt-req"></span></div>
+        <div class="tab" data-tab="appr" onclick="switchTab('appr')">매장 요청 <span class="cnt" id="cnt-appr"></span></div>
       </div>
-      <div class="right">
-        <label class="chk-inline"><input type="checkbox" id="f-stock1" onchange="renderReq()"> 보충 가능 재고 1이상 보기</label>
-        <button class="btn ghost" onclick="toast('엑셀 양식 업로드 모달 (mock)')">⬆ 일괄 업로드</button>
-        <button class="btn ghost" onclick="toast('전체 엑셀 다운로드 (mock)')">⬇ 전체 엑셀 다운로드</button>
+
+      <!-- TAB 1: 본사 요청 -->
+      <div id="tab-req">
+        <div class="filters">
+          <select><option>플랫폼: 무신사</option></select>
+          <select><option>담당 MD: 전체</option></select>
+          <select id="f-brand" onchange="renderReq()">
+            <option value="all">브랜드: 전체</option>
+            <option value="무신사 스탠다드">무신사 스탠다드</option>
+            <option value="무신사 스탠다드 뷰티">무신사 스탠다드 뷰티</option>
+            <option value="무신사스탠다드 지비지에이치">무신사스탠다드 지비지에이치</option>
+            <option value="무신사 스탠다드 홈">무신사 스탠다드 홈</option>
+            <option value="무신사 스탠다드 키즈">무신사 스탠다드 키즈</option>
+            <option value="무신사 스탠다드 오프라인">무신사 스탠다드 오프라인</option>
+            <option value="무신사 스탠다드 스포츠">무신사 스탠다드 스포츠</option>
+            <option value="무신사 스탠다드 우먼">무신사 스탠다드 우먼</option>
+            <option value="무탠홈매입">무탠홈매입</option>
+          </select>
+          <select id="f-store" onchange="renderReq()">
+            <option value="all">스토어: 전체</option>
+            <option>홍대</option><option>강남</option><option>동성로</option><option>서면</option><option>성수</option>
+            <option>명동</option><option>타임빌라스 수원</option><option>현대백화점 중동</option><option>스타필드 수원</option>
+            <option>AK플라자 분당</option><option>롯데몰 동부산</option><option>롯데백화점 센텀</option><option>한남</option>
+            <option>갤러리아 광교</option><option>롯데프리미엄 아울렛 기흥점</option>
+          </select>
+          <input type="text" placeholder="SKU번호 / 대표스타일">
+          <select id="f-auto" onchange="renderReq()">
+            <option value="all">자동보충여부: 전체</option><option value="Y">자동보충 Y</option><option value="N">자동보충 N</option>
+          </select>
+          <select id="f-chodo" onchange="renderReq()">
+            <option value="all">초도 입고: 전체</option><option value="Y">초도 Y</option><option value="N">초도 N</option>
+          </select>
+          <button class="btn primary" onclick="renderReq()">검색</button>
+          <button class="btn" onclick="resetReq()">초기화 ↻</button>
+        </div>
+        <div class="cards">
+          <div class="card"><div class="lbl">스토어 입고일</div><div class="val">26.06.24 (수)</div></div>
+          <div class="card"><div class="lbl">확정 마감일시</div><div class="val">06.23 (화) 18:15<span class="sub" id="countdown">--</span></div></div>
+          <div class="card"><div class="lbl">다음 스토어 입고일</div><div class="val">26.06.25 (목)</div></div>
+        </div>
+        <div class="gridhead">
+          <div class="left">
+            <span class="total">전체 <span id="req-total">0</span>건</span>
+            <button class="btn primary" id="btn-confirm" onclick="confirmReq()">보충확정</button>
+          </div>
+          <div class="right">
+            <label class="chk-inline"><input type="checkbox" id="f-stock1" onchange="renderReq()"> 보충 가능 재고 1이상 보기</label>
+            <button class="btn" onclick="toast('엑셀 양식 업로드 모달 (mock)')">⬆ 일괄 업로드</button>
+            <button class="btn" onclick="toast('전체 엑셀 다운로드 (mock)')">⬇ 전체 엑셀 다운로드</button>
+          </div>
+        </div>
+        <div class="tablewrap">
+          <table>
+            <thead><tr>
+              <th class="center"><input type="checkbox" id="chk-all" onclick="toggleAll(this)"></th>
+              <th class="center">자동보충여부</th><th>스토어명</th><th>SKU번호</th><th>SKU명</th>
+              <th>대표스타일</th><th>컬러</th><th>사이즈</th><th class="num">보충 지시<br>완료 수량</th>
+              <th class="num">보충 확정 수량</th><th class="center">최대</th><th class="num">보충 가능 재고</th>
+              <th class="center">초도</th><th>브랜드</th><th>카테고리</th><th>바코드</th><th>마지막 처리일시</th><th>처리자</th>
+            </tr></thead>
+            <tbody id="req-body"></tbody>
+          </table>
+        </div>
+        <div class="footnote">· <b>자동보충 Y</b> = Autonomation 자동출고 산출 · <b>N</b> = 운영중이나 자동출고 제외(추천≤0/매핑제외/재고부족), 수동 입력 보충<br>· 산식: 보충 확정 수량 = 목표재고(향후 3일 예상판매) − (매장 현재고 + 이동중 재고) · 무탠 전량 PB(1P)</div>
+      </div>
+
+      <!-- TAB 2: 매장 요청 -->
+      <div id="tab-appr" style="display:none;">
+        <div class="filters">
+          <select><option>요청매장: 전체</option></select>
+          <input type="text" placeholder="SKU번호 / 대표스타일">
+          <input type="text" placeholder="요청일자">
+          <button class="btn primary" onclick="renderAppr()">검색</button>
+          <button class="btn" onclick="renderAppr()">초기화 ↻</button>
+        </div>
+        <div class="gridhead">
+          <div class="left">
+            <span class="total">매장 요청 <span id="appr-total">0</span>건</span>
+            <button class="btn green" onclick="approve()">승인</button>
+            <button class="btn red" onclick="reject()">반려</button>
+          </div>
+          <div class="right muted" style="font-size:11px;">※ 승인 = 즉시 보충확정(MWMS 출고지시)</div>
+        </div>
+        <div class="tablewrap">
+          <table>
+            <thead><tr>
+              <th class="center"><input type="checkbox" id="chk-all-appr" onclick="toggleAllAppr(this)"></th>
+              <th>요청매장</th><th>보충요청자</th><th>SKU번호</th><th>SKU명</th><th>대표스타일</th><th>컬러</th><th>사이즈</th>
+              <th class="num">매장보충 요청 수량</th><th class="num">보충 확정 수량</th><th class="num">보충 가능 재고</th>
+              <th>브랜드</th><th>카테고리</th><th>바코드</th><th>마지막 처리일시</th><th>처리자</th>
+            </tr></thead>
+            <tbody id="appr-body"></tbody>
+          </table>
+        </div>
+        <div class="footnote">· 승인 클릭 시 보충 가능 재고·컷오프 마감 검증 뒤 즉시 출고지시 · 반려 시 사유 입력해 매장(MOSS)에 회신</div>
       </div>
     </div>
 
-    <div class="tablewrap">
-      <table>
-        <thead>
-          <tr>
-            <th class="center"><input type="checkbox" id="chk-all" onclick="toggleAll(this)"></th>
-            <th class="center">자동보충여부</th>
-            <th>스토어명</th>
-            <th>SKU번호</th>
-            <th>SKU명</th>
-            <th>대표스타일</th>
-            <th>컬러</th>
-            <th>사이즈</th>
-            <th class="num">보충 지시<br>완료 수량</th>
-            <th class="num">보충 확정 수량</th>
-            <th class="center">최대</th>
-            <th class="num">보충 가능 재고</th>
-            <th class="center">초도</th>
-            <th>브랜드</th>
-            <th>카테고리</th>
-            <th>바코드</th>
-            <th>마지막 처리일시</th>
-            <th>처리자</th>
-          </tr>
-        </thead>
-        <tbody id="req-body"></tbody>
-      </table>
-    </div>
-    <div class="footnote">
-      · <b>자동보충 Y</b> = Autonomation 자동출고 산출 건 (요청 수량 추천값 자동 채움) · <b>N</b> = 운영중이나 자동출고 제외(추천≤0/매핑제외/재고부족 drop)된 건, 수동 입력 보충<br>
-      · 추천 산식(무탠 자동출고): 보충 확정 수량 = 목표재고(향후 3일 예상판매) − (매장 현재고 + 이동중 재고) · 무탠은 전량 PB(1P)라 매입형태 컬럼 없음
-    </div>
-  </div>
+    <!-- ===== PAGE 2: 보충 현황 ===== -->
+    <div class="wrap" id="page-status" style="display:none;">
+      <div class="crumb">무탠 스토어 관리 › 무탠 재고 보충 현황</div>
+      <h1>무탠 재고 보충 현황 <span class="muted" style="font-size:12px;font-weight:400;">· MOCK</span></h1>
 
-  <!-- ================= TAB 2: 승인 ================= -->
-  <div id="tab-appr" style="display:none;">
-    <div class="filters">
-      <select><option>요청매장: 전체</option></select>
-      <input type="text" placeholder="SKU번호 / 대표스타일">
-      <input type="text" placeholder="요청일자">
-      <button class="btn primary" onclick="renderAppr()">검색</button>
-      <button class="btn" onclick="renderAppr()">초기화 ↻</button>
-    </div>
-
-    <div class="gridhead">
-      <div class="left">
-        <span class="total">매장 요청 <span id="appr-total">0</span>건</span>
-        <button class="btn green" onclick="approve()">승인</button>
-        <button class="btn red" onclick="reject()">반려</button>
+      <div class="filters">
+        <select><option>스토어: 전체</option></select>
+        <select><option>브랜드: 전체</option></select>
+        <input type="text" placeholder="SKU번호 / 대표스타일">
+        <input type="text" placeholder="출고일">
+        <select id="s-status" onchange="renderStatus()">
+          <option value="all">물류상태: 전체</option>
+          <option value="출고지시">출고지시</option><option value="출고대기">출고대기</option>
+          <option value="이동중">이동중</option><option value="입고완료">입고완료</option>
+        </select>
+        <select><option>센터: 전체</option></select>
+        <button class="btn primary" onclick="renderStatus()">검색</button>
       </div>
-      <div class="right muted" style="font-size:11px;">※ 승인 = 즉시 보충확정(MWMS 출고지시)</div>
-    </div>
 
-    <div class="tablewrap">
-      <table>
-        <thead>
-          <tr>
-            <th class="center"><input type="checkbox" id="chk-all-appr" onclick="toggleAllAppr(this)"></th>
-            <th>요청매장</th>
-            <th>보충요청자</th>
-            <th>SKU번호</th>
-            <th>SKU명</th>
-            <th>대표스타일</th>
-            <th>컬러</th>
-            <th>사이즈</th>
-            <th class="num">매장보충 요청 수량</th>
-            <th class="num">보충 확정 수량</th>
-            <th class="num">보충 가능 재고</th>
-            <th>브랜드</th>
-            <th>카테고리</th>
-            <th>바코드</th>
-            <th>마지막 처리일시</th>
-            <th>처리자</th>
-          </tr>
-        </thead>
-        <tbody id="appr-body"></tbody>
-      </table>
+      <div class="gridhead">
+        <div class="left"><span class="total">확정 <span id="st-total">0</span>건</span></div>
+        <div class="right">
+          <span class="muted" style="font-size:11px;">행 클릭 시 센터별 출고 상세 ▾</span>
+          <button class="btn" onclick="toast('전체 엑셀 다운로드 (mock)')">⬇ 전체 엑셀 다운로드</button>
+        </div>
+      </div>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr>
+            <th style="width:28px;"></th>
+            <th>스토어명</th><th>대표스타일</th><th>SKU번호</th><th>SKU명</th><th>컬러</th><th>사이즈</th>
+            <th class="num">보충 확정 수량</th><th class="num">출고 수량</th><th class="num">입고 수량</th>
+            <th>진행률</th><th class="center">물류상태</th><th>확정일시</th>
+          </tr></thead>
+          <tbody id="status-body"></tbody>
+        </table>
+      </div>
+      <div class="footnote">· 보충 <b>확정된 건만</b> 노출 · 물류상태: 출고지시 → 출고대기 → 이동중 → 입고완료 · 1 보충요청이 여러 센터로 분리될 수 있어 행 확장 시 <b>센터별 출고 상세</b> 노출 (읽기 전용)</div>
     </div>
-    <div class="footnote">· 승인 클릭 시 보충 가능 재고·컷오프 마감을 검증한 뒤 즉시 출고지시 · 반려 시 사유를 입력해 매장(MOSS)에 회신</div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ---------------- mock data ----------------
+// ---------------- data: 본사 요청 ----------------
 const reqData = [
   { auto:'Y', store:'홍대', sku:'S001', name:'무탠 베이직 크루넥 티셔츠', style:'MTSS-001', color:'블랙', size:'M', done:0, req:5, stock:42, chodo:'N', brand:'무신사 스탠다드', cat:'상의>티셔츠', barcode:'8809000000001', lastAt:'2026-06-23 09:12', lastBy:'System' },
   { auto:'Y', store:'강남', sku:'S003', name:'무탠 와이드 슬랙스', style:'MBPS-014', color:'네이비', size:'30', done:2, req:6, stock:18, chodo:'N', brand:'무신사 스탠다드', cat:'하의>슬랙스', barcode:'8809000000023', lastAt:'2026-06-23 09:12', lastBy:'System' },
@@ -273,160 +290,153 @@ const reqData = [
   { auto:'Y', store:'스타필드 수원', sku:'S033', name:'스탠다드 키즈 기모 맨투맨', style:'MKDS-210', color:'네이비', size:'130', done:1, req:6, stock:22, chodo:'N', brand:'무신사 스탠다드 키즈', cat:'키즈>상의', barcode:'8809000000333', lastAt:'2026-06-23 09:12', lastBy:'System' },
 ];
 
+// ---------------- data: 매장 요청 ----------------
 const apprData = [
   { store:'동성로', sku:'S002', name:'무탠 스탠다드 셔츠', style:'MSHS-008', color:'화이트', size:'95', storeReq:4, req:4, stock:6, brand:'무신사 스탠다드', cat:'상의>셔츠', barcode:'8809000000012', requester:'최매장', lastAt:'2026-06-23 08:30', lastBy:'-' },
   { store:'AK플라자 분당', sku:'S005', name:'무탠 오버핏 후디', style:'MHDS-220', color:'그레이', size:'M', storeReq:6, req:6, stock:25, brand:'무신사 스탠다드', cat:'상의>후드', barcode:'8809000000046', requester:'정매장', lastAt:'2026-06-23 08:45', lastBy:'박운영' },
   { store:'갤러리아 광교', sku:'S014', name:'무탠 미니멀 볼캡', style:'MCPS-455', color:'블랙', size:'FREE', storeReq:10, req:10, stock:8, brand:'무신사 스탠다드', cat:'ACC>모자', barcode:'8809000000144', requester:'한매장', lastAt:'2026-06-23 09:05', lastBy:'-' },
 ];
 
-// ---------------- tab ----------------
+// ---------------- data: 보충 현황 ----------------
+const statusData = [
+  { store:'홍대', style:'MTSS-001', sku:'S001', name:'무탠 베이직 크루넥 티셔츠', color:'블랙', size:'M', conf:5, out:5, inq:5, status:'입고완료', at:'2026-06-23 18:10',
+    centers:[ {center:'동탄 MFS', move:'MV2406001', out:'OUT500101', in:'IN300101', outQty:3, moveQty:3, inQty:3, status:'입고완료', at:'2026-06-24 07:05'},
+              {center:'곤지암 MFS', move:'MV2406002', out:'OUT500102', in:'IN300102', outQty:2, moveQty:2, inQty:2, status:'입고완료', at:'2026-06-24 07:20'} ] },
+  { store:'강남', style:'MBPS-014', sku:'S003', name:'무탠 와이드 슬랙스', color:'네이비', size:'30', conf:6, out:6, inq:2, status:'이동중', at:'2026-06-23 18:11',
+    centers:[ {center:'동탄 MFS', move:'MV2406010', out:'OUT500110', in:'IN300110', outQty:4, moveQty:4, inQty:2, status:'이동중', at:'2026-06-24 06:50'},
+              {center:'양지 MFS', move:'MV2406011', out:'OUT500111', in:'-', outQty:2, moveQty:2, inQty:0, status:'이동중', at:'2026-06-24 06:55'} ] },
+  { store:'성수', style:'MHDS-220', sku:'S005', name:'무탠 오버핏 후디', color:'그레이', size:'L', conf:8, out:5, inq:0, status:'출고대기', at:'2026-06-23 18:12',
+    centers:[ {center:'동탄 MFS', move:'MV2406020', out:'OUT500120', in:'-', outQty:5, moveQty:0, inQty:0, status:'출고대기', at:'2026-06-24 05:30'},
+              {center:'곤지암 MFS', move:'MV2406021', out:'-', in:'-', outQty:3, moveQty:0, inQty:0, status:'출고지시', at:'2026-06-24 05:10'} ] },
+  { store:'한남', style:'MCPS-455', sku:'S014', name:'무탠 미니멀 볼캡', color:'블랙', size:'FREE', conf:3, out:0, inq:0, status:'출고지시', at:'2026-06-23 18:15',
+    centers:[ {center:'양지 MFS', move:'MV2406030', out:'-', in:'-', outQty:3, moveQty:0, inQty:0, status:'출고지시', at:'2026-06-24 05:00'} ] },
+  { store:'스타필드 수원', style:'MKDS-210', sku:'S033', name:'스탠다드 키즈 기모 맨투맨', color:'네이비', size:'130', conf:6, out:6, inq:6, status:'입고완료', at:'2026-06-23 18:09',
+    centers:[ {center:'동탄 MFS', move:'MV2406040', out:'OUT500140', in:'IN300140', outQty:6, moveQty:6, inQty:6, status:'입고완료', at:'2026-06-24 07:00'} ] },
+];
+
+// ---------------- page nav ----------------
+function goPage(p){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.page===p));
+  document.getElementById('page-request').style.display = p==='request'?'block':'none';
+  document.getElementById('page-status').style.display = p==='status'?'block':'none';
+  if(p==='status') renderStatus();
+}
 function switchTab(t){
   document.querySelectorAll('.tab').forEach(e=>e.classList.toggle('active', e.dataset.tab===t));
   document.getElementById('tab-req').style.display = t==='req'?'block':'none';
   document.getElementById('tab-appr').style.display = t==='appr'?'block':'none';
 }
 
-// ---------------- tab1 render ----------------
+// ---------------- 본사 요청 ----------------
 function getReqFiltered(){
-  const fa=document.getElementById('f-auto').value;
-  const fc=document.getElementById('f-chodo').value;
-  const fb=document.getElementById('f-brand').value;
-  const fst=document.getElementById('f-store').value;
+  const fa=document.getElementById('f-auto').value, fc=document.getElementById('f-chodo').value;
+  const fb=document.getElementById('f-brand').value, fst=document.getElementById('f-store').value;
   const fs=document.getElementById('f-stock1').checked;
-  return reqData.filter(r=>
-    (fa==='all'||r.auto===fa) &&
-    (fc==='all'||r.chodo===fc) &&
-    (fb==='all'||r.brand===fb) &&
-    (fst==='all'||r.store===fst) &&
-    (!fs || r.stock>=1)
-  );
+  return reqData.filter(r=>(fa==='all'||r.auto===fa)&&(fc==='all'||r.chodo===fc)&&(fb==='all'||r.brand===fb)&&(fst==='all'||r.store===fst)&&(!fs||r.stock>=1));
 }
 function renderReq(){
-  const rows=getReqFiltered();
-  const tb=document.getElementById('req-body'); tb.innerHTML='';
+  const rows=getReqFiltered(), tb=document.getElementById('req-body'); tb.innerHTML='';
   rows.forEach((r)=>{
-    const i = reqData.indexOf(r);
-    const reqVal = r.req===null ? '' : r.req;
-    const autoBadge = r.auto==='Y' ? '<span class="badge y">Y</span>' : '<span class="badge n">N</span>';
-    const reasonTxt = r.auto==='N' && r.reason ? `<div class="reason">${r.reason}</div>` : '';
-    const chodoBadge = r.chodo==='Y' ? '<span class="badge chodo">초도</span>' : '<span class="muted">-</span>';
-    tb.insertAdjacentHTML('beforeend', `
-      <tr>
-        <td class="center"><input type="checkbox" class="row-chk" data-i="${i}"></td>
-        <td class="center">${autoBadge}${reasonTxt}</td>
-        <td>${r.store}</td>
-        <td>${r.sku}</td>
-        <td>${r.name}</td>
-        <td>${r.style}</td>
-        <td>${r.color}</td>
-        <td>${r.size}</td>
-        <td class="num">${r.done>0?r.done:'<span class="muted">-</span>'}</td>
-        <td class="num"><input type="number" min="0" max="${r.stock}" value="${reqVal}" class="qty-input ${reqVal!==''&&reqVal>0?'req':''}" data-i="${i}" onchange="onQty(this)"></td>
-        <td class="center"><button class="btn sm" onclick="setMax(${i})">최대</button></td>
-        <td class="num">${r.stock}</td>
-        <td class="center">${chodoBadge}</td>
-        <td>${r.brand}</td>
-        <td>${r.cat}</td>
-        <td>${r.barcode}</td>
-        <td>${r.lastAt?r.lastAt:'<span class="muted">-</span>'}</td>
-        <td>${r.lastBy?r.lastBy:'<span class="muted">-</span>'}</td>
-      </tr>`);
+    const i=reqData.indexOf(r), reqVal=r.req===null?'':r.req;
+    const autoBadge=r.auto==='Y'?'<span class="badge y">Y</span>':'<span class="badge n">N</span>';
+    const reasonTxt=r.auto==='N'&&r.reason?`<div class="reason">${r.reason}</div>`:'';
+    const chodoBadge=r.chodo==='Y'?'<span class="badge chodo">초도</span>':'<span class="muted">-</span>';
+    tb.insertAdjacentHTML('beforeend',`<tr>
+      <td class="center"><input type="checkbox" class="row-chk" data-i="${i}"></td>
+      <td class="center">${autoBadge}${reasonTxt}</td><td>${r.store}</td><td>${r.sku}</td><td>${r.name}</td>
+      <td>${r.style}</td><td>${r.color}</td><td>${r.size}</td>
+      <td class="num">${r.done>0?r.done:'<span class="muted">-</span>'}</td>
+      <td class="num"><input type="number" min="0" max="${r.stock}" value="${reqVal}" class="qty-input ${reqVal!==''&&reqVal>0?'req':''}" data-i="${i}" onchange="onQty(this)"></td>
+      <td class="center"><button class="btn sm" onclick="setMax(${i})">최대</button></td>
+      <td class="num">${r.stock}</td><td class="center">${chodoBadge}</td><td>${r.brand}</td><td>${r.cat}</td><td>${r.barcode}</td>
+      <td>${r.lastAt?r.lastAt:'<span class="muted">-</span>'}</td><td>${r.lastBy?r.lastBy:'<span class="muted">-</span>'}</td></tr>`);
   });
   document.getElementById('req-total').textContent=rows.length;
   document.getElementById('cnt-req').textContent=`(${reqData.length})`;
   document.getElementById('chk-all').checked=false;
 }
-function onQty(el){
-  const i=+el.dataset.i; let v=parseInt(el.value);
-  if(isNaN(v)||v<0){ v=0; }
-  if(v>reqData[i].stock){ v=reqData[i].stock; toast('보충 가능 재고를 초과할 수 없습니다.'); }
-  el.value=v; reqData[i].req=v;
-  el.classList.toggle('req', v>0);
-}
+function onQty(el){ const i=+el.dataset.i; let v=parseInt(el.value); if(isNaN(v)||v<0)v=0; if(v>reqData[i].stock){v=reqData[i].stock;toast('보충 가능 재고를 초과할 수 없습니다.');} el.value=v; reqData[i].req=v; el.classList.toggle('req',v>0); }
 function setMax(i){ reqData[i].req=reqData[i].stock; renderReq(); }
 function toggleAll(el){ document.querySelectorAll('.row-chk').forEach(c=>c.checked=el.checked); }
-function resetReq(){
-  document.getElementById('f-auto').value='all';
-  document.getElementById('f-chodo').value='all';
-  document.getElementById('f-brand').value='all';
-  document.getElementById('f-store').value='all';
-  document.getElementById('f-stock1').checked=false;
-  renderReq();
-}
+function resetReq(){ ['f-auto','f-chodo','f-brand','f-store'].forEach(id=>document.getElementById(id).value='all'); document.getElementById('f-stock1').checked=false; renderReq(); }
 function confirmReq(){
   const sel=[...document.querySelectorAll('.row-chk:checked')].map(c=>reqData[+c.dataset.i]);
-  if(!sel.length){ toast('확정할 행을 선택해 주세요.'); return; }
+  if(!sel.length){toast('확정할 행을 선택해 주세요.');return;}
   const qty=sel.reduce((s,r)=>s+(r.req||0),0);
-  if(qty<=0){ toast('보충 확정 수량이 0인 건은 확정할 수 없습니다.'); return; }
-  toast(`✅ ${sel.length}개 SKU · 총 ${qty}개 보충확정 → MWMS 출고지시 전송 (mock)`);
+  if(qty<=0){toast('보충 확정 수량이 0인 건은 확정할 수 없습니다.');return;}
+  if(confirm('보충확정 하시겠습니까?')) toast(`✅ ${sel.length}개 SKU · 총 ${qty}개 보충확정 → MWMS 출고지시 (mock)`);
 }
 
-// ---------------- tab2 render ----------------
+// ---------------- 매장 요청 ----------------
 function renderAppr(){
   const tb=document.getElementById('appr-body'); tb.innerHTML='';
   apprData.forEach((r,i)=>{
-    const over = r.req>r.stock;
-    tb.insertAdjacentHTML('beforeend', `
-      <tr>
-        <td class="center"><input type="checkbox" class="appr-chk" data-i="${i}"></td>
-        <td>${r.store}</td>
-        <td>${r.requester||'<span class="muted">-</span>'}</td>
-        <td>${r.sku}</td>
-        <td>${r.name}</td>
-        <td>${r.style}</td>
-        <td>${r.color}</td>
-        <td>${r.size}</td>
-        <td class="num">${r.storeReq}</td>
-        <td class="num"><input type="number" min="0" max="${r.stock}" value="${r.req}" class="qty-input ${over?'req':''}" data-i="${i}" onchange="onApprQty(this)"></td>
-        <td class="num">${r.stock}</td>
-        <td>${r.brand}</td>
-        <td>${r.cat}</td>
-        <td>${r.barcode}</td>
-        <td>${r.lastAt?r.lastAt:'<span class="muted">-</span>'}</td>
-        <td>${r.lastBy&&r.lastBy!=='-'?r.lastBy:'<span class="muted">-</span>'}</td>
-      </tr>`);
+    const over=r.req>r.stock;
+    tb.insertAdjacentHTML('beforeend',`<tr>
+      <td class="center"><input type="checkbox" class="appr-chk" data-i="${i}"></td>
+      <td>${r.store}</td><td>${r.requester||'<span class="muted">-</span>'}</td><td>${r.sku}</td><td>${r.name}</td>
+      <td>${r.style}</td><td>${r.color}</td><td>${r.size}</td>
+      <td class="num">${r.storeReq}</td>
+      <td class="num"><input type="number" min="0" max="${r.stock}" value="${r.req}" class="qty-input ${over?'req':''}" data-i="${i}" onchange="onApprQty(this)"></td>
+      <td class="num">${r.stock}</td><td>${r.brand}</td><td>${r.cat}</td><td>${r.barcode}</td>
+      <td>${r.lastAt?r.lastAt:'<span class="muted">-</span>'}</td><td>${r.lastBy&&r.lastBy!=='-'?r.lastBy:'<span class="muted">-</span>'}</td></tr>`);
   });
   document.getElementById('appr-total').textContent=apprData.length;
   document.getElementById('cnt-appr').textContent=`(${apprData.length})`;
   document.getElementById('chk-all-appr').checked=false;
 }
 function toggleAllAppr(el){ document.querySelectorAll('.appr-chk').forEach(c=>c.checked=el.checked); }
-function onApprQty(el){
-  const i=+el.dataset.i; let v=parseInt(el.value);
-  if(isNaN(v)||v<0) v=0;
-  apprData[i].req=v;
-  el.classList.toggle('req', v>apprData[i].stock);
-}
+function onApprQty(el){ const i=+el.dataset.i; let v=parseInt(el.value); if(isNaN(v)||v<0)v=0; apprData[i].req=v; el.classList.toggle('req',v>apprData[i].stock); }
 function approve(){
   const sel=[...document.querySelectorAll('.appr-chk:checked')].map(c=>apprData[+c.dataset.i]);
-  if(!sel.length){ toast('승인할 요청을 선택해 주세요.'); return; }
+  if(!sel.length){toast('승인할 요청을 선택해 주세요.');return;}
   const over=sel.filter(r=>r.req>r.stock);
-  if(over.length){ toast(`⚠ ${over.length}건은 요청수량 > 보충 가능 재고 — 승인 불가 (가용 초과)`); return; }
-  toast(`✅ ${sel.length}건 승인 → 즉시 보충확정·MWMS 출고지시 (mock)`);
+  if(over.length){toast(`⚠ ${over.length}건은 확정수량 > 보충 가능 재고 — 승인 불가`);return;}
+  if(confirm('승인 시 즉시 물류시스템으로 보충 지시 됩니다. 진행하시겠습니까?')) toast(`✅ ${sel.length}건 승인 → 즉시 출고지시 (mock)`);
 }
 function reject(){
   const sel=[...document.querySelectorAll('.appr-chk:checked')];
-  if(!sel.length){ toast('반려할 요청을 선택해 주세요.'); return; }
-  toast(`⛔ ${sel.length}건 반려 → 사유 입력 모달 (mock)`);
+  if(!sel.length){toast('반려할 요청을 선택해 주세요.');return;}
+  if(confirm('반려 시 보충지시되지 않습니다. 진행하시겠습니까?')) toast(`⛔ ${sel.length}건 반려 → 사유 입력 모달 (mock)`);
+}
+
+// ---------------- 보충 현황 ----------------
+function stClass(s){ return s.includes('완료')?'완료':s.includes('이동')?'이동':s.includes('대기')?'대기':'지시'; }
+function renderStatus(){
+  const f=document.getElementById('s-status').value;
+  const rows=statusData.filter(r=>f==='all'||r.status===f);
+  const tb=document.getElementById('status-body'); tb.innerHTML='';
+  rows.forEach((r)=>{
+    const i=statusData.indexOf(r);
+    const pct=Math.round(r.inq/r.conf*100);
+    tb.insertAdjacentHTML('beforeend',`<tr onclick="toggleSub(${i})" style="cursor:pointer;">
+      <td class="center"><span class="exp-btn" id="exp-${i}">▸</span></td>
+      <td>${r.store}</td><td>${r.style}</td><td>${r.sku}</td><td>${r.name}</td><td>${r.color}</td><td>${r.size}</td>
+      <td class="num">${r.conf}</td><td class="num">${r.out}</td><td class="num">${r.inq}</td>
+      <td><div class="prog"><div class="bar"><i style="width:${pct}%"></i></div><span class="muted">${pct}%</span></div></td>
+      <td class="center"><span class="st ${stClass(r.status)}">${r.status}</span></td><td>${r.at}</td></tr>
+      <tr class="subrow" id="sub-${i}" style="display:none;"><td colspan="13"><div class="subwrap">
+        <table><thead><tr><th>출고센터</th><th>이동번호</th><th>출고번호</th><th>입고번호</th>
+        <th class="num">출고</th><th class="num">이동</th><th class="num">입고</th><th class="center">물류상태</th><th>처리일시</th></tr></thead>
+        <tbody>${r.centers.map(c=>`<tr><td>${c.center}</td><td>${c.move}</td><td>${c.out}</td><td>${c.in}</td>
+        <td class="num">${c.outQty}</td><td class="num">${c.moveQty}</td><td class="num">${c.inQty}</td>
+        <td class="center"><span class="st ${stClass(c.status)}">${c.status}</span></td><td>${c.at}</td></tr>`).join('')}</tbody></table>
+      </div></td></tr>`);
+  });
+  document.getElementById('st-total').textContent=rows.length;
+}
+function toggleSub(i){
+  const sub=document.getElementById('sub-'+i), exp=document.getElementById('exp-'+i);
+  const open=sub.style.display==='none'; sub.style.display=open?'table-row':'none'; exp.textContent=open?'▾':'▸';
 }
 
 // ---------------- toast & countdown ----------------
 let toastTimer;
-function toast(msg){
-  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
-  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2600);
-}
-// countdown to demo deadline (now + 7h47m)
-const deadline = Date.now() + (7*3600+47*60)*1000;
-function tick(){
-  let s=Math.max(0,Math.floor((deadline-Date.now())/1000));
-  const h=Math.floor(s/3600), m=Math.floor((s%3600)/60);
-  document.getElementById('countdown').textContent = s>0?`(${h}시간 ${m}분 남음)`:'(마감)';
-  document.getElementById('btn-confirm').disabled = s<=0;
-}
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2600); }
+const deadline=Date.now()+(7*3600+47*60)*1000;
+function tick(){ let s=Math.max(0,Math.floor((deadline-Date.now())/1000)); const h=Math.floor(s/3600),m=Math.floor((s%3600)/60); document.getElementById('countdown').textContent=s>0?`(${h}시간 ${m}분 남음)`:'(마감)'; document.getElementById('btn-confirm').disabled=s<=0; }
 setInterval(tick,1000); tick();
 
-// init
 renderReq(); renderAppr();
 </script>
 </body>
