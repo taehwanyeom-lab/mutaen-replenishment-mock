@@ -187,7 +187,7 @@
             <th>컬러</th>
             <th>사이즈</th>
             <th class="num">보충 지시<br>완료 수량</th>
-            <th class="num">보충 요청 수량</th>
+            <th class="num">보충 확정 수량</th>
             <th class="center">최대</th>
             <th class="num">보충 가능 재고</th>
             <th class="center">초도</th>
@@ -203,7 +203,7 @@
     </div>
     <div class="footnote">
       · <b>자동보충 Y</b> = Autonomation 자동출고 산출 건 (요청 수량 추천값 자동 채움) · <b>N</b> = 운영중이나 자동출고 제외(추천≤0/매핑제외/재고부족 drop)된 건, 수동 입력 보충<br>
-      · 추천 산식(무탠 자동출고): 보충 요청 수량 = 목표재고(향후 3일 예상판매) − (매장 현재고 + 이동중 재고) · 무탠은 전량 PB(1P)라 매입형태 컬럼 없음
+      · 추천 산식(무탠 자동출고): 보충 확정 수량 = 목표재고(향후 3일 예상판매) − (매장 현재고 + 이동중 재고) · 무탠은 전량 PB(1P)라 매입형태 컬럼 없음
     </div>
   </div>
 
@@ -238,7 +238,7 @@
             <th>대표스타일</th>
             <th>컬러</th>
             <th>사이즈</th>
-            <th class="num">보충 요청 수량</th>
+            <th class="num">보충 확정 수량</th>
             <th class="num">보충 가능 재고</th>
             <th>브랜드</th>
             <th>카테고리</th>
@@ -356,7 +356,7 @@ function confirmReq(){
   const sel=[...document.querySelectorAll('.row-chk:checked')].map(c=>reqData[+c.dataset.i]);
   if(!sel.length){ toast('확정할 행을 선택해 주세요.'); return; }
   const qty=sel.reduce((s,r)=>s+(r.req||0),0);
-  if(qty<=0){ toast('보충 요청 수량이 0인 건은 확정할 수 없습니다.'); return; }
+  if(qty<=0){ toast('보충 확정 수량이 0인 건은 확정할 수 없습니다.'); return; }
   toast(`✅ ${sel.length}개 SKU · 총 ${qty}개 보충확정 → MWMS 출고지시 전송 (mock)`);
 }
 
