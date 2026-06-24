@@ -194,7 +194,7 @@
             <tbody id="req-body"></tbody>
           </table>
         </div>
-        <div class="footnote">· <b>자동보충 Y</b> = Autonomation 자동출고 산출 · <b>N</b> = 운영중이나 자동출고 제외(추천≤0/매핑제외/재고부족), 수동 입력 보충<br>· 산식: 보충 확정 수량 = 목표재고(향후 3일 예상판매) − (매장 현재고 + 이동중 재고) · 무탠 전량 PB(1P)</div>
+        <div class="footnote">· <b>전개상품관리 여부 = Y</b>인 SKU만 목록에 노출<br>· <b>자동보충 Y</b> = Autonomation 자동출고 산출 · <b>N</b> = 운영중이나 자동출고 제외(추천≤0/매핑제외/재고부족), 수동 입력 보충<br>· 산식: 보충 확정 수량 = 목표재고(향후 3일 예상판매) − (매장 현재고 + 이동중 재고) · 무탠 전량 PB(1P)</div>
       </div>
 
       <!-- TAB 2: 매장 요청 -->
@@ -206,13 +206,22 @@
           <button class="btn primary" onclick="renderAppr()">검색</button>
           <button class="btn" onclick="renderAppr()">초기화 ↻</button>
         </div>
+        <div class="cards">
+          <div class="card"><div class="lbl">스토어 입고일</div><div class="val">26.06.24 (수)</div></div>
+          <div class="card"><div class="lbl">확정 마감일시</div><div class="val">06.23 (화) 18:15<span class="sub" id="countdown2">--</span></div></div>
+          <div class="card"><div class="lbl">다음 스토어 입고일</div><div class="val">26.06.25 (목)</div></div>
+        </div>
         <div class="gridhead">
           <div class="left">
             <span class="total">매장 요청 <span id="appr-total">0</span>건</span>
             <button class="btn green" onclick="approve()">승인</button>
             <button class="btn red" onclick="reject()">반려</button>
+            <span class="muted" style="font-size:11px;">※ 승인 = 즉시 보충확정(MWMS 출고지시)</span>
           </div>
-          <div class="right muted" style="font-size:11px;">※ 승인 = 즉시 보충확정(MWMS 출고지시)</div>
+          <div class="right">
+            <button class="btn" onclick="toast('엑셀 양식 업로드 모달 (mock)')">⬆ 일괄 업로드</button>
+            <button class="btn" onclick="toast('전체 엑셀 다운로드 (mock)')">⬇ 전체 엑셀 다운로드</button>
+          </div>
         </div>
         <div class="tablewrap">
           <table>
@@ -225,7 +234,7 @@
             <tbody id="appr-body"></tbody>
           </table>
         </div>
-        <div class="footnote">· 승인 클릭 시 보충 가능 재고·컷오프 마감 검증 뒤 즉시 출고지시 · 반려 시 사유 입력해 매장(MOSS)에 회신</div>
+        <div class="footnote">· <b>전개상품관리 여부 = Y</b>인 SKU만 목록에 노출 · 단건/일괄 처리 지원<br>· 승인 클릭 시 보충 가능 재고·컷오프 마감 검증 뒤 즉시 출고지시 · 반려 시 사유 입력해 매장(MOSS)에 회신</div>
       </div>
     </div>
 
@@ -434,7 +443,7 @@ function toggleSub(i){
 let toastTimer;
 function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2600); }
 const deadline=Date.now()+(7*3600+47*60)*1000;
-function tick(){ let s=Math.max(0,Math.floor((deadline-Date.now())/1000)); const h=Math.floor(s/3600),m=Math.floor((s%3600)/60); document.getElementById('countdown').textContent=s>0?`(${h}시간 ${m}분 남음)`:'(마감)'; document.getElementById('btn-confirm').disabled=s<=0; }
+function tick(){ let s=Math.max(0,Math.floor((deadline-Date.now())/1000)); const h=Math.floor(s/3600),m=Math.floor((s%3600)/60); const txt=s>0?`(${h}시간 ${m}분 남음)`:'(마감)'; document.getElementById('countdown').textContent=txt; const c2=document.getElementById('countdown2'); if(c2)c2.textContent=txt; document.getElementById('btn-confirm').disabled=s<=0; }
 setInterval(tick,1000); tick();
 
 renderReq(); renderAppr();
