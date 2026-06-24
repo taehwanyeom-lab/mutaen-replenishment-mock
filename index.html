@@ -160,6 +160,7 @@
             <option>갤러리아 광교</option><option>롯데프리미엄 아울렛 기흥점</option>
           </select>
           <input type="text" placeholder="SKU번호">
+          <input type="text" placeholder="바코드">
           <input type="text" placeholder="대표스타일">
           <select id="f-auto" onchange="renderReq()">
             <option value="all">자동보충여부: 전체</option><option value="Y">자동보충 Y</option><option value="N">자동보충 N</option>
@@ -190,7 +191,7 @@
           <table>
             <thead><tr>
               <th class="center"><input type="checkbox" id="chk-all" onclick="toggleAll(this)"></th>
-              <th class="center">자동보충여부</th><th>스토어명</th><th>SKU번호</th><th>SKU명</th><th>옵션명</th><th>대표스타일</th>
+              <th class="center">자동보충여부</th><th>스토어명</th><th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th><th>대표스타일</th>
               <th class="num">직전 7일<br>판매량</th><th class="num">직전 14일<br>판매량</th><th class="num">매장재고</th><th class="num">매장 입고<br>예정수량</th>
               <th class="num">보충 지시<br>완료 수량</th><th class="num">보충 확정 수량</th><th class="num">보충 가능 재고</th>
               <th class="center">초도 입고 여부</th><th>브랜드</th><th>마지막 처리일시</th><th>처리자</th>
@@ -207,6 +208,7 @@
           <input type="text" placeholder="요청일자 (달력)">
           <select><option>요청매장: 전체</option></select>
           <input type="text" placeholder="SKU번호">
+          <input type="text" placeholder="바코드">
           <input type="text" placeholder="대표스타일">
           <select id="a-status" onchange="renderAppr()">
             <option value="all">상태: 전체</option>
@@ -238,7 +240,7 @@
           <table>
             <thead><tr>
               <th class="center"><input type="checkbox" id="chk-all-appr" onclick="toggleAllAppr(this)"></th>
-              <th class="center">상태</th><th>반려 사유</th><th>요청매장</th><th>보충요청자</th><th>SKU번호</th><th>SKU명</th><th>옵션명</th><th>대표스타일</th>
+              <th class="center">상태</th><th>반려 사유</th><th>요청매장</th><th>보충요청자</th><th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th><th>대표스타일</th>
               <th class="num">매장 입고<br>예정수량</th><th class="num">보충 지시<br>완료 수량</th><th class="num">보충 확정 수량</th><th class="num">매장 보충<br>요청 수량</th><th class="num">보충 가능 재고</th>
               <th>브랜드</th><th>마지막 처리일시</th><th>처리자</th>
             </tr></thead>
@@ -296,24 +298,24 @@
 <script>
 // ---------------- data: 본사 요청 ----------------
 const reqData = [
-  { auto:'Y', store:'홍대', sku:'S001', name:'무탠 베이직 크루넥 티셔츠', style:'MTSS-001', color:'블랙', size:'M', sales7:8, sales14:15, storeStock:3, inbound:2, done:5, req:null, stock:42, chodo:'N', brand:'무신사 스탠다드', lastAt:'2026-06-23 09:12', lastBy:'System' },
-  { auto:'Y', store:'강남', sku:'S003', name:'무탠 와이드 슬랙스', style:'MBPS-014', color:'네이비', size:'30', sales7:5, sales14:11, storeStock:4, inbound:0, done:6, req:null, stock:18, chodo:'N', brand:'무신사 스탠다드', lastAt:'2026-06-23 09:12', lastBy:'System' },
-  { auto:'Y', store:'성수', sku:'S005', name:'무탠 오버핏 후디', style:'MHDS-220', color:'그레이', size:'L', sales7:0, sales14:0, storeStock:0, inbound:0, done:8, req:null, stock:25, chodo:'Y', brand:'무신사 스탠다드', lastAt:'2026-06-23 10:40', lastBy:'김상품' },
-  { auto:'N', store:'동성로', sku:'S002', name:'무탠 스탠다드 셔츠', style:'MSHS-008', color:'화이트', size:'95', sales7:2, sales14:5, storeStock:1, inbound:0, done:0, req:null, stock:0, chodo:'N', brand:'무신사 스탠다드', reason:'재고부족', lastAt:'', lastBy:'' },
-  { auto:'N', store:'서면', sku:'S008', name:'무탠 데일리 양말 3p', style:'MSCS-301', color:'멀티', size:'FREE', sales7:1, sales14:3, storeStock:40, inbound:0, done:0, req:null, stock:120, chodo:'N', brand:'무신사 스탠다드', reason:'추천≤0(재고충분)', lastAt:'', lastBy:'' },
-  { auto:'N', store:'명동', sku:'S011', name:'무탠 카고 조거팬츠', style:'MBPS-077', color:'베이지', size:'32', sales7:3, sales14:6, storeStock:2, inbound:1, done:1, req:null, stock:9, chodo:'N', brand:'무신사 스탠다드', reason:'매핑제외', lastAt:'2026-06-23 11:02', lastBy:'박운영' },
-  { auto:'Y', store:'한남', sku:'S014', name:'무탠 미니멀 볼캡', style:'MCPS-455', color:'블랙', size:'FREE', sales7:4, sales14:7, storeStock:5, inbound:0, done:3, req:null, stock:14, chodo:'N', brand:'무신사 스탠다드', lastAt:'2026-06-23 09:12', lastBy:'System' },
-  { auto:'Y', store:'강남', sku:'S020', name:'스탠다드 톤업 선크림', style:'MBTS-101', color:'-', size:'50ml', sales7:6, sales14:12, storeStock:2, inbound:3, done:4, req:null, stock:30, chodo:'N', brand:'무신사 스탠다드 뷰티', lastAt:'2026-06-23 09:12', lastBy:'System' },
-  { auto:'Y', store:'타임빌라스 수원', sku:'S025', name:'스탠다드 우먼 크롭 가디건', style:'MWTS-330', color:'아이보리', size:'S', sales7:0, sales14:0, storeStock:0, inbound:0, done:5, req:null, stock:16, chodo:'Y', brand:'무신사 스탠다드 우먼', lastAt:'2026-06-23 10:55', lastBy:'이엠디' },
-  { auto:'N', store:'현대백화점 중동', sku:'S030', name:'스탠다드 홈 워싱 베개커버', style:'MHMS-077', color:'그레이', size:'50x70', sales7:1, sales14:2, storeStock:6, inbound:0, done:0, req:null, stock:8, chodo:'N', brand:'무탠홈매입', reason:'추천≤0(재고충분)', lastAt:'', lastBy:'' },
-  { auto:'Y', store:'스타필드 수원', sku:'S033', name:'스탠다드 키즈 기모 맨투맨', style:'MKDS-210', color:'네이비', size:'130', sales7:5, sales14:10, storeStock:3, inbound:2, done:6, req:null, stock:22, chodo:'N', brand:'무신사 스탠다드 키즈', lastAt:'2026-06-23 09:12', lastBy:'System' },
+  { auto:'Y', store:'홍대', sku:'S001', barcode:'8809000000001', name:'무탠 베이직 크루넥 티셔츠', style:'MTSS-001', color:'블랙', size:'M', sales7:8, sales14:15, storeStock:3, inbound:2, done:5, req:null, stock:42, chodo:'N', brand:'무신사 스탠다드', lastAt:'2026-06-23 09:12', lastBy:'System' },
+  { auto:'Y', store:'강남', sku:'S003', barcode:'8809000000023', name:'무탠 와이드 슬랙스', style:'MBPS-014', color:'네이비', size:'30', sales7:5, sales14:11, storeStock:4, inbound:0, done:6, req:null, stock:18, chodo:'N', brand:'무신사 스탠다드', lastAt:'2026-06-23 09:12', lastBy:'System' },
+  { auto:'Y', store:'성수', sku:'S005', barcode:'8809000000045', name:'무탠 오버핏 후디', style:'MHDS-220', color:'그레이', size:'L', sales7:0, sales14:0, storeStock:0, inbound:0, done:8, req:null, stock:25, chodo:'Y', brand:'무신사 스탠다드', lastAt:'2026-06-23 10:40', lastBy:'김상품' },
+  { auto:'N', store:'동성로', sku:'S002', barcode:'8809000000012', name:'무탠 스탠다드 셔츠', style:'MSHS-008', color:'화이트', size:'95', sales7:2, sales14:5, storeStock:1, inbound:0, done:0, req:null, stock:0, chodo:'N', brand:'무신사 스탠다드', reason:'재고부족', lastAt:'', lastBy:'' },
+  { auto:'N', store:'서면', sku:'S008', barcode:'8809000000088', name:'무탠 데일리 양말 3p', style:'MSCS-301', color:'멀티', size:'FREE', sales7:1, sales14:3, storeStock:40, inbound:0, done:0, req:null, stock:120, chodo:'N', brand:'무신사 스탠다드', reason:'추천≤0(재고충분)', lastAt:'', lastBy:'' },
+  { auto:'N', store:'명동', sku:'S011', barcode:'8809000000111', name:'무탠 카고 조거팬츠', style:'MBPS-077', color:'베이지', size:'32', sales7:3, sales14:6, storeStock:2, inbound:1, done:1, req:null, stock:9, chodo:'N', brand:'무신사 스탠다드', reason:'매핑제외', lastAt:'2026-06-23 11:02', lastBy:'박운영' },
+  { auto:'Y', store:'한남', sku:'S014', barcode:'8809000000144', name:'무탠 미니멀 볼캡', style:'MCPS-455', color:'블랙', size:'FREE', sales7:4, sales14:7, storeStock:5, inbound:0, done:3, req:null, stock:14, chodo:'N', brand:'무신사 스탠다드', lastAt:'2026-06-23 09:12', lastBy:'System' },
+  { auto:'Y', store:'강남', sku:'S020', barcode:'8809000000200', name:'스탠다드 톤업 선크림', style:'MBTS-101', color:'-', size:'50ml', sales7:6, sales14:12, storeStock:2, inbound:3, done:4, req:null, stock:30, chodo:'N', brand:'무신사 스탠다드 뷰티', lastAt:'2026-06-23 09:12', lastBy:'System' },
+  { auto:'Y', store:'타임빌라스 수원', sku:'S025', barcode:'8809000000250', name:'스탠다드 우먼 크롭 가디건', style:'MWTS-330', color:'아이보리', size:'S', sales7:0, sales14:0, storeStock:0, inbound:0, done:5, req:null, stock:16, chodo:'Y', brand:'무신사 스탠다드 우먼', lastAt:'2026-06-23 10:55', lastBy:'이엠디' },
+  { auto:'N', store:'현대백화점 중동', sku:'S030', barcode:'8809000000300', name:'스탠다드 홈 워싱 베개커버', style:'MHMS-077', color:'그레이', size:'50x70', sales7:1, sales14:2, storeStock:6, inbound:0, done:0, req:null, stock:8, chodo:'N', brand:'무탠홈매입', reason:'추천≤0(재고충분)', lastAt:'', lastBy:'' },
+  { auto:'Y', store:'스타필드 수원', sku:'S033', barcode:'8809000000333', name:'스탠다드 키즈 기모 맨투맨', style:'MKDS-210', color:'네이비', size:'130', sales7:5, sales14:10, storeStock:3, inbound:2, done:6, req:null, stock:22, chodo:'N', brand:'무신사 스탠다드 키즈', lastAt:'2026-06-23 09:12', lastBy:'System' },
 ];
 
 // ---------------- data: 매장 요청 ----------------
 const apprData = [
-  { store:'동성로', requester:'최매장', sku:'S002', name:'무탠 스탠다드 셔츠', style:'MSHS-008', color:'화이트', size:'95', inbound:0, done:0, storeReq:4, req:4, stock:6, brand:'무신사 스탠다드', astatus:'대기', reason:'', lastAt:'2026-06-23 08:30', lastBy:'-' },
-  { store:'AK플라자 분당', requester:'정매장', sku:'S005', name:'무탠 오버핏 후디', style:'MHDS-220', color:'그레이', size:'M', inbound:2, done:0, storeReq:6, req:6, stock:25, brand:'무신사 스탠다드', astatus:'대기', reason:'', lastAt:'2026-06-23 08:45', lastBy:'박운영' },
-  { store:'갤러리아 광교', requester:'한매장', sku:'S014', name:'무탠 미니멀 볼캡', style:'MCPS-455', color:'블랙', size:'FREE', inbound:1, done:1, storeReq:10, req:10, stock:8, brand:'무신사 스탠다드', astatus:'대기', reason:'', lastAt:'2026-06-23 09:05', lastBy:'-' },
+  { store:'동성로', requester:'최매장', sku:'S002', barcode:'8809000000012', name:'무탠 스탠다드 셔츠', style:'MSHS-008', color:'화이트', size:'95', inbound:0, done:0, storeReq:4, req:4, stock:6, brand:'무신사 스탠다드', astatus:'대기', reason:'', lastAt:'2026-06-23 08:30', lastBy:'-' },
+  { store:'AK플라자 분당', requester:'정매장', sku:'S005', barcode:'8809000000046', name:'무탠 오버핏 후디', style:'MHDS-220', color:'그레이', size:'M', inbound:2, done:0, storeReq:6, req:6, stock:25, brand:'무신사 스탠다드', astatus:'대기', reason:'', lastAt:'2026-06-23 08:45', lastBy:'박운영' },
+  { store:'갤러리아 광교', requester:'한매장', sku:'S014', barcode:'8809000000144', name:'무탠 미니멀 볼캡', style:'MCPS-455', color:'블랙', size:'FREE', inbound:1, done:1, storeReq:10, req:10, stock:8, brand:'무신사 스탠다드', astatus:'대기', reason:'', lastAt:'2026-06-23 09:05', lastBy:'-' },
 ];
 
 // ---------------- data: 보충 현황 ----------------
@@ -363,7 +365,7 @@ function renderReq(){
     const opt=[r.color,r.size].filter(x=>x&&x!=='-').join(' / ')||'-';
     tb.insertAdjacentHTML('beforeend',`<tr>
       <td class="center"><input type="checkbox" class="row-chk" data-i="${i}"></td>
-      <td class="center">${autoBadge}</td><td>${r.store}</td><td>${r.sku}</td><td>${r.name}</td><td>${opt}</td><td>${r.style}</td>
+      <td class="center">${autoBadge}</td><td>${r.store}</td><td>${r.sku}</td><td>${r.barcode}</td><td>${r.name}</td><td>${opt}</td><td>${r.style}</td>
       <td class="num">${r.sales7}</td><td class="num">${r.sales14}</td><td class="num">${r.storeStock}</td><td class="num">${r.inbound}</td>
       <td class="num">${r.done>0?r.done:'<span class="muted">-</span>'}</td>
       <td class="num" style="white-space:nowrap;"><input type="number" min="0" max="${r.stock}" value="${reqVal}" class="qty-input ${reqVal!==''&&reqVal>0?'req':''}" data-i="${i}" onchange="onQty(this)"> <button class="btn sm" onclick="setMax(${i})">최대</button></td>
@@ -404,7 +406,7 @@ function renderAppr(){
       <td class="center">${chk}</td>
       <td class="center"><span class="ast ${r.astatus}">${r.astatus}</span></td>
       <td>${r.reason?r.reason:'<span class="muted">-</span>'}</td>
-      <td>${r.store}</td><td>${r.requester||'<span class="muted">-</span>'}</td><td>${r.sku}</td><td>${r.name}</td><td>${opt}</td><td>${r.style}</td>
+      <td>${r.store}</td><td>${r.requester||'<span class="muted">-</span>'}</td><td>${r.sku}</td><td>${r.barcode}</td><td>${r.name}</td><td>${opt}</td><td>${r.style}</td>
       <td class="num">${r.inbound}</td><td class="num">${r.done>0?r.done:'<span class="muted">-</span>'}</td>
       ${qtyCell}
       <td class="num">${r.storeReq}</td>
