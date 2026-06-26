@@ -137,7 +137,7 @@
     </div>
     <div class="modal-body">
       <table><thead><tr>
-        <th style="width:150px;">출발 매장</th><th style="width:150px;">도착 매장</th><th>SKU/바코드</th><th>옵션</th>
+        <th style="width:150px;">출발 매장</th><th style="width:150px;">도착 매장</th><th>SKU번호</th><th>바코드</th>
         <th class="num">이동 수량</th><th class="num">출발 보유재고</th><th class="center">삭제</th>
       </tr></thead><tbody id="move-body"></tbody></table>
     </div>
@@ -457,14 +457,14 @@ function tick(){ let s=Math.max(0,Math.floor((deadline-Date.now())/1000)); const
 // ================= 매장간 이동 모달 =================
 let moveScope='mt';
 const moveData={
-  mt:[ {from:'성수', to:'홍대', sku:'S001', opt:'블랙/M', qty:3, avail:7},
-       {from:'강남', to:'명동', sku:'S014', opt:'FREE', qty:5, avail:14} ],
-  ep:[ {from:'무신사 스토어 강남', to:'무신사 스토어 홍대', sku:'E001', opt:'화이트/270', qty:2, avail:6},
-       {from:'무신사 스토어 성수@대림창고', to:'무신사 스토어 명동', sku:'E006', opt:'레드/L', qty:4, avail:9} ],
+  mt:[ {from:'성수', to:'홍대', sku:'S001', barcode:'8809000000001', qty:3, avail:7},
+       {from:'강남', to:'명동', sku:'S014', barcode:'8809000000144', qty:5, avail:14} ],
+  ep:[ {from:'무신사 스토어 강남', to:'무신사 스토어 홍대', sku:'E001', barcode:'8809100000011', qty:2, avail:6},
+       {from:'무신사 스토어 성수@대림창고', to:'무신사 스토어 명동', sku:'E006', barcode:'8809100000066', qty:4, avail:9} ],
 };
 function openMove(sc){ moveScope=sc; document.getElementById('move-title').textContent=(sc==='mt'?'무탠':'편집샵')+' 매장간 이동'; renderMove(); document.getElementById('move-bg').classList.add('show'); }
 function closeMove(){ document.getElementById('move-bg').classList.remove('show'); }
-function addMoveRow(){ moveData[moveScope].push({from:'', to:'', sku:'', opt:'', qty:0, avail:0}); renderMove(); }
+function addMoveRow(){ moveData[moveScope].push({from:'', to:'', sku:'', barcode:'', qty:0, avail:0}); renderMove(); }
 function delMoveRow(i){ moveData[moveScope].splice(i,1); renderMove(); }
 function mField(i,f,v){ moveData[moveScope][i][f]=(f==='qty'||f==='avail')?(parseInt(v)||0):v; renderMove(); }
 function moveOpts(sel){ return '<option value="">선택</option>'+STORES[moveScope].map(s=>`<option ${s===sel?'selected':''}>${s}</option>`).join(''); }
@@ -475,10 +475,10 @@ function renderMove(){
     tb.insertAdjacentHTML('beforeend',`<tr>
       <td><select class="m-sel ${dup?'m-err':''}" onchange="mField(${i},'from',this.value)">${moveOpts(r.from)}</select></td>
       <td><select class="m-sel ${dup?'m-err':''}" onchange="mField(${i},'to',this.value)">${moveOpts(r.to)}</select></td>
-      <td><input class="m-in" style="width:130px" value="${r.sku}" onchange="mField(${i},'sku',this.value)" placeholder="SKU/바코드"></td>
-      <td><input class="m-in" style="width:90px" value="${r.opt}" onchange="mField(${i},'opt',this.value)" placeholder="옵션"></td>
+      <td><input class="m-in" style="width:110px" value="${r.sku}" onchange="mField(${i},'sku',this.value)" placeholder="SKU번호"></td>
+      <td><input class="m-in" style="width:120px" value="${r.barcode}" onchange="mField(${i},'barcode',this.value)" placeholder="바코드"></td>
       <td class="num"><input type="number" min="0" class="m-in num ${over?'m-err':''}" value="${r.qty}" onchange="mField(${i},'qty',this.value)"></td>
-      <td class="num"><input type="number" min="0" class="m-in num" value="${r.avail}" onchange="mField(${i},'avail',this.value)"></td>
+      <td class="num">${r.avail}</td>
       <td class="center"><button class="btn sm" onclick="delMoveRow(${i})">🗑</button></td></tr>`);
   });
   const froms=new Set(d.filter(r=>r.from).map(r=>r.from)), tos=new Set(d.filter(r=>r.to).map(r=>r.to));
