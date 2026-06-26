@@ -179,6 +179,12 @@ const baseStatus = [
     centers:[ {center:'양지 MFS', move:'MV2406030', out:'-', in:'-', outQty:3, moveQty:0, inQty:0, status:'출고대기', at:'2026-06-24 05:00'} ] },
   { store:'스타필드 수원', style:'MKDS-210', sku:'S033', barcode:'8809000000333', name:'키즈 기모 맨투맨', color:'네이비', size:'130', brand:'무신사 스탠다드', conf:6, out:6, inq:6, status:'입고완료', at:'2026-06-23 18:09',
     centers:[ {center:'동탄 MFS', move:'MV2406040', out:'OUT500140', in:'IN300140', outQty:6, moveQty:6, inQty:6, status:'입고완료', at:'2026-06-24 07:00'} ] },
+  { store:'동성로', style:'MSHS-008', sku:'S002', barcode:'8809000000012', name:'스탠다드 셔츠', color:'화이트', size:'95', brand:'무신사 스탠다드', conf:4, out:4, inq:0, status:'출고대기', at:'2026-06-23 18:13',
+    centers:[ {center:'성수', move:'MV2406301', out:'-', in:'-', outQty:4, moveQty:0, inQty:0, status:'출고대기', at:'2026-06-24 05:40'} ] },
+  { store:'서면', style:'MCPS-455', sku:'S014', barcode:'8809000000144', name:'미니멀 볼캡', color:'블랙', size:'FREE', brand:'무신사 스탠다드', conf:3, out:3, inq:3, status:'입고완료', at:'2026-06-23 18:14',
+    centers:[ {center:'한남', move:'MV2406302', out:'OUT500302', in:'IN300302', outQty:3, moveQty:3, inQty:3, status:'입고완료', at:'2026-06-24 07:30'} ] },
+  { store:'명동', style:'MBPS-014', sku:'S003', barcode:'8809000000023', name:'와이드 슬랙스', color:'네이비', size:'30', brand:'무신사 스탠다드', conf:5, out:5, inq:2, status:'이동중', at:'2026-06-23 18:16',
+    centers:[ {center:'스타필드 수원', move:'MV2406303', out:'OUT500303', in:'-', outQty:5, moveQty:5, inQty:2, status:'이동중', at:'2026-06-24 06:30'} ] },
 ];
 const cp = x => JSON.parse(JSON.stringify(x));
 
@@ -321,9 +327,9 @@ function statusPageHTML(sc, label){
     <div class="right"><span class="muted" style="font-size:11px;">행 클릭 시 센터별 출고 상세 ▾</span>
       <button class="btn" onclick="toast('전체 엑셀 다운로드 (mock)')">⬇ 전체 엑셀 다운로드</button></div></div>
   <div class="tablewrap"><table><thead><tr>
-    <th style="width:28px;"></th><th>스토어명</th><th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th>${styTh(sc)}<th>브랜드</th>
+    <th style="width:28px;"></th><th>입고 스토어명</th><th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th>${styTh(sc)}<th>브랜드</th>
     <th class="num">보충 확정 수량</th><th class="num">출고 확정 수량</th><th class="num">입고 확정 수량</th>
-    <th class="center">상태</th><th>출고센터 정보</th><th>보충 확정 일시</th>
+    <th class="center">상태</th><th>출고지 정보</th><th>보충 확정 일시</th>
   </tr></thead><tbody id="${sc}-status-body"></tbody></table></div>
   <div class="footnote">· 보충 확정된 건만 노출 · 상태: 출고대기 → 이동중 → 입고완료 · 행 확장 시 센터별 출고 상세(읽기 전용)</div>`;
 }
@@ -424,7 +430,7 @@ function renderStatus(sc){
       <td class="num">${r.conf}</td><td class="num">${r.out}</td><td class="num">${r.inq}</td>
       <td class="center"><span class="st ${stClass(r.status)}">${r.status}</span></td><td>${centers}</td><td>${r.at}</td></tr>
       <tr class="subrow" id="${sc}-sub-${i}" style="display:none;"><td colspan="${span}"><div class="subwrap">
-        <table><thead><tr><th>출고센터</th><th>이동번호</th><th>출고번호</th><th>입고번호</th><th class="num">출고</th><th class="num">이동</th><th class="num">입고</th><th class="center">상태</th><th>처리일시</th></tr></thead>
+        <table><thead><tr><th>출고지</th><th>이동번호</th><th>출고번호</th><th>입고번호</th><th class="num">출고</th><th class="num">이동</th><th class="num">입고</th><th class="center">상태</th><th>처리일시</th></tr></thead>
         <tbody>${r.centers.map(c=>`<tr><td>${c.center}</td><td>${c.move}</td><td>${c.out}</td><td>${c.in}</td><td class="num">${c.outQty}</td><td class="num">${c.moveQty}</td><td class="num">${c.inQty}</td><td class="center"><span class="st ${stClass(c.status)}">${c.status}</span></td><td>${c.at}</td></tr>`).join('')}</tbody></table>
       </div></td></tr>`);
   });
