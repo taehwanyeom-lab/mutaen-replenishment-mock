@@ -75,6 +75,20 @@
   .subwrap th { background:#f3f4f6; }
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background:#1f2329; color:#fff; padding:11px 20px; border-radius:8px; font-size:13px; opacity:0; transition:opacity .25s; pointer-events:none; z-index:50; box-shadow:0 6px 20px rgba(0,0,0,.25); }
   .toast.show { opacity:1; }
+  /* modal */
+  .modal-bg { position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:center; justify-content:center; z-index:100; }
+  .modal-bg.show { display:flex; }
+  .modal { background:#fff; border-radius:12px; width:1000px; max-width:96vw; max-height:88vh; display:flex; flex-direction:column; box-shadow:0 12px 40px rgba(0,0,0,.3); }
+  .modal-head { padding:16px 20px; border-bottom:1px solid #eee; display:flex; align-items:center; justify-content:space-between; }
+  .modal-head h3 { font-size:16px; font-weight:700; }
+  .modal-head .x { cursor:pointer; color:#9ca3af; font-size:18px; }
+  .modal-tools { padding:12px 20px; display:flex; gap:8px; align-items:center; border-bottom:1px solid #f0f1f3; }
+  .modal-body { padding:8px 20px 16px; overflow:auto; }
+  .modal-foot { padding:14px 20px; border-top:1px solid #eee; display:flex; justify-content:flex-end; gap:8px; }
+  .m-sel { height:28px; border:1px solid #d1d5db; border-radius:5px; font-size:12px; padding:0 6px; }
+  .m-in { height:28px; border:1px solid #d1d5db; border-radius:5px; font-size:12px; padding:0 7px; }
+  .m-in.num { width:64px; text-align:right; }
+  .m-err { border-color:#dc2626 !important; background:#fef2f2; }
 </style>
 </head>
 <body>
@@ -111,6 +125,25 @@
   </div>
 </div>
 <div class="toast" id="toast"></div>
+
+<!-- 매장간 이동 모달 -->
+<div class="modal-bg" id="move-bg">
+  <div class="modal">
+    <div class="modal-head"><h3 id="move-title">매장간 이동</h3><span class="x" onclick="closeMove()">✕</span></div>
+    <div class="modal-tools">
+      <button class="btn sm" onclick="addMoveRow()">+ 행 추가</button>
+      <button class="btn sm" onclick="toast('엑셀 양식: 출발매장,도착매장,SKU/바코드,수량 (mock)')">⬆ 엑셀 업로드</button>
+      <span class="muted" id="move-summary" style="margin-left:auto;font-size:12px;"></span>
+    </div>
+    <div class="modal-body">
+      <table><thead><tr>
+        <th style="width:150px;">출발 매장</th><th style="width:150px;">도착 매장</th><th>SKU/바코드</th><th>옵션</th>
+        <th class="num">이동 수량</th><th class="num">출발 보유재고</th><th class="center">삭제</th>
+      </tr></thead><tbody id="move-body"></tbody></table>
+    </div>
+    <div class="modal-foot"><button class="btn" onclick="closeMove()">취소</button><button class="btn primary" onclick="submitMove()">이동 지시</button></div>
+  </div>
+</div>
 
 <script>
 // ================= 데이터 =================
@@ -224,7 +257,8 @@ function requestPageHTML(sc, label){
     </div>
     <div class="gridhead">
       <div class="left"><span class="total">전체 <span id="${sc}-req-total">0</span>건</span>
-        <button class="btn primary btn-confirm" onclick="confirmReq('${sc}')">보충확정</button></div>
+        <button class="btn primary btn-confirm" onclick="confirmReq('${sc}')">보충확정</button>
+        <button class="btn" onclick="openMove('${sc}')">＋ 매장간 이동</button></div>
       <div class="right">
         <label class="chk-inline"><input type="checkbox" id="${sc}-f-stock1" onchange="renderReq('${sc}')"> 보충 가능 재고 1이상 보기</label>
         <button class="btn" onclick="toast('엑셀 양식 업로드 (mock)')">⬆ 일괄 업로드</button>
@@ -419,6 +453,53 @@ let toastTimer;
 function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2600); }
 const deadline=Date.now()+(7*3600+47*60)*1000;
 function tick(){ let s=Math.max(0,Math.floor((deadline-Date.now())/1000)); const h=Math.floor(s/3600),m=Math.floor((s%3600)/60); const txt=s>0?`(${h}시간 ${m}분 남음)`:'(마감)'; document.querySelectorAll('.countdown').forEach(e=>e.textContent=txt); document.querySelectorAll('.btn-confirm').forEach(b=>b.disabled=s<=0); }
+
+// ================= 매장간 이동 모달 =================
+let moveScope='mt';
+const moveData={
+  mt:[ {from:'성수', to:'홍대', sku:'S001', opt:'블랙/M', qty:3, avail:7},
+       {from:'강남', to:'명동', sku:'S014', opt:'FREE', qty:5, avail:14} ],
+  ep:[ {from:'무신사 스토어 강남', to:'무신사 스토어 홍대', sku:'E001', opt:'화이트/270', qty:2, avail:6},
+       {from:'무신사 스토어 성수@대림창고', to:'무신사 스토어 명동', sku:'E006', opt:'레드/L', qty:4, avail:9} ],
+};
+function openMove(sc){ moveScope=sc; document.getElementById('move-title').textContent=(sc==='mt'?'무탠':'편집샵')+' 매장간 이동'; renderMove(); document.getElementById('move-bg').classList.add('show'); }
+function closeMove(){ document.getElementById('move-bg').classList.remove('show'); }
+function addMoveRow(){ moveData[moveScope].push({from:'', to:'', sku:'', opt:'', qty:0, avail:0}); renderMove(); }
+function delMoveRow(i){ moveData[moveScope].splice(i,1); renderMove(); }
+function mField(i,f,v){ moveData[moveScope][i][f]=(f==='qty'||f==='avail')?(parseInt(v)||0):v; renderMove(); }
+function moveOpts(sel){ return '<option value="">선택</option>'+STORES[moveScope].map(s=>`<option ${s===sel?'selected':''}>${s}</option>`).join(''); }
+function renderMove(){
+  const d=moveData[moveScope], tb=document.getElementById('move-body'); tb.innerHTML='';
+  d.forEach((r,i)=>{
+    const dup=r.from&&r.to&&r.from===r.to, over=r.qty>r.avail;
+    tb.insertAdjacentHTML('beforeend',`<tr>
+      <td><select class="m-sel ${dup?'m-err':''}" onchange="mField(${i},'from',this.value)">${moveOpts(r.from)}</select></td>
+      <td><select class="m-sel ${dup?'m-err':''}" onchange="mField(${i},'to',this.value)">${moveOpts(r.to)}</select></td>
+      <td><input class="m-in" style="width:130px" value="${r.sku}" onchange="mField(${i},'sku',this.value)" placeholder="SKU/바코드"></td>
+      <td><input class="m-in" style="width:90px" value="${r.opt}" onchange="mField(${i},'opt',this.value)" placeholder="옵션"></td>
+      <td class="num"><input type="number" min="0" class="m-in num ${over?'m-err':''}" value="${r.qty}" onchange="mField(${i},'qty',this.value)"></td>
+      <td class="num"><input type="number" min="0" class="m-in num" value="${r.avail}" onchange="mField(${i},'avail',this.value)"></td>
+      <td class="center"><button class="btn sm" onclick="delMoveRow(${i})">🗑</button></td></tr>`);
+  });
+  const froms=new Set(d.filter(r=>r.from).map(r=>r.from)), tos=new Set(d.filter(r=>r.to).map(r=>r.to));
+  const pcs=d.reduce((s,r)=>s+(r.qty||0),0);
+  document.getElementById('move-summary').textContent=`출발 ${froms.size}곳 → 도착 ${tos.size}곳 · 총 ${d.length}건 / ${pcs}pcs`;
+}
+function submitMove(){
+  const d=moveData[moveScope];
+  if(!d.length){ toast('이동 행을 추가해 주세요.'); return; }
+  const errs=[];
+  d.forEach((r,i)=>{
+    if(!r.from||!r.to||!r.sku||!r.qty) errs.push(`${i+1}행: 출발/도착/SKU/수량 필수`);
+    else if(r.from===r.to) errs.push(`${i+1}행: 출발=도착 불가`);
+    else if(r.qty>r.avail) errs.push(`${i+1}행: 수량>출발 보유재고`);
+  });
+  if(errs.length){ toast('⚠ '+errs[0]+(errs.length>1?` 외 ${errs.length-1}건`:'')); return; }
+  const pcs=d.reduce((s,r)=>s+r.qty,0);
+  if(confirm(`총 ${d.length}건 / ${pcs}pcs 매장간 이동을 지시하시겠습니까?`)){
+    toast(`✅ ${d.length}건 매장간 이동 지시 → MWMS 전송 (mock)`); closeMove();
+  }
+}
 
 // ================= init =================
 document.getElementById('page-mt-request').innerHTML=requestPageHTML('mt','무탠');
