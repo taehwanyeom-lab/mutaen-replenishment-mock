@@ -93,6 +93,19 @@
   .m-in { height:28px; border:1px solid #d1d5db; border-radius:5px; font-size:12px; padding:0 7px; }
   .m-in.num { width:64px; text-align:right; }
   .m-err { border-color:#dc2626 !important; background:#fef2f2; }
+  /* 무탠 반품 지시 인라인 폼 (블록형) */
+  .rf-back { display:inline-flex; align-items:center; gap:6px; cursor:pointer; color:#2563eb; font-weight:600; font-size:13px; margin-bottom:10px; }
+  .rf-back:hover { text-decoration:underline; }
+  .rf-block { background:#fff; border:1px solid #e5e7eb; border-radius:8px; margin-bottom:12px; overflow:hidden; }
+  .rf-block-head { display:flex; align-items:center; gap:16px; flex-wrap:wrap; padding:12px 14px; background:#f9fafb; border-bottom:1px solid #eef0f2; }
+  .rf-block-head .fld { display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#374151; }
+  .rf-block-head .m-sel { height:30px; }
+  .rf-block-head .del { margin-left:auto; }
+  .rf-block-tools { padding:8px 14px; display:flex; gap:8px; align-items:center; border-bottom:1px solid #f0f1f3; }
+  .rf-block-body { overflow:auto; }
+  .rf-block-body table { width:100%; }
+  .rf-block-sum { padding:8px 14px; font-size:12px; color:#6b7280; text-align:right; background:#fbfcfe; }
+  .rf-foot { position:sticky; bottom:0; background:#fff; border:1px solid #e5e7eb; border-radius:8px; padding:12px 16px; display:flex; align-items:center; gap:10px; box-shadow:0 -2px 10px rgba(0,0,0,.05); }
 </style>
 </head>
 <body>
@@ -130,10 +143,8 @@
       <div class="nav-item" data-page="inv-partner-return" onclick="goPage('inv-partner-return')">파트너사 반출/반품</div>
       <div class="nav-item" data-page="inv-convert" onclick="goPage('inv-convert')">불량↔정상 전환</div>
       <div class="nav-item" data-page="inv-special-out" onclick="goPage('inv-special-out')">특수출고</div>
-      <div class="nav-item" data-page="inv-disposal-approve" onclick="goPage('inv-disposal-approve')">폐기 승인</div>
-      <div class="nav-item" data-page="inv-disposal-history" onclick="goPage('inv-disposal-history')">폐기 내역 조회</div>
-      <div class="nav-item" data-page="inv-adjust-approve" onclick="goPage('inv-adjust-approve')">재고조정 승인</div>
-      <div class="nav-item" data-page="inv-adjust-history" onclick="goPage('inv-adjust-history')">재고조정 내역 조회</div>
+      <div class="nav-item" data-page="inv-disposal" onclick="goPage('inv-disposal')">폐기 관리</div>
+      <div class="nav-item" data-page="inv-adjust" onclick="goPage('inv-adjust')">재고조정 관리</div>
     </div>
   </aside>
 
@@ -159,10 +170,8 @@
     <div class="wrap" id="page-inv-partner-return" style="display:none;"></div>
     <div class="wrap" id="page-inv-convert" style="display:none;"></div>
     <div class="wrap" id="page-inv-special-out" style="display:none;"></div>
-    <div class="wrap" id="page-inv-disposal-approve" style="display:none;"></div>
-    <div class="wrap" id="page-inv-disposal-history" style="display:none;"></div>
-    <div class="wrap" id="page-inv-adjust-approve" style="display:none;"></div>
-    <div class="wrap" id="page-inv-adjust-history" style="display:none;"></div>
+    <div class="wrap" id="page-inv-disposal" style="display:none;"></div>
+    <div class="wrap" id="page-inv-adjust" style="display:none;"></div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -452,7 +461,7 @@ const RETURN_FLOWS = {
 // 반품관리 scope별 구성 (라벨/유형/필터)
 const RET = {
   mt: { fromLabel:'출발지', toLabel:'도착지', availLabel:'', outLabel:'출고 확정<br>수량', inLabel:'입고 완료<br>수량',
-        brandLabel:'브랜드', lastByLabel:'요청자', types:['시즌반품','불량반품','기타반품','폐기반품'], rtypes:['매장→센터'], partnerReturn:true, partnerOrigin:'여주1센터', noCheckbox:true, combined:true, moveCol:true, reqNoCol:true, rtypeKey:'rtype', reasonCol:true, approveCol:false,
+        brandLabel:'브랜드', lastByLabel:'요청자', types:['시즌반품','불량반품','기타반품','폐기반품'], rtypes:['매장→센터'], partnerReturn:true, partnerOrigin:'여주1센터', noCheckbox:true, combined:true, moveCol:true, reqNoCol:true, rtypeKey:'rtype', rtypeCol:false, reasonCol:true, approveCol:false,
         tabs:[{key:'hq',label:'본사 지시',register:true},{key:'store',label:'매장 요청',reqNo:true}],
         tip:'본사가 매장→센터 반품을 지시 · 파트너사向 반출/반품은 [재고 관리 › 파트너사 반출/반품]',
         note:'본사가 매장→센터 반품을 지시 · 무탠은 전량 1P(PB) → 반품 시 SAP 자산이동 자동 전송 · 파트너사向은 [파트너사 반출/반품] 메뉴 · 상태: 출고대기 → 이동중 → 입고완료' },
@@ -467,6 +476,7 @@ function requestPageHTML(sc, label){
   return `
   <div class="crumb">${label} 스토어 관리 › ${label} 재고 보충 요청/승인</div>
   <h1>${label} 재고 보충 요청/승인 <span class="muted" style="font-size:12px;font-weight:400;">· MOCK</span></h1>
+  <div id="${sc}-rq-mainview">
   <div class="tabs">
     <div class="tab active" id="${sc}-tab-req-btn" onclick="switchTab('${sc}','req')">본사 요청 <span class="cnt" id="${sc}-cnt-req"></span></div>
     <div class="tab" id="${sc}-tab-appr-btn" onclick="switchTab('${sc}','appr')">매장 요청 <span class="cnt" id="${sc}-cnt-appr"></span></div>
@@ -487,7 +497,7 @@ function requestPageHTML(sc, label){
     <div class="gridhead">
       <div class="left"><span class="total">전체 <span id="${sc}-req-total">0</span>건</span>
         <button class="btn primary btn-confirm" onclick="confirmReq('${sc}')">보충확정</button>
-        <button class="btn" onclick="openMove('${sc}')">＋ 매장간 이동</button></div>
+        <button class="btn" onclick="openMoveForm('${sc}')">＋ 매장간 이동</button></div>
       <div class="right">
         <label class="chk-inline"><input type="checkbox" id="${sc}-f-stock1" onchange="renderReq('${sc}')"> 보충 가능 재고 1이상 보기</label>
         <button class="btn" onclick="toast('엑셀 양식 업로드 (mock)')">⬆ 일괄 업로드</button>
@@ -531,7 +541,9 @@ function requestPageHTML(sc, label){
       <th>브랜드</th><th>마지막 처리일시</th><th>처리자</th>
     </tr></thead><tbody id="${sc}-appr-body"></tbody></table></div>
     <div class="footnote">· 승인 클릭 시 가용재고·컷오프 검증 후 즉시 출고지시 · 반려 시 사유 입력해 매장(MOSS)에 회신</div>
-  </div>`;
+  </div>
+  </div>
+  ${moveFormHTML(sc,label)}`;
 }
 
 function statusPageHTML(sc, label){
@@ -567,10 +579,11 @@ function returnPageHTML(sc, label){
     : '';
   const rtypeOptsHtml=(C.rtypes||[]).map(t=>`<option>${t}</option>`).join('');
   const filtersInner=(C.combined&&C.reasonCol)
-    ? `<select id="${sc}-rt-brand" onchange="renderReturn('${sc}')"><option value="all">${C.brandLabel}: 전체</option>${brandOpts(sc)}</select>
+    ? `<input type="text" id="${sc}-rt-move" placeholder="이동번호" oninput="renderReturn('${sc}')" style="width:130px">
+       <input type="text" id="${sc}-rt-reqno" placeholder="요청번호" oninput="renderReturn('${sc}')" style="width:130px;display:none">
+       <select id="${sc}-rt-brand" onchange="renderReturn('${sc}')"><option value="all">${C.brandLabel}: 전체</option>${brandOpts(sc)}</select>
        <select id="${sc}-rt-store" onchange="renderReturn('${sc}')"><option value="all">출발지: 전체</option>${storeOpts(sc)}</select>
        <input type="text" placeholder="SKU번호"><input type="text" placeholder="바코드">${styFilter(sc)}
-       <select id="${sc}-rt-rtype" onchange="renderReturn('${sc}')"><option value="all">반품유형: 전체</option>${rtypeOptsHtml}</select>
        <select id="${sc}-rt-type" onchange="renderReturn('${sc}')"><option value="all">반품사유: 전체</option>${typeOptsHtml}</select>
        <select id="${sc}-rt-status" onchange="renderReturn('${sc}')"><option value="all">이동상태: 전체</option><option value="출고대기">출고대기</option><option value="이동중">이동중</option><option value="입고완료">입고완료</option></select>`
     : C.combined
@@ -590,6 +603,7 @@ function returnPageHTML(sc, label){
   return `
   <div class="crumb">${label} 스토어 관리 › ${label} ${C.menuName||'반품관리'}</div>
   <h1>${label} ${C.menuName||'반품관리'} <span class="muted" style="font-size:12px;font-weight:400;">· MOCK</span></h1>
+  <div id="${sc}-rt-listview">
   ${tabsHtml}
   <div class="filters">
     ${filtersInner}
@@ -599,7 +613,7 @@ function returnPageHTML(sc, label){
   <div class="gridhead">
     <div class="left"><span class="total">전체 <span id="${sc}-rt-total">0</span>건</span>
       <span id="${sc}-rt-register-btns">${C.partnerReturn
-        ? `<button class="btn primary" id="${sc}-rt-btn-store" onclick="openReturn('${sc}','store')">＋ 매장 반품 지시</button>`
+        ? `<button class="btn primary" id="${sc}-rt-btn-store" onclick="openReturnForm('${sc}')">＋ 매장 반품 지시</button>`
         : `<button class="btn primary" onclick="openReturn('${sc}')">＋ 반품 지시</button>`}</span>
       <span id="${sc}-rt-approve-btns" style="display:none;">
         <button class="btn green" onclick="approveReturn('${sc}')">승인</button>
@@ -611,7 +625,9 @@ function returnPageHTML(sc, label){
       <button class="btn" onclick="toast('전체 엑셀 다운로드 (mock)')">⬇ 전체 엑셀 다운로드</button></div>
   </div>
   <div class="tablewrap"><table><thead id="${sc}-rt-head"></thead><tbody id="${sc}-rt-body"></tbody></table></div>
-  <div class="footnote">· ${C.note}</div>`;
+  <div class="footnote">· ${C.note}</div>
+  </div>
+  ${returnFormHTML(sc)}`;
 }
 
 // ================= 렌더 =================
@@ -729,7 +745,7 @@ function switchTab(sc,t){
 }
 function goPage(p){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===p));
-  ['mt-request','mt-status','ep-request','ep-status','mt-return','ep-return','mt-product','mt-autoship-group','ep-product','po-consign-approve','po-consign-status','po-pb-review','po-pb-asn','po-buy-request','po-buy-order','po-buy-asn','inv-move','inv-partner-return','inv-convert','inv-special-out','inv-disposal-approve','inv-disposal-history','inv-adjust-approve','inv-adjust-history'].forEach(pg=>{ document.getElementById('page-'+pg).style.display = pg===p?'block':'none'; });
+  ['mt-request','mt-status','ep-request','ep-status','mt-return','ep-return','mt-product','mt-autoship-group','ep-product','po-consign-approve','po-consign-status','po-pb-review','po-pb-asn','po-buy-request','po-buy-order','po-buy-asn','inv-move','inv-partner-return','inv-convert','inv-special-out','inv-disposal','inv-adjust'].forEach(pg=>{ document.getElementById('page-'+pg).style.display = pg===p?'block':'none'; });
 }
 function placeholderHTML(crumb, title){
   return `<div class="crumb">${crumb}</div><h1>${title} <span class="muted" style="font-size:12px;font-weight:400;">· MOCK</span></h1>
@@ -810,7 +826,10 @@ function renderReturn(sc){
   const destName=!!(tab&&tab.destName);
   const showReqNo=C.reqNoCol&&(!tabbed||(tab&&tab.reqNo));
   const fb=val(sc+'-rt-brand'), fst=val(sc+'-rt-store'), fc=val(sc+'-rt-center'), ft=val(sc+'-rt-type'), fs=val(sc+'-rt-status'), fas=val(sc+'-rt-astatus'), frt=val(sc+'-rt-rtype');
-  const rows=d.filter(r=>(!tabbed||r.tabKey===cat)&&(frt==='all'||r.rtype===frt)&&(fb==='all'||r.brand===fb)&&(fst==='all'||r.store===fst)&&(fc==='all'||r.center===fc)&&(ft==='all'||r.type===ft)&&(fs==='all'||r.status===fs)&&(fas==='all'||r.astatus===fas));
+  const fmove=val(sc+'-rt-move'), freqno=(tabbed&&cat==='store')?val(sc+'-rt-reqno'):'';
+  const txtOk=(f,v)=>(f==='all'||f==='')||String(v||'').toLowerCase().includes(String(f).toLowerCase());
+  const rq=document.getElementById(sc+'-rt-reqno'); if(rq) rq.style.display=(tabbed&&cat==='store')?'inline-block':'none';
+  const rows=d.filter(r=>(!tabbed||r.tabKey===cat)&&(frt==='all'||r.rtype===frt)&&(fb==='all'||r.brand===fb)&&(fst==='all'||r.store===fst)&&(fc==='all'||r.center===fc)&&(ft==='all'||r.type===ft)&&(fs==='all'||r.status===fs)&&(fas==='all'||r.astatus===fas)&&txtOk(fmove,r.move)&&txtOk(freqno,r.reqNo));
   const head=document.getElementById(sc+'-rt-head'), tb=document.getElementById(sc+'-rt-body'); tb.innerHTML='';
   const reg=document.getElementById(sc+'-rt-register-btns'); if(reg) reg.style.display=isApprove?'none':'inline';
   const ab=document.getElementById(sc+'-rt-approve-btns'); if(ab) ab.style.display=(isApprove||approve)?'inline':'none';
@@ -821,18 +840,18 @@ function renderReturn(sc){
   if(C.combined){
     head.innerHTML=`<tr>
       ${approve?`<th class="center"><input type="checkbox" onclick="toggleAllReturn('${sc}',this)"></th>`:''}
-      ${C.moveCol?'<th>이동번호</th>':''}<th class="center">반품유형</th>${C.reasonCol?'<th class="center">반품사유</th>':''}${approve?'<th class="center">승인상태</th>':''}${showReqNo?'<th>요청번호</th>':''}
+      ${C.moveCol?'<th>이동번호</th>':''}${C.rtypeCol===false?'':'<th class="center">반품유형</th>'}${C.reasonCol?'<th class="center">반품사유</th>':''}${approve?'<th class="center">승인상태</th>':''}${showReqNo?'<th>요청번호</th>':''}
       <th>${C.fromLabel}</th><th>${C.toLabel}</th>
-      <th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th>${styTh(sc)}<th>${C.brandLabel}</th>
+      ${styTh(sc)}<th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th><th>${C.brandLabel}</th>
       <th class="num">반품지시<br>수량</th><th class="num">${C.outLabel}</th><th class="num">${C.inLabel}</th>${C.availLabel?`<th class="num">${C.availLabel}</th>`:''}
       <th class="center">이동상태</th><th>마지막 처리일시</th><th>${C.lastByLabel||'처리자'}</th>${approve?'<th>요청자</th>':''}</tr>`;
     rows.forEach((r)=>{ const i=d.indexOf(r);
       const dest=r.destAddr?`<a href="javascript:void(0)" onclick="openDestView('${sc}',${i})" style="color:#2563eb;font-weight:600;text-decoration:underline;">${r.center}</a>`:r.center;
       tb.insertAdjacentHTML('beforeend',`<tr>
         ${approve?`<td class="center">${(r.astatus==='대기')?`<input type="checkbox" class="${sc}-rt-chk" data-i="${i}">`:''}</td>`:''}
-        ${C.moveCol?`<td>${r.move?`<a href="javascript:void(0)" onclick="openMoveDetail('${sc}',${i})" style="color:#2563eb;font-weight:600;text-decoration:underline;">${r.move}</a>`:'<span class="muted">-</span>'}</td>`:''}<td class="center">${typeBadge(r[C.rtypeKey])}</td>${C.reasonCol?`<td class="center">${typeBadge(r.type)}</td>`:''}${approve?`<td class="center">${r.astatus?`<span class="ast ${r.astatus}">${r.astatus}</span>`:'<span class="ast 승인">자동승인</span>'}</td>`:''}${showReqNo?`<td>${r.reqNo||'<span class="muted">-</span>'}</td>`:''}
+        ${C.moveCol?`<td>${r.move?`<a href="javascript:void(0)" onclick="openMoveDetail('${sc}',${i})" style="color:#2563eb;font-weight:600;text-decoration:underline;">${r.move}</a>`:'<span class="muted">-</span>'}</td>`:''}${C.rtypeCol===false?'':`<td class="center">${typeBadge(r[C.rtypeKey])}</td>`}${C.reasonCol?`<td class="center">${typeBadge(r.type)}</td>`:''}${approve?`<td class="center">${r.astatus?`<span class="ast ${r.astatus}">${r.astatus}</span>`:'<span class="ast 승인">자동승인</span>'}</td>`:''}${showReqNo?`<td>${r.reqNo||'<span class="muted">-</span>'}</td>`:''}
         <td>${r.store}</td><td>${dest}</td>
-        <td>${r.sku}</td><td>${r.barcode}</td><td>${r.name}</td><td>${r.opt}</td>${ss(sc)?`<td>${r.style||'-'}</td>`:''}<td>${r.brand}</td>
+        ${ss(sc)?`<td>${r.style||'-'}</td>`:''}<td>${r.sku}</td><td>${r.barcode}</td><td>${r.name}</td><td>${r.opt}</td><td>${r.brand}</td>
         <td class="num">${r.qty}</td><td class="num">${r.out>0?r.out:'<span class="muted">-</span>'}</td><td class="num">${r.inq>0?r.inq:'<span class="muted">-</span>'}</td>${C.availLabel?`<td class="num">${r.avail}</td>`:''}
         <td class="center"><span class="st ${stClass(r.status)}">${r.status}</span></td>
         <td>${r.lastAt?r.lastAt:'<span class="muted">-</span>'}</td><td>${r.lastBy&&r.lastBy!=='-'?r.lastBy:'<span class="muted">-</span>'}</td>${approve?`<td>${r.requester||'<span class="muted">-</span>'}</td>`:''}</tr>`);
@@ -925,7 +944,7 @@ function rejectReturn(sc){
   checked.forEach(c=>{ const r=DB[sc].ret[+c.dataset.i]; if(r){ r.astatus='반려'; r.reason=reason.trim(); r.lastAt='2026-06-23 17:46'; r.lastBy='염태환'; } });
   renderReturn(sc); toast(`⛔ ${checked.length}건 반려 → 사유 회신 (mock)`);
 }
-function resetReturn(sc){ [sc+'-rt-brand',sc+'-rt-store',sc+'-rt-center',sc+'-rt-type',sc+'-rt-status',sc+'-rt-astatus',sc+'-rt-rtype'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='all';}); renderReturn(sc); }
+function resetReturn(sc){ [sc+'-rt-brand',sc+'-rt-store',sc+'-rt-center',sc+'-rt-type',sc+'-rt-status',sc+'-rt-astatus',sc+'-rt-rtype'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='all';}); [sc+'-rt-move',sc+'-rt-reqno'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';}); renderReturn(sc); }
 
 // ----- 반품 지시 모달 (매장→센터, 매장간 이동 모달 참고) -----
 let returnScope='mt';
@@ -1033,6 +1052,206 @@ function submitReturn(){
   }
 }
 
+// ===== 매장 반품 지시 — 인라인 전용 폼 (하이브리드: 헤더 고정 + 블록) · scope 공통 =====
+const rfBlocks={mt:[],ep:[]};
+const rfHasStyle=sc=>sc==='mt';   // 대표스타일 노출 (무탠만)
+const rfHasReason=sc=>sc==='mt';  // 반품사유 선택 (무탠만 · 편집샵은 매장→센터 단일)
+function blankRfRow(){ return {sku:'',barcode:'',name:'',opt:'',style:'',brand:'',qty:0,avail:0}; }
+function blankRfBlock(sc){ return {store:'',center:'',reason:(rfHasReason(sc)?RET.mt.types[0]:'매장→센터'),rows:[blankRfRow()]}; }
+function openReturnForm(sc){ if(!rfBlocks[sc].length) rfBlocks[sc]=[blankRfBlock(sc)];
+  document.getElementById(sc+'-rt-listview').style.display='none';
+  document.getElementById(sc+'-rt-formview').style.display='block';
+  renderRfForm(sc); }
+function closeReturnForm(sc){ document.getElementById(sc+'-rt-formview').style.display='none';
+  document.getElementById(sc+'-rt-listview').style.display='block'; }
+function addRfBlock(sc){ rfBlocks[sc].push(blankRfBlock(sc)); renderRfForm(sc); }
+function delRfBlock(sc,bi){ rfBlocks[sc].splice(bi,1); if(!rfBlocks[sc].length) rfBlocks[sc]=[blankRfBlock(sc)]; renderRfForm(sc); }
+function rfBlockField(sc,bi,f,v){ rfBlocks[sc][bi][f]=v; renderRfForm(sc); }
+function addRfRow(sc,bi){ rfBlocks[sc][bi].rows.push(blankRfRow()); renderRfForm(sc); }
+function delRfRow(sc,bi,ri){ rfBlocks[sc][bi].rows.splice(ri,1); if(!rfBlocks[sc][bi].rows.length) rfBlocks[sc][bi].rows.push(blankRfRow()); renderRfForm(sc); }
+function rfRowSku(sc,bi,ri,v){ const r=rfBlocks[sc][bi].rows[ri]; r.sku=(v||'').trim().toUpperCase();
+  const m=SKU_MASTER[sc][r.sku];
+  if(m){ r.barcode=m.barcode; r.name=m.name; r.opt=m.opt; r.style=m.style; r.brand=m.brand; r.avail=m.avail; }
+  else { r.barcode=''; r.name=''; r.opt=''; r.style=''; r.brand=''; r.avail=0; }
+  renderRfForm(sc); }
+function rfRowQty(sc,bi,ri,v){ rfBlocks[sc][bi].rows[ri].qty=parseInt(v)||0; renderRfForm(sc); }
+function renderRfForm(sc){
+  const wrap=document.getElementById(sc+'-rf-blocks'); wrap.innerHTML='';
+  const hasStyle=rfHasStyle(sc), hasReason=rfHasReason(sc);
+  rfBlocks[sc].forEach((b,bi)=>{
+    let rowsHtml='';
+    b.rows.forEach((r,ri)=>{
+      const noSku=r.sku&&!SKU_MASTER[sc][r.sku], over=r.sku&&r.qty>r.avail;
+      rowsHtml+=`<tr>
+        ${hasStyle?`<td>${r.style||'<span class="muted">-</span>'}</td>`:''}
+        <td><input class="m-in ${noSku?'m-err':''}" style="width:90px" value="${r.sku}" onchange="rfRowSku('${sc}',${bi},${ri},this.value)" placeholder="SKU번호"></td>
+        <td><span class="muted">${r.barcode||'-'}</span></td>
+        <td>${r.name||'<span class="muted">-</span>'}</td>
+        <td>${r.opt||'<span class="muted">-</span>'}</td>
+        <td class="num"><input type="number" min="0" class="m-in num ${over?'m-err':''}" value="${r.qty}" onchange="rfRowQty('${sc}',${bi},${ri},this.value)"></td>
+        <td class="num">${r.avail}</td>
+        <td class="center"><button class="btn sm" onclick="delRfRow('${sc}',${bi},${ri})">🗑</button></td></tr>`;
+    });
+    const bpcs=b.rows.reduce((s,r)=>s+(r.qty||0),0), bcnt=b.rows.filter(r=>r.sku).length;
+    const reasonFld=hasReason?`<span class="fld">반품 사유 <select class="m-sel" onchange="rfBlockField('${sc}',${bi},'reason',this.value)">${RET.mt.types.map(t=>`<option ${t===b.reason?'selected':''}>${t}</option>`).join('')}</select></span>`:'';
+    wrap.insertAdjacentHTML('beforeend',`<div class="rf-block">
+      <div class="rf-block-head">
+        <span class="fld">출발 매장 <select class="m-sel ${!b.store?'m-err':''}" onchange="rfBlockField('${sc}',${bi},'store',this.value)">${optSel(STORES[sc],b.store)}</select></span>
+        <span class="fld">도착 센터 <select class="m-sel ${!b.center?'m-err':''}" onchange="rfBlockField('${sc}',${bi},'center',this.value)">${optSel(CENTERS[sc],b.center)}</select></span>
+        ${reasonFld}
+        <button class="btn sm del" onclick="delRfBlock('${sc}',${bi})">🗑 블록 삭제</button>
+      </div>
+      <div class="rf-block-tools">
+        <button class="btn sm" onclick="addRfRow('${sc}',${bi})">+ SKU 행 추가</button>
+        <button class="btn sm" onclick="toast('엑셀 양식: SKU번호/바코드, 반품수량 (mock)')">⬆ 엑셀 업로드</button>
+      </div>
+      <div class="rf-block-body"><table><thead><tr>
+        ${hasStyle?'<th>대표스타일</th>':''}<th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th><th class="num">반품 수량</th><th class="num">보유재고</th><th class="center">삭제</th>
+      </tr></thead><tbody>${rowsHtml}</tbody></table></div>
+      <div class="rf-block-sum">${b.store||'<span style="color:#dc2626">매장?</span>'} → ${b.center||'<span style="color:#dc2626">센터?</span>'}${hasReason?' · '+b.reason:''} · ${bcnt}건 / ${bpcs}pcs</div>
+    </div>`);
+  });
+  const totPcs=rfBlocks[sc].reduce((s,b)=>s+b.rows.reduce((a,r)=>a+(r.qty||0),0),0);
+  const totCnt=rfBlocks[sc].reduce((s,b)=>s+b.rows.filter(r=>r.sku).length,0);
+  document.getElementById(sc+'-rf-summary').textContent=`블록 ${rfBlocks[sc].length}개 · 총 ${totCnt}건 / ${totPcs}pcs`;
+}
+function submitReturnForm(sc){
+  const errs=[]; let total=0;
+  rfBlocks[sc].forEach((b,bi)=>{
+    const valid=b.rows.filter(r=>r.sku||r.qty);
+    if(!b.store||!b.center){ errs.push(`블록${bi+1}: 출발매장/도착센터 필수`); }
+    if(!valid.length){ errs.push(`블록${bi+1}: SKU를 1건 이상 추가`); }
+    valid.forEach((r,ri)=>{
+      if(!r.sku||!r.qty) errs.push(`블록${bi+1}-${ri+1}행: SKU/수량 필수`);
+      else if(!SKU_MASTER[sc][r.sku]) errs.push(`블록${bi+1}-${ri+1}행: SKU번호를 찾을 수 없음`);
+      else if(r.qty>r.avail) errs.push(`블록${bi+1}-${ri+1}행: 반품수량 > 보유재고`);
+      else total++;
+    });
+  });
+  if(errs.length){ toast('⚠ '+errs[0]+(errs.length>1?` 외 ${errs.length-1}건`:'')); return; }
+  const pcs=rfBlocks[sc].reduce((s,b)=>s+b.rows.reduce((a,r)=>a+(r.qty||0),0),0);
+  if(!confirm(`총 ${total}건 / ${pcs}pcs 반품을 지시하시겠습니까?`)) return;
+  rfBlocks[sc].forEach(b=>{ b.rows.filter(r=>r.sku&&r.qty).forEach(r=>{
+    const rec={tabKey:'hq',move:'TX-MVR'+String(Date.now()).slice(-10),type:(sc==='mt'?b.reason:'매장→센터'),store:b.store,center:b.center,sku:r.sku,barcode:r.barcode,name:r.name,opt:r.opt,style:r.style,brand:r.brand,qty:r.qty,out:0,inq:0,avail:r.avail,status:'출고대기',lastAt:'2026-06-23 17:50',lastBy:'염태환'};
+    if(sc==='mt') rec.rtype='매장→센터';
+    DB[sc].ret.unshift(rec); }); });
+  rfBlocks[sc]=[]; renderReturn(sc); closeReturnForm(sc);
+  toast(`✅ ${total}건 반품 지시 → MWMS 전송${sc==='mt'?' · SAP 자산이동':' · 위탁(2P) SAP 미연동'} (mock)`);
+}
+function returnFormHTML(sc){
+  const label=sc==='mt'?'무탠':'편집샵';
+  return `<div id="${sc}-rt-formview" style="display:none;">
+    <div class="rf-back" onclick="closeReturnForm('${sc}')">← 목록으로</div>
+    <div class="gridhead"><div class="left"><span class="total">${label} 매장 반품 지시 등록</span>
+      <span class="muted" style="font-size:11px;">출발매장·도착센터${rfHasReason(sc)?'·사유':''}를 블록 단위로 지정하고 SKU를 추가하세요 · 조합이 다르면 블록을 추가하면 됩니다</span></div></div>
+    <div id="${sc}-rf-blocks"></div>
+    <button class="btn" onclick="addRfBlock('${sc}')" style="margin-bottom:14px;">＋ 매장/도착지 블록 추가</button>
+    <div class="rf-foot">
+      <span class="total" id="${sc}-rf-summary" style="font-size:13px;">블록 0개</span>
+      <span style="margin-left:auto;"></span>
+      <button class="btn" onclick="closeReturnForm('${sc}')">취소</button>
+      <button class="btn primary" onclick="submitReturnForm('${sc}')">반품 지시</button>
+    </div>
+  </div>`;
+}
+
+// ===== 매장간 이동 — 인라인 전용 폼 (하이브리드: 출발/도착 헤더 고정 + 블록) · scope 공통 =====
+const mvBlocks={mt:[],ep:[]};
+function blankMvRow(){ return {sku:'',barcode:'',name:'',opt:'',style:'',qty:0,avail:0}; }
+function blankMvBlock(){ return {from:'',to:'',rows:[blankMvRow()]}; }
+function openMoveForm(sc){ if(!mvBlocks[sc].length) mvBlocks[sc]=[blankMvBlock()];
+  document.getElementById(sc+'-rq-mainview').style.display='none';
+  document.getElementById(sc+'-mv-formview').style.display='block';
+  renderMvForm(sc); }
+function closeMoveForm(sc){ document.getElementById(sc+'-mv-formview').style.display='none';
+  document.getElementById(sc+'-rq-mainview').style.display='block'; }
+function addMvBlock(sc){ mvBlocks[sc].push(blankMvBlock()); renderMvForm(sc); }
+function delMvBlock(sc,bi){ mvBlocks[sc].splice(bi,1); if(!mvBlocks[sc].length) mvBlocks[sc]=[blankMvBlock()]; renderMvForm(sc); }
+function mvBlockField(sc,bi,f,v){ mvBlocks[sc][bi][f]=v; renderMvForm(sc); }
+function addMvRow(sc,bi){ mvBlocks[sc][bi].rows.push(blankMvRow()); renderMvForm(sc); }
+function delMvRow(sc,bi,ri){ mvBlocks[sc][bi].rows.splice(ri,1); if(!mvBlocks[sc][bi].rows.length) mvBlocks[sc][bi].rows.push(blankMvRow()); renderMvForm(sc); }
+function mvRowSku(sc,bi,ri,v){ const r=mvBlocks[sc][bi].rows[ri]; r.sku=(v||'').trim().toUpperCase();
+  const m=SKU_MASTER[sc][r.sku];
+  if(m){ r.barcode=m.barcode; r.name=m.name; r.opt=m.opt; r.style=m.style; r.avail=m.avail; }
+  else { r.barcode=''; r.name=''; r.opt=''; r.style=''; r.avail=0; }
+  renderMvForm(sc); }
+function mvRowQty(sc,bi,ri,v){ mvBlocks[sc][bi].rows[ri].qty=parseInt(v)||0; renderMvForm(sc); }
+function renderMvForm(sc){
+  const wrap=document.getElementById(sc+'-mv-blocks'); wrap.innerHTML='';
+  const hasStyle=sc==='mt';
+  mvBlocks[sc].forEach((b,bi)=>{
+    const dup=b.from&&b.to&&b.from===b.to;
+    let rowsHtml='';
+    b.rows.forEach((r,ri)=>{
+      const noSku=r.sku&&!SKU_MASTER[sc][r.sku], over=r.sku&&r.qty>r.avail;
+      rowsHtml+=`<tr>
+        ${hasStyle?`<td>${r.style||'<span class="muted">-</span>'}</td>`:''}
+        <td><input class="m-in ${noSku?'m-err':''}" style="width:90px" value="${r.sku}" onchange="mvRowSku('${sc}',${bi},${ri},this.value)" placeholder="SKU번호"></td>
+        <td><span class="muted">${r.barcode||'-'}</span></td>
+        <td>${r.name||'<span class="muted">-</span>'}</td>
+        <td>${r.opt||'<span class="muted">-</span>'}</td>
+        <td class="num"><input type="number" min="0" class="m-in num ${over?'m-err':''}" value="${r.qty}" onchange="mvRowQty('${sc}',${bi},${ri},this.value)"></td>
+        <td class="num">${r.avail}</td>
+        <td class="center"><button class="btn sm" onclick="delMvRow('${sc}',${bi},${ri})">🗑</button></td></tr>`;
+    });
+    const bpcs=b.rows.reduce((s,r)=>s+(r.qty||0),0), bcnt=b.rows.filter(r=>r.sku).length;
+    wrap.insertAdjacentHTML('beforeend',`<div class="rf-block">
+      <div class="rf-block-head">
+        <span class="fld">출발 매장 <select class="m-sel ${(!b.from||dup)?'m-err':''}" onchange="mvBlockField('${sc}',${bi},'from',this.value)">${optSel(STORES[sc],b.from)}</select></span>
+        <span class="fld">도착 매장 <select class="m-sel ${(!b.to||dup)?'m-err':''}" onchange="mvBlockField('${sc}',${bi},'to',this.value)">${optSel(STORES[sc],b.to)}</select></span>
+        ${dup?'<span class="muted" style="color:#dc2626;font-size:11px;">출발=도착 불가</span>':''}
+        <button class="btn sm del" onclick="delMvBlock('${sc}',${bi})">🗑 블록 삭제</button>
+      </div>
+      <div class="rf-block-tools">
+        <button class="btn sm" onclick="addMvRow('${sc}',${bi})">+ SKU 행 추가</button>
+        <button class="btn sm" onclick="toast('엑셀 양식: SKU번호/바코드, 이동수량 (mock)')">⬆ 엑셀 업로드</button>
+      </div>
+      <div class="rf-block-body"><table><thead><tr>
+        ${hasStyle?'<th>대표스타일</th>':''}<th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th><th class="num">이동 수량</th><th class="num">출발 보유재고</th><th class="center">삭제</th>
+      </tr></thead><tbody>${rowsHtml}</tbody></table></div>
+      <div class="rf-block-sum">${b.from||'<span style="color:#dc2626">출발?</span>'} → ${b.to||'<span style="color:#dc2626">도착?</span>'} · ${bcnt}건 / ${bpcs}pcs</div>
+    </div>`);
+  });
+  const totPcs=mvBlocks[sc].reduce((s,b)=>s+b.rows.reduce((a,r)=>a+(r.qty||0),0),0);
+  const totCnt=mvBlocks[sc].reduce((s,b)=>s+b.rows.filter(r=>r.sku).length,0);
+  document.getElementById(sc+'-mv-summary').textContent=`블록 ${mvBlocks[sc].length}개 · 총 ${totCnt}건 / ${totPcs}pcs`;
+}
+function submitMoveForm(sc){
+  const errs=[]; let total=0;
+  mvBlocks[sc].forEach((b,bi)=>{
+    const valid=b.rows.filter(r=>r.sku||r.qty);
+    if(!b.from||!b.to) errs.push(`블록${bi+1}: 출발/도착 매장 필수`);
+    else if(b.from===b.to) errs.push(`블록${bi+1}: 출발=도착 불가`);
+    if(!valid.length) errs.push(`블록${bi+1}: SKU를 1건 이상 추가`);
+    valid.forEach((r,ri)=>{
+      if(!r.sku||!r.qty) errs.push(`블록${bi+1}-${ri+1}행: SKU/수량 필수`);
+      else if(!SKU_MASTER[sc][r.sku]) errs.push(`블록${bi+1}-${ri+1}행: SKU번호를 찾을 수 없음`);
+      else if(r.qty>r.avail) errs.push(`블록${bi+1}-${ri+1}행: 이동수량 > 출발 보유재고`);
+      else total++;
+    });
+  });
+  if(errs.length){ toast('⚠ '+errs[0]+(errs.length>1?` 외 ${errs.length-1}건`:'')); return; }
+  const pcs=mvBlocks[sc].reduce((s,b)=>s+b.rows.reduce((a,r)=>a+(r.qty||0),0),0);
+  if(!confirm(`총 ${total}건 / ${pcs}pcs 매장간 이동을 지시하시겠습니까?`)) return;
+  mvBlocks[sc]=[]; closeMoveForm(sc);
+  toast(`✅ ${total}건 매장간 이동 지시 → MWMS 전송 (mock)`);
+}
+function moveFormHTML(sc,label){
+  return `<div id="${sc}-mv-formview" style="display:none;">
+    <div class="rf-back" onclick="closeMoveForm('${sc}')">← 목록으로</div>
+    <div class="gridhead"><div class="left"><span class="total">${label} 매장간 이동 등록</span>
+      <span class="muted" style="font-size:11px;">출발·도착 매장을 블록 단위로 지정하고 SKU를 추가하세요 · 경로가 다르면 블록을 추가하면 됩니다</span></div></div>
+    <div id="${sc}-mv-blocks"></div>
+    <button class="btn" onclick="addMvBlock('${sc}')" style="margin-bottom:14px;">＋ 이동 경로 블록 추가</button>
+    <div class="rf-foot">
+      <span class="total" id="${sc}-mv-summary" style="font-size:13px;">블록 0개</span>
+      <span style="margin-left:auto;"></span>
+      <button class="btn" onclick="closeMoveForm('${sc}')">취소</button>
+      <button class="btn primary" onclick="submitMoveForm('${sc}')">이동 지시</button>
+    </div>
+  </div>`;
+}
+
 // ================= 파트너사 반출/반품 (무탠+편집샵 통합 조회/등록) =================
 function partnerReturnPageHTML(){
   return `
@@ -1119,10 +1338,8 @@ document.getElementById('page-inv-move').innerHTML=placeholderHTML('재고 관�
 document.getElementById('page-inv-partner-return').innerHTML=partnerReturnPageHTML(); renderPartnerReturn();
 document.getElementById('page-inv-convert').innerHTML=placeholderHTML('재고 관리 › 불량↔정상 전환','불량↔정상 전환');
 document.getElementById('page-inv-special-out').innerHTML=placeholderHTML('재고 관리 › 특수출고','특수출고');
-document.getElementById('page-inv-disposal-approve').innerHTML=placeholderHTML('재고 관리 › 폐기 승인','폐기 승인');
-document.getElementById('page-inv-disposal-history').innerHTML=placeholderHTML('재고 관리 › 폐기 내역 조회','폐기 내역 조회');
-document.getElementById('page-inv-adjust-approve').innerHTML=placeholderHTML('재고 관리 › 재고조정 승인','재고조정 승인');
-document.getElementById('page-inv-adjust-history').innerHTML=placeholderHTML('재고 관리 › 재고조정 내역 조회','재고조정 내역 조회');
+document.getElementById('page-inv-disposal').innerHTML=placeholderHTML('재고 관리 › 폐기 관리','폐기 관리');
+document.getElementById('page-inv-adjust').innerHTML=placeholderHTML('재고 관리 › 재고조정 관리','재고조정 관리');
 ['mt','ep'].forEach(sc=>{ renderReq(sc); renderAppr(sc); renderStatus(sc); renderReturn(sc); });
 setInterval(tick,1000); tick();
 </script>
