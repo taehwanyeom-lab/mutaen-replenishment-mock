@@ -582,7 +582,7 @@ function statusPageHTML(sc, label){
     <button class="btn primary" onclick="renderStatus('${sc}')">검색</button>
   </div>
   <div class="gridhead"><div class="left"><span class="total">확정 <span id="${sc}-st-total">0</span>건</span>
-      <button class="btn red" onclick="cancelStatusSelected('${sc}')">보충취소</button>
+      <button class="btn red" onclick="cancelStatusSelected('${sc}')">출고취소</button>
       <span class="muted" style="font-size:11px;">※ 출고대기 건만 선택·취소 가능</span></div>
     <div class="right"><span class="muted" style="font-size:11px;">행 클릭 시 센터별 출고 상세 ▾</span>
       <button class="btn" onclick="toast('전체 엑셀 다운로드 (mock)')">⬇ 전체 엑셀 다운로드</button></div></div>
@@ -645,7 +645,7 @@ function returnPageHTML(sc, label){
         <button class="btn green" onclick="approveReturn('${sc}')">승인</button>
         <button class="btn red" onclick="rejectReturn('${sc}')">반려</button>
       </span>
-      <button class="btn red" onclick="cancelReturnSelected('${sc}')">반납 취소</button>
+      <button class="btn red" onclick="cancelReturnSelected('${sc}')">출고취소</button>
       <span class="muted" style="font-size:11px;">※ ${C.tip}</span></div>
     <div class="right">
       <button class="btn" id="${sc}-rt-upload-btn" onclick="toast('엑셀 양식 업로드 (mock)')">⬆ 일괄 업로드</button>
@@ -745,21 +745,21 @@ function toggleAllPartner(el){ document.querySelectorAll('.pr-chk').forEach(c=>c
 function cancelStatusSelected(sc){
   const checked=[...document.querySelectorAll('.'+sc+'-st-chk:checked')];
   if(!checked.length){ toast('취소할 건을 선택해 주세요. (출고대기 건만 선택 가능)'); return; }
-  if(!confirm(`선택한 ${checked.length}건의 보충을 취소하시겠습니까?`)) return;
+  if(!confirm(`선택한 ${checked.length}건의 출고를 취소하시겠습니까?`)) return;
   checked.forEach(c=>{ const r=DB[sc].status[+c.dataset.i]; if(r&&r.status==='출고대기'){ r.status='취소'; if(r.centers) r.centers.forEach(x=>x.status='취소'); } });
-  renderStatus(sc); toast(`✅ ${checked.length}건 보충취소 → MWMS 출고지시 취소 (mock)`); }
+  renderStatus(sc); toast(`✅ ${checked.length}건 출고취소 → MWMS 출고지시 취소 (mock)`); }
 function cancelReturnSelected(sc){
   const checked=[...document.querySelectorAll('.'+sc+'-rt-chk:checked')];
   if(!checked.length){ toast('취소할 건을 선택해 주세요. (출고대기 건만 선택 가능)'); return; }
-  if(!confirm(`선택한 ${checked.length}건의 반납을 취소하시겠습니까?`)) return;
+  if(!confirm(`선택한 ${checked.length}건의 출고를 취소하시겠습니까?`)) return;
   let n=0; checked.forEach(c=>{ const r=DB[sc].ret[+c.dataset.i]; if(r&&r.status==='출고대기'){ r.status='취소'; r.lastAt='2026-07-08 09:00'; r.lastBy='염태환'; n++; } });
-  renderReturn(sc); toast(`✅ ${n}건 반납 취소 → MWMS 지시 취소 (mock)`); }
+  renderReturn(sc); toast(`✅ ${n}건 출고취소 → MWMS 지시 취소 (mock)`); }
 function cancelPartnerSelected(){
   const checked=[...document.querySelectorAll('.pr-chk:checked')];
   if(!checked.length){ toast('취소할 건을 선택해 주세요. (출고대기 건만 선택 가능)'); return; }
-  if(!confirm(`선택한 ${checked.length}건의 반품을 취소하시겠습니까?`)) return;
+  if(!confirm(`선택한 ${checked.length}건의 출고를 취소하시겠습니까?`)) return;
   let n=0; checked.forEach(c=>{ const r=partnerReturnData[+c.dataset.i]; if(r&&r.status==='출고대기'){ r.status='취소'; r.lastAt='2026-07-08 09:00'; r.lastBy='염태환'; n++; } });
-  renderPartnerReturn(); toast(`✅ ${n}건 반품 취소 → MWMS 지시 취소 (mock)`); }
+  renderPartnerReturn(); toast(`✅ ${n}건 출고취소 → MWMS 지시 취소 (mock)`); }
 function renderStatus(sc){
   const d=DB[sc].status;
   const fs=val(sc+'-s-status'), fst=val(sc+'-st-store'), fb=val(sc+'-st-brand'), fa=val(sc+'-st-auto');
@@ -1428,7 +1428,7 @@ function partnerReturnPageHTML(){
   <div class="gridhead">
     <div class="left"><span class="total">전체 <span id="pr-total">0</span>건</span>
       <button class="btn primary" onclick="openPartnerForm()">＋ 파트너사 반출/반품</button>
-      <button class="btn red" onclick="cancelPartnerSelected()">반품 취소</button>
+      <button class="btn red" onclick="cancelPartnerSelected()">출고취소</button>
       <span class="muted" style="font-size:11px;">※ 출고대기 건만 선택·취소 · 무탠·편집샵 통합</span></div>
     <div class="right">
       <button class="btn" onclick="toast('전체 엑셀 다운로드 (mock)')">⬇ 전체 엑셀 다운로드</button></div>
