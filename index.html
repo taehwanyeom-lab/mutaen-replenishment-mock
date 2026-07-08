@@ -64,6 +64,7 @@
   .st.대기 { background:#dbeafe; color:#1d4ed8; }
   .st.이동 { background:#ffedd5; color:#c2410c; }
   .st.완료 { background:#dcfce7; color:#15803d; }
+  .st.취소 { background:#fee2e2; color:#b91c1c; text-decoration:line-through; }
   .ast { display:inline-block; padding:2px 9px; border-radius:11px; font-size:11px; font-weight:700; }
   .ast.대기 { background:#fef9c3; color:#a16207; }
   .ast.승인 { background:#dcfce7; color:#15803d; }
@@ -580,11 +581,13 @@ function statusPageHTML(sc, label){
     <select id="${sc}-s-status" onchange="renderStatus('${sc}')"><option value="all">상태: 전체</option><option value="출고대기">출고대기</option><option value="이동중">이동중</option><option value="입고완료">입고완료</option></select>
     <button class="btn primary" onclick="renderStatus('${sc}')">검색</button>
   </div>
-  <div class="gridhead"><div class="left"><span class="total">확정 <span id="${sc}-st-total">0</span>건</span></div>
+  <div class="gridhead"><div class="left"><span class="total">확정 <span id="${sc}-st-total">0</span>건</span>
+      <button class="btn red" onclick="cancelStatusSelected('${sc}')">보충취소</button>
+      <span class="muted" style="font-size:11px;">※ 출고대기 건만 선택·취소 가능</span></div>
     <div class="right"><span class="muted" style="font-size:11px;">행 클릭 시 센터별 출고 상세 ▾</span>
       <button class="btn" onclick="toast('전체 엑셀 다운로드 (mock)')">⬇ 전체 엑셀 다운로드</button></div></div>
   <div class="tablewrap"><table><thead><tr>
-    <th style="width:28px;"></th><th class="center">자동보충여부</th><th>입고 스토어명</th><th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th>${styTh(sc)}<th>브랜드</th>
+    <th class="center" style="width:34px;"><input type="checkbox" onclick="toggleAllStatus('${sc}',this)"></th><th style="width:28px;"></th><th class="center">자동보충여부</th><th>입고 스토어명</th><th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th>${styTh(sc)}<th>브랜드</th>
     <th class="num">보충 확정 수량</th><th class="num">출고 확정 수량</th><th class="num">입고 확정 수량</th>
     <th class="center">상태</th><th>출고지 정보</th><th>보충 확정 일시</th>
   </tr></thead><tbody id="${sc}-status-body"></tbody></table></div>
@@ -642,6 +645,7 @@ function returnPageHTML(sc, label){
         <button class="btn green" onclick="approveReturn('${sc}')">승인</button>
         <button class="btn red" onclick="rejectReturn('${sc}')">반려</button>
       </span>
+      <button class="btn red" onclick="cancelReturnSelected('${sc}')">반납 취소</button>
       <span class="muted" style="font-size:11px;">※ ${C.tip}</span></div>
     <div class="right">
       <button class="btn" id="${sc}-rt-upload-btn" onclick="toast('엑셀 양식 업로드 (mock)')">⬆ 일괄 업로드</button>
@@ -734,17 +738,39 @@ function reject(sc){
   renderAppr(sc); toast(`⛔ ${idx.length}건 반려 → 사유 회신 (mock)`);
 }
 
-function stClass(s){ return s.includes('완료')?'완료':s.includes('이동')?'이동':s.includes('대기')?'대기':'지시'; }
+function stClass(s){ return s.includes('취소')?'취소':s.includes('완료')?'완료':s.includes('이동')?'이동':s.includes('대기')?'대기':'지시'; }
+// ===== 취소 처리 (체크박스로 N건 선택 → 일괄 취소 · 출고대기 상태만) =====
+function toggleAllStatus(sc,el){ document.querySelectorAll('.'+sc+'-st-chk').forEach(c=>c.checked=el.checked); }
+function toggleAllPartner(el){ document.querySelectorAll('.pr-chk').forEach(c=>c.checked=el.checked); }
+function cancelStatusSelected(sc){
+  const checked=[...document.querySelectorAll('.'+sc+'-st-chk:checked')];
+  if(!checked.length){ toast('취소할 건을 선택해 주세요. (출고대기 건만 선택 가능)'); return; }
+  if(!confirm(`선택한 ${checked.length}건의 보충을 취소하시겠습니까?`)) return;
+  checked.forEach(c=>{ const r=DB[sc].status[+c.dataset.i]; if(r&&r.status==='출고대기'){ r.status='취소'; if(r.centers) r.centers.forEach(x=>x.status='취소'); } });
+  renderStatus(sc); toast(`✅ ${checked.length}건 보충취소 → MWMS 출고지시 취소 (mock)`); }
+function cancelReturnSelected(sc){
+  const checked=[...document.querySelectorAll('.'+sc+'-rt-chk:checked')];
+  if(!checked.length){ toast('취소할 건을 선택해 주세요. (출고대기 건만 선택 가능)'); return; }
+  if(!confirm(`선택한 ${checked.length}건의 반납을 취소하시겠습니까?`)) return;
+  let n=0; checked.forEach(c=>{ const r=DB[sc].ret[+c.dataset.i]; if(r&&r.status==='출고대기'){ r.status='취소'; r.lastAt='2026-07-08 09:00'; r.lastBy='염태환'; n++; } });
+  renderReturn(sc); toast(`✅ ${n}건 반납 취소 → MWMS 지시 취소 (mock)`); }
+function cancelPartnerSelected(){
+  const checked=[...document.querySelectorAll('.pr-chk:checked')];
+  if(!checked.length){ toast('취소할 건을 선택해 주세요. (출고대기 건만 선택 가능)'); return; }
+  if(!confirm(`선택한 ${checked.length}건의 반품을 취소하시겠습니까?`)) return;
+  let n=0; checked.forEach(c=>{ const r=partnerReturnData[+c.dataset.i]; if(r&&r.status==='출고대기'){ r.status='취소'; r.lastAt='2026-07-08 09:00'; r.lastBy='염태환'; n++; } });
+  renderPartnerReturn(); toast(`✅ ${n}건 반품 취소 → MWMS 지시 취소 (mock)`); }
 function renderStatus(sc){
   const d=DB[sc].status;
   const fs=val(sc+'-s-status'), fst=val(sc+'-st-store'), fb=val(sc+'-st-brand'), fa=val(sc+'-st-auto');
   const rows=d.filter(r=>(fs==='all'||r.status===fs)&&(fst==='all'||r.store===fst)&&(fb==='all'||r.brand===fb)&&(fa==='all'||r.auto===fa));
   const tb=document.getElementById(sc+'-status-body'); tb.innerHTML='';
-  const span=ss(sc)?15:14;
+  const span=ss(sc)?16:15;
   rows.forEach((r)=>{
     const i=d.indexOf(r), opt=[r.color,r.size].filter(x=>x&&x!=='-').join(' / ')||'-', centers=r.centers.map(c=>c.center).join(', ');
     const autoBadge=r.auto==='Y'?'<span class="badge y">Y</span>':'<span class="badge n">N</span>';
     tb.insertAdjacentHTML('beforeend',`<tr onclick="toggleSub('${sc}',${i})" style="cursor:pointer;">
+      <td class="center">${r.status==='출고대기'?`<input type="checkbox" class="${sc}-st-chk" data-i="${i}" onclick="event.stopPropagation()">`:''}</td>
       <td class="center"><span class="exp-btn" id="${sc}-exp-${i}">▸</span></td>
       <td class="center">${autoBadge}</td>
       <td>${r.store}</td><td>${r.sku}</td><td>${r.barcode}</td><td>${r.name}</td><td>${opt}</td>${ss(sc)?`<td>${r.style}</td>`:''}<td>${r.brand}</td>
@@ -864,7 +890,7 @@ function renderReturn(sc){
     if(bp) bp.style.display=showReg?'inline-block':'none'; }
   if(C.combined){
     head.innerHTML=`<tr>
-      ${approve?`<th class="center"><input type="checkbox" onclick="toggleAllReturn('${sc}',this)"></th>`:''}
+      <th class="center"><input type="checkbox" onclick="toggleAllReturn('${sc}',this)"></th>
       ${C.moveCol?'<th>이동번호</th>':''}${C.rtypeCol===false?'':'<th class="center">반품유형</th>'}${C.reasonCol?'<th class="center">반품사유</th>':''}${approve?'<th class="center">승인상태</th>':''}${showReqNo?'<th>요청번호</th>':''}
       <th>${C.fromLabel}</th><th>${C.toLabel}</th>
       ${styTh(sc)}<th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th><th>${C.brandLabel}</th>
@@ -873,7 +899,7 @@ function renderReturn(sc){
     rows.forEach((r)=>{ const i=d.indexOf(r);
       const dest=r.destAddr?`<a href="javascript:void(0)" onclick="openDestView('${sc}',${i})" style="color:#2563eb;font-weight:600;text-decoration:underline;">${r.center}</a>`:r.center;
       tb.insertAdjacentHTML('beforeend',`<tr>
-        ${approve?`<td class="center">${(r.astatus==='대기')?`<input type="checkbox" class="${sc}-rt-chk" data-i="${i}">`:''}</td>`:''}
+        <td class="center">${r.status==='출고대기'?`<input type="checkbox" class="${sc}-rt-chk" data-i="${i}">`:''}</td>
         ${C.moveCol?`<td>${r.move?`<a href="javascript:void(0)" onclick="openMoveDetail('${sc}',${i})" style="color:#2563eb;font-weight:600;text-decoration:underline;">${r.move}</a>`:'<span class="muted">-</span>'}</td>`:''}${C.rtypeCol===false?'':`<td class="center">${typeBadge(r[C.rtypeKey])}</td>`}${C.reasonCol?`<td class="center">${typeBadge(r.type)}</td>`:''}${approve?`<td class="center">${r.astatus?`<span class="ast ${r.astatus}">${r.astatus}</span>`:'<span class="ast 승인">자동승인</span>'}</td>`:''}${showReqNo?`<td>${r.reqNo||'<span class="muted">-</span>'}</td>`:''}
         <td>${r.store}</td><td>${dest}</td>
         ${ss(sc)?`<td>${r.style||'-'}</td>`:''}<td>${r.sku}</td><td>${r.barcode}</td><td>${r.name}</td><td>${r.opt}</td><td>${r.brand}</td>
@@ -957,8 +983,8 @@ function approveReturn(sc){
   const checked=[...document.querySelectorAll('.'+sc+'-rt-chk:checked')];
   if(!checked.length){ toast('승인할 요청을 선택해 주세요.'); return; }
   if(!confirm(`선택한 ${checked.length}건을 승인하시겠습니까? 승인 시 즉시 반품 지시됩니다.`)) return;
-  checked.forEach(c=>{ const r=DB[sc].ret[+c.dataset.i]; if(r){ r.astatus='승인'; r.lastAt='2026-06-23 17:45'; r.lastBy='염태환'; } });
-  renderReturn(sc); toast(`✅ ${checked.length}건 승인 → 즉시 반품 지시 (mock)`);
+  let n=0; checked.forEach(c=>{ const r=DB[sc].ret[+c.dataset.i]; if(r&&r.astatus==='대기'){ r.astatus='승인'; r.lastAt='2026-06-23 17:45'; r.lastBy='염태환'; n++; } });
+  renderReturn(sc); toast(`✅ ${n}건 승인 → 즉시 반품 지시 (mock)`);
 }
 function rejectReturn(sc){
   const checked=[...document.querySelectorAll('.'+sc+'-rt-chk:checked')];
@@ -966,8 +992,8 @@ function rejectReturn(sc){
   const reason=prompt('반려 사유를 입력해 주세요. (매장에 회신됩니다)');
   if(reason===null) return;
   if(!reason.trim()){ toast('반려 사유는 필수입니다.'); return; }
-  checked.forEach(c=>{ const r=DB[sc].ret[+c.dataset.i]; if(r){ r.astatus='반려'; r.reason=reason.trim(); r.lastAt='2026-06-23 17:46'; r.lastBy='염태환'; } });
-  renderReturn(sc); toast(`⛔ ${checked.length}건 반려 → 사유 회신 (mock)`);
+  let n=0; checked.forEach(c=>{ const r=DB[sc].ret[+c.dataset.i]; if(r&&r.astatus==='대기'){ r.astatus='반려'; r.reason=reason.trim(); r.lastAt='2026-06-23 17:46'; r.lastBy='염태환'; n++; } });
+  renderReturn(sc); toast(`⛔ ${n}건 반려 → 사유 회신 (mock)`);
 }
 function resetReturn(sc){ [sc+'-rt-brand',sc+'-rt-store',sc+'-rt-center',sc+'-rt-type',sc+'-rt-status',sc+'-rt-astatus',sc+'-rt-rtype'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='all';}); [sc+'-rt-move',sc+'-rt-reqno',sc+'-rt-person'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';}); renderReturn(sc); }
 
@@ -1402,11 +1428,13 @@ function partnerReturnPageHTML(){
   <div class="gridhead">
     <div class="left"><span class="total">전체 <span id="pr-total">0</span>건</span>
       <button class="btn primary" onclick="openPartnerForm()">＋ 파트너사 반출/반품</button>
-      <span class="muted" style="font-size:11px;">※ 무탠·편집샵의 센터→파트너 / 매장→파트너 반출·반품 통합</span></div>
+      <button class="btn red" onclick="cancelPartnerSelected()">반품 취소</button>
+      <span class="muted" style="font-size:11px;">※ 출고대기 건만 선택·취소 · 무탠·편집샵 통합</span></div>
     <div class="right">
       <button class="btn" onclick="toast('전체 엑셀 다운로드 (mock)')">⬇ 전체 엑셀 다운로드</button></div>
   </div>
   <div class="tablewrap"><table><thead><tr>
+    <th class="center" style="width:34px;"><input type="checkbox" onclick="toggleAllPartner(this)"></th>
     <th>이동번호</th><th class="center">반품유형</th><th>출발지</th><th>도착지</th>
     <th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th><th>브랜드</th>
     <th class="num">반품지시<br>수량</th><th class="num">출고확정<br>수량</th>
@@ -1425,6 +1453,7 @@ function renderPartnerReturn(){
     const move=r.move?`<a href="javascript:void(0)" onclick="openPartnerMoveDetail(${i})" style="color:#2563eb;font-weight:600;text-decoration:underline;">${r.move}</a>`:'<span class="muted">-</span>';
     const dest=r.destAddr?`<a href="javascript:void(0)" onclick="openPartnerDest(${i})" style="color:#2563eb;font-weight:600;text-decoration:underline;">${r.center}</a>`:r.center;
     tb.insertAdjacentHTML('beforeend',`<tr>
+      <td class="center">${r.status==='출고대기'?`<input type="checkbox" class="pr-chk" data-i="${i}">`:''}</td>
       <td>${move}</td><td class="center">${typeBadge(r.rtype)}</td><td>${r.store}</td><td>${dest}</td>
       <td>${r.sku}</td><td>${r.barcode}</td><td>${r.name}</td><td>${r.opt||'-'}</td><td>${r.brand}</td>
       <td class="num">${r.qty}</td><td class="num">${r.out>0?r.out:'<span class="muted">-</span>'}</td>
