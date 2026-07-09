@@ -519,7 +519,7 @@ function requestPageHTML(sc, label){
     <div class="gridhead">
       <div class="left"><span class="total">전체 <span id="${sc}-req-total">0</span>건</span>
         <button class="btn primary btn-confirm" onclick="confirmReq('${sc}')">보충확정</button>
-        <button class="btn" onclick="openMoveForm('${sc}')">＋ 매장간 이동</button></div>
+        <button class="btn" onclick="openMoveForm('${sc}')">＋ 매장간 보충</button></div>
       <div class="right">
         <label class="chk-inline"><input type="checkbox" id="${sc}-f-stock1" onchange="renderReq('${sc}')"> 보충 가능 재고 1이상 보기</label>
         <button class="btn" onclick="toast('엑셀 양식 업로드 (mock)')">⬆ 일괄 업로드</button>
@@ -1483,6 +1483,187 @@ function openPartnerMoveDetail(i){ const r0=partnerReturnData[i]; if(!r0||!r0.mo
     +`<table style="margin-top:14px;"><thead><tr><th>SKU번호</th><th>바코드</th><th>옵션명</th><th class="num">반품지시<br>수량</th><th class="num">출고 확정<br>수량</th><th class="num">입고 완료<br>수량</th><th class="center">상태</th></tr></thead><tbody>${rows}</tbody></table>`;
   document.getElementById('mvdetail-bg').classList.add('show'); }
 
+// ================= 재고이동 (inv-move) =================
+const IMV_CENTERS=['여주1센터','여주2센터','여주3센터','여주4센터'];
+const IMV_STORES=[...new Set([...STORES.mt, ...STORES.ep, '무신사 메가스토어 아이파크몰 용산점','이구홈 성수'])];
+const IMV_TYPES=[{key:'cc',label:'센터↔센터 재고이동',reason:'재고이동 (센터↔센터)'},{key:'cs',label:'센터→매장 재고이동',reason:'재고이동 (센터→매장)'},{key:'ss',label:'매장→매장 재고이동',reason:'재고이동 (매장→매장)'}];
+// 목록 mock 데이터
+let imvData=[
+  {no:'2607090000327',reason:'재고보충 (물류센터 → 매장)',sub:'[영업 요청] 배드블러더 - 무신사 메가스토어 아이파크몰 용산점',pay:'승인',status:'출고대기',from:'여주3-무신사-온라인',to:'무신사 메가스토어 아이파크몰 용산점',rep:'로 엣지 컨벡스 조거 - 블랙 S',more:25,reqQty:47,outQty:0,inQty:0,amount:7573000,regAt:'26.07.09 16:17',regBy:'juyoun.lee@musinsa.com',cancelable:true,skus:[{sku:'S101',barcode:'8809000010101',name:'로 엣지 컨벡스 조거',opt:'블랙 / S',qty:5},{sku:'S102',barcode:'8809000010102',name:'로 엣지 컨벡스 조거',opt:'블랙 / M',qty:8}]},
+  {no:'2607090000326',reason:'재고반납 (매장 → 물류센터)',sub:'데드스탁0709-잠실-트래블',pay:'승인',status:'출고대기',from:'무신사 스토어 롯데백화점 잠실점',to:'여주3-무신사-온라인',rep:'아르떼 스트라이프 롱 슬리브 아이보리 MEDIUM',more:17,reqQty:33,outQty:0,inQty:0,amount:1557000,regAt:'26.07.09 16:16',regBy:'daebeom.choi@musinsa.com',cancelable:true,skus:[{sku:'S110',barcode:'8809000011001',name:'아르떼 스트라이프 롱 슬리브',opt:'아이보리 / M',qty:6}]},
+  {no:'2607090000325',reason:'재고반납 (매장 → 물류센터)',sub:'데드스탁0709-잠실-탄산마그네슘',pay:'승인',status:'출고대기',from:'무신사 스토어 롯데백화점 잠실점',to:'여주3-무신사-온라인',rep:'탄산 로고 볼캡',more:10,reqQty:30,outQty:0,inQty:0,amount:1723000,regAt:'26.07.09 16:14',regBy:'daebeom.choi@musinsa.com',cancelable:true,skus:[{sku:'S120',barcode:'8809000012001',name:'탄산 로고 볼캡',opt:'블랙 / FREE',qty:10}]},
+  {no:'2607090000324',reason:'재고반납 (매장 → 물류센터)',sub:'데드스탁0709-잠실-키뮤어',pay:'승인',status:'출고대기',from:'무신사 스토어 롯데백화점 잠실점',to:'여주3-무신사-온라인',rep:'선데이 바이브 반팔 티셔츠_아이보리 아이보리 S',more:1,reqQty:6,outQty:0,inQty:0,amount:294000,regAt:'26.07.09 16:12',regBy:'daebeom.choi@musinsa.com',cancelable:true,skus:[{sku:'S130',barcode:'8809000013001',name:'선데이 바이브 반팔 티셔츠',opt:'아이보리 / S',qty:3},{sku:'S131',barcode:'8809000013002',name:'선데이 바이브 반팔 티셔츠',opt:'아이보리 / M',qty:3}]},
+  {no:'2607090000323',reason:'MFS 물류중앙화 (입고 → 물류센터 → 매장)',sub:'물류 중앙화',pay:'승인',status:'출고대기',from:'여주2-29CM-오프라인',to:'이구홈 성수',rep:'레고트 리유저블백 MINI 블루',more:0,reqQty:20,outQty:0,inQty:0,amount:158000,regAt:'26.07.09 16:09',regBy:'unknown',cancelable:false,skus:[{sku:'E201',barcode:'8809100020101',name:'레고트 리유저블백 MINI',opt:'블루 / FREE',qty:20}]},
+  {no:'2607090000322',reason:'MFS 물류중앙화 (입고 → 물류센터 → 매장)',sub:'물류 중앙화',pay:'승인',status:'출고대기',from:'여주2-29CM-오프라인',to:'이구홈 성수',rep:'레고트 포켓몬 페이스 파우치 키링 (6 colors) 이상해씨',more:0,reqQty:200,outQty:0,inQty:0,amount:4000000,regAt:'26.07.09 16:09',regBy:'unknown',cancelable:false,skus:[{sku:'E202',barcode:'8809100020201',name:'레고트 포켓몬 페이스 파우치 키링',opt:'이상해씨 / FREE',qty:200}]},
+  {no:'2607090000321',reason:'MFS 물류중앙화 (입고 → 물류센터 → 매장)',sub:'물류 중앙화',pay:'승인',status:'출고대기',from:'여주2-29CM-오프라인',to:'이구홈 성수',rep:'레고트 치키 스티커 세트 10p 스토리',more:0,reqQty:50,outQty:0,inQty:0,amount:500000,regAt:'26.07.09 16:09',regBy:'unknown',cancelable:false,skus:[{sku:'E203',barcode:'8809100020301',name:'레고트 치키 스티커 세트 10p',opt:'스토리 / FREE',qty:50}]},
+  {no:'2607090000318',reason:'MFS 물류중앙화 (입고 → 물류센터 → 매장)',sub:'물류 중앙화',pay:'승인',status:'출고대기',from:'여주2-29CM-오프라인',to:'이구홈 성수',rep:'레고트 루프 텀블러 모듈 스트랩 Long 코랄',more:0,reqQty:50,outQty:0,inQty:0,amount:1000000,regAt:'26.07.09 16:09',regBy:'unknown',cancelable:false,skus:[{sku:'E204',barcode:'8809100020401',name:'레고트 루프 텀블러 모듈 스트랩 Long',opt:'코랄 / FREE',qty:50}]},
+  {no:'2607080000210',reason:'재고이동 (센터↔센터)',sub:'수동 등록',pay:'승인',status:'이동중',from:'여주1센터',to:'여주2센터',rep:'베이직 크루넥 티셔츠',more:3,reqQty:60,outQty:60,inQty:20,amount:900000,regAt:'26.07.08 11:20',regBy:'taehwan.yeom@musinsa.com',cancelable:false,skus:[{sku:'S001',barcode:'8809000000001',name:'베이직 크루넥 티셔츠',opt:'블랙 / M',qty:30}]},
+  {no:'2607080000208',reason:'재고이동 (센터→매장)',sub:'수동 등록',pay:'승인',status:'입고완료',from:'여주1센터',to:'무신사 스토어 강남',rep:'와이드 슬랙스',more:2,reqQty:24,outQty:24,inQty:24,amount:1200000,regAt:'26.07.08 09:40',regBy:'taehwan.yeom@musinsa.com',cancelable:false,skus:[{sku:'S003',barcode:'8809000000023',name:'와이드 슬랙스',opt:'네이비 / 30',qty:12}]},
+  {no:'2607080000205',reason:'재고이동 (매장→매장)',sub:'수동 등록',pay:'승인',status:'출고대기',from:'무신사 스토어 홍대',to:'무신사 스토어 명동',rep:'오버핏 후디',more:1,reqQty:10,outQty:0,inQty:0,amount:450000,regAt:'26.07.08 09:05',regBy:'taehwan.yeom@musinsa.com',cancelable:true,skus:[{sku:'S005',barcode:'8809000000045',name:'오버핏 후디',opt:'그레이 / L',qty:6},{sku:'S006',barcode:'8809000000046',name:'오버핏 후디',opt:'그레이 / M',qty:4}]},
+  {no:'2607070000199',reason:'재고이동 (센터↔센터)',sub:'수동 등록',pay:'승인',status:'취소',from:'여주4센터',to:'여주1센터',rep:'미니멀 볼캡',more:0,reqQty:14,outQty:0,inQty:0,amount:210000,regAt:'26.07.07 17:30',regBy:'taehwan.yeom@musinsa.com',cancelable:false,skus:[{sku:'S014',barcode:'8809000000144',name:'미니멀 볼캡',opt:'블랙 / FREE',qty:14}]},
+];
+const imvUniq=k=>[...new Set(imvData.map(r=>r[k]))];
+const imvOpt=(id,label,vals)=>`<select id="${id}" onchange="renderImvList()"><option value="all">${label}: 전체</option>${vals.map(v=>`<option>${v}</option>`).join('')}</select>`;
+function invMovePageHTML(){
+  return `
+  <div class="crumb">재고 관리 › 재고이동</div>
+  <h1>재고이동 <span class="muted" style="font-size:12px;font-weight:400;">· MOCK</span></h1>
+  <div id="imv-listview">
+  <div class="filters">
+    <button class="btn" onclick="toast('전체 필터 (mock)')">⚙ 전체 필터 1</button>
+    <input type="text" value="26.06.09 ~ 26.07.10" style="width:170px" title="등록일">
+    <input type="text" id="imv-no" placeholder="이동번호" oninput="renderImvList()" style="width:120px">
+    <input type="text" placeholder="출고번호" style="width:110px"><input type="text" placeholder="입고번호" style="width:110px">
+    ${imvOpt('imv-from','출발지',imvUniq('from'))}
+    ${imvOpt('imv-to','도착지',imvUniq('to'))}
+    <input type="text" id="imv-by" placeholder="등록자" oninput="renderImvList()" style="width:120px">
+    ${imvOpt('imv-reason','이동사유',imvUniq('reason'))}
+    <input type="text" placeholder="UID" style="width:90px"><input type="text" placeholder="바코드" style="width:110px">
+    <select id="imv-status" onchange="renderImvList()"><option value="all">이동상태: 전체</option><option>출고대기</option><option>이동중</option><option>입고완료</option><option>취소</option></select>
+    <select onchange="renderImvList()"><option value="all">요청상태: 전체</option><option>승인</option></select>
+    <button class="btn primary" onclick="renderImvList()">검색</button>
+    <button class="btn" onclick="resetImvList()">초기화 ↻</button>
+  </div>
+  <div class="gridhead">
+    <div class="left"><span class="total">전체 <span id="imv-total">0</span>건</span>
+      <button class="btn primary" onclick="openImvForm()">신규 등록</button></div>
+    <div class="right"><label class="chk-inline"><input type="checkbox"> 미반납 건 보기</label></div>
+  </div>
+  <div class="tablewrap"><table><thead><tr>
+    <th style="min-width:200px;">이동 사유 / 결제상태</th><th style="min-width:130px;">이동번호</th><th class="center">이동상태</th>
+    <th style="min-width:190px;">경로</th><th style="min-width:200px;">SKU명</th>
+    <th class="num">요청수량</th><th class="num">출고수량<br>(출발)</th><th class="num">입고수량<br>(도착)</th>
+    <th class="num">요청 상품 총액</th><th>등록일시</th><th>등록자</th>
+  </tr></thead><tbody id="imv-body"></tbody></table></div>
+  <div class="footnote">· 재고이동 유형: 센터↔센터 / 센터→매장 / 매장→매장 · 상태: 출고대기 → 이동중 → 입고완료 · 출고대기 건만 출고취소 가능</div>
+  </div>
+  ${imvFormHTML()}`;
+}
+function renderImvList(){
+  const fno=val('imv-no'),ff=val('imv-from'),ft=val('imv-to'),fby=val('imv-by'),fr=val('imv-reason'),fs=val('imv-status');
+  const txtOk=(f,v)=>(!f||f==='all')||String(v||'').toLowerCase().includes(String(f).toLowerCase());
+  const rows=imvData.filter(r=>txtOk(fno,r.no)&&(ff==='all'||r.from===ff)&&(ft==='all'||r.to===ft)&&txtOk(fby,r.regBy)&&(fr==='all'||r.reason===fr)&&(fs==='all'||r.status===fs));
+  const tb=document.getElementById('imv-body'); tb.innerHTML='';
+  rows.forEach(r=>{ const i=imvData.indexOf(r);
+    const cxlBtn=r.status==='출고대기'
+      ? (r.cancelable?`<button class="btn sm red" onclick="cancelImv(${i})">출고 취소</button>`:`<button class="btn sm" disabled>출고 취소</button>`)
+      : '';
+    tb.insertAdjacentHTML('beforeend',`<tr>
+      <td><div style="font-weight:600;">${r.reason}</div><div class="muted" style="font-size:11px;margin-top:2px;">${r.sub}</div><div style="margin-top:4px;"><span class="ast 승인">${r.pay}</span></div></td>
+      <td><a href="javascript:void(0)" onclick="toggleImvSub(${i})" style="color:#2563eb;font-weight:600;text-decoration:underline;">${r.no}</a>${cxlBtn?`<div style="margin-top:6px;">${cxlBtn}</div>`:''}</td>
+      <td class="center"><span class="st ${stClass(r.status)}">${r.status}</span></td>
+      <td><div style="color:#6b7280;">◦ ${r.from}</div><div style="margin-top:3px;">◦ <b>${r.to}</b></div></td>
+      <td>${r.rep}${r.more>0?` <span class="muted">외 ${r.more}</span>`:''}</td>
+      <td class="num">${r.reqQty}</td><td class="num">${r.outQty}</td><td class="num">${r.inQty}</td>
+      <td class="num">${r.amount.toLocaleString()}원</td><td>${r.regAt}</td><td>${r.regBy}</td></tr>
+      <tr class="subrow" id="imv-sub-${i}" style="display:none;"><td colspan="11"><div class="subwrap">
+        <table><thead><tr><th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th><th class="num">요청수량</th><th class="num">출고수량</th><th class="num">입고수량</th></tr></thead>
+        <tbody>${r.skus.map(s=>`<tr><td>${s.sku}</td><td>${s.barcode}</td><td>${s.name}</td><td>${s.opt}</td><td class="num">${s.qty}</td><td class="num">${r.status==='입고완료'||r.status==='이동중'?s.qty:0}</td><td class="num">${r.status==='입고완료'?s.qty:0}</td></tr>`).join('')}${r.more>0?`<tr><td colspan="7" class="muted" style="text-align:center;">…외 ${r.more}건 (mock)</td></tr>`:''}</tbody></table>
+      </div></td></tr>`);
+  });
+  document.getElementById('imv-total').textContent=rows.length;
+}
+function toggleImvSub(i){ const s=document.getElementById('imv-sub-'+i); if(s) s.style.display=s.style.display==='none'?'table-row':'none'; }
+function resetImvList(){ ['imv-from','imv-to','imv-reason','imv-status'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='all';}); ['imv-no','imv-by'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';}); renderImvList(); }
+function cancelImv(i){ const r=imvData[i]; if(!r) return; if(r.status!=='출고대기'){ toast('출고대기 상태만 출고취소 가능합니다.'); return; }
+  if(!confirm(`[${r.no}] 이동 건을 출고취소 하시겠습니까?`)) return;
+  r.status='취소'; renderImvList(); toast('✅ 출고취소 완료 → MWMS 출고지시 취소 (mock)'); }
+// ----- 신규 등록 인라인 폼 (유형 탭 + 블록) -----
+const imvBlocks=[];
+const imvFromList=t=> (t==='ss')?IMV_STORES:IMV_CENTERS;
+const imvToList=t=> (t==='cc')?IMV_CENTERS:IMV_STORES;
+const imvFromLabel=t=> (t==='ss')?'출발 매장':'출발 센터';
+const imvToLabel=t=> (t==='cc')?'도착 센터':'도착 매장';
+function blankImvRow(){ return {sku:'',barcode:'',name:'',opt:'',style:'',qty:0,avail:0}; }
+function blankImvBlock(){ return {type:'cc',from:'',to:'',outDate:'',rows:[blankImvRow()]}; }
+function openImvForm(){ if(!imvBlocks.length) imvBlocks.push(blankImvBlock());
+  document.getElementById('imv-listview').style.display='none';
+  document.getElementById('imv-formview').style.display='block'; renderImvForm(); }
+function closeImvForm(){ document.getElementById('imv-formview').style.display='none';
+  document.getElementById('imv-listview').style.display='block'; }
+function imvBlockType(bi,v){ const b=imvBlocks[bi]; b.type=v; b.from=''; b.to=''; if(v==='ss') b.outDate=''; renderImvForm(); }
+function addImvBlock(){ imvBlocks.push(blankImvBlock()); renderImvForm(); }
+function delImvBlock(bi){ imvBlocks.splice(bi,1); if(!imvBlocks.length) imvBlocks.push(blankImvBlock()); renderImvForm(); }
+function imvBlockField(bi,f,v){ imvBlocks[bi][f]=v; renderImvForm(); }
+function addImvRow(bi){ imvBlocks[bi].rows.push(blankImvRow()); renderImvForm(); }
+function delImvRow(bi,ri){ imvBlocks[bi].rows.splice(ri,1); if(!imvBlocks[bi].rows.length) imvBlocks[bi].rows.push(blankImvRow()); renderImvForm(); }
+function imvRowSku(bi,ri,v){ const r=imvBlocks[bi].rows[ri]; r.sku=(v||'').trim().toUpperCase(); const m=skuLookup(r.sku);
+  if(m){ r.barcode=m.barcode; r.name=m.name; r.opt=m.opt; r.style=m.style; r.avail=m.avail; }
+  else { r.barcode=''; r.name=''; r.opt=''; r.style=''; r.avail=0; } renderImvForm(); }
+function imvRowQty(bi,ri,v){ imvBlocks[bi].rows[ri].qty=parseInt(v)||0; renderImvForm(); }
+function renderImvForm(){
+  const wrap=document.getElementById('imv-blocks'); wrap.innerHTML='';
+  imvBlocks.forEach((b,bi)=>{
+    const fromList=imvFromList(b.type),toList=imvToList(b.type);
+    const dup=b.from&&b.to&&b.from===b.to;
+    let rowsHtml='';
+    b.rows.forEach((r,ri)=>{ const noSku=r.sku&&!skuLookup(r.sku), over=r.sku&&r.qty>r.avail;
+      rowsHtml+=`<tr>
+        <td><input class="m-in ${noSku?'m-err':''}" style="width:90px" value="${r.sku}" onchange="imvRowSku(${bi},${ri},this.value)" placeholder="SKU번호"></td>
+        <td><span class="muted">${r.barcode||'-'}</span></td>
+        <td>${r.name||'<span class="muted">-</span>'}</td>
+        <td>${r.opt||'<span class="muted">-</span>'}</td>
+        <td class="num"><input type="number" min="0" class="m-in num ${over?'m-err':''}" value="${r.qty}" onchange="imvRowQty(${bi},${ri},this.value)"></td>
+        <td class="num">${r.avail}</td>
+        <td class="center"><button class="btn sm" onclick="delImvRow(${bi},${ri})">🗑</button></td></tr>`; });
+    const bpcs=b.rows.reduce((s,r)=>s+(r.qty||0),0), bcnt=b.rows.filter(r=>r.sku).length;
+    wrap.insertAdjacentHTML('beforeend',`<div class="rf-block">
+      <div class="rf-block-head">
+        <span class="fld">이동유형 <select class="m-sel" onchange="imvBlockType(${bi},this.value)">${IMV_TYPES.map(t=>`<option value="${t.key}" ${t.key===b.type?'selected':''}>${t.label}</option>`).join('')}</select></span>
+        <span class="fld">${imvFromLabel(b.type)} <select class="m-sel ${(!b.from||dup)?'m-err':''}" onchange="imvBlockField(${bi},'from',this.value)">${optSel(fromList,b.from)}</select></span>
+        <span class="fld">${imvToLabel(b.type)} <select class="m-sel ${(!b.to||dup)?'m-err':''}" onchange="imvBlockField(${bi},'to',this.value)">${optSel(toList,b.to)}</select></span>
+        ${b.type!=='ss'?`<span class="fld">출고예정일 <input type="date" class="m-in" value="${b.outDate||''}" onchange="imvBlockField(${bi},'outDate',this.value)"></span>`:''}
+        ${dup?'<span class="muted" style="color:#dc2626;font-size:11px;">출발=도착 불가</span>':''}
+        <button class="btn sm del" onclick="delImvBlock(${bi})">🗑 블록 삭제</button>
+      </div>
+      <div class="rf-block-tools">
+        <button class="btn sm" onclick="addImvRow(${bi})">+ SKU 행 추가</button>
+        <button class="btn sm" onclick="toast('엑셀 양식: SKU번호/바코드, 이동수량 (mock)')">⬆ 엑셀 업로드</button>
+      </div>
+      <div class="rf-block-body"><table><thead><tr>
+        <th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th><th class="num">이동 수량</th><th class="num">출발 보유재고</th><th class="center">삭제</th>
+      </tr></thead><tbody>${rowsHtml}</tbody></table></div>
+      <div class="rf-block-sum">${b.from||'<span style="color:#dc2626">출발?</span>'} → ${b.to||'<span style="color:#dc2626">도착?</span>'} · ${bcnt}건 / ${bpcs}pcs</div>
+    </div>`);
+  });
+  const totPcs=imvBlocks.reduce((s,b)=>s+b.rows.reduce((a,r)=>a+(r.qty||0),0),0);
+  const totCnt=imvBlocks.reduce((s,b)=>s+b.rows.filter(r=>r.sku).length,0);
+  document.getElementById('imv-summary').textContent=`블록 ${imvBlocks.length}개 · 총 ${totCnt}건 / ${totPcs}pcs`;
+}
+function submitImvForm(){
+  const errs=[]; let total=0;
+  imvBlocks.forEach((b,bi)=>{ const valid=b.rows.filter(r=>r.sku||r.qty);
+    if(!b.from||!b.to) errs.push(`블록${bi+1}: 출발/도착 필수`); else if(b.from===b.to) errs.push(`블록${bi+1}: 출발=도착 불가`);
+    if(!valid.length) errs.push(`블록${bi+1}: SKU를 1건 이상 추가`);
+    valid.forEach((r,ri)=>{ if(!r.sku||!r.qty) errs.push(`블록${bi+1}-${ri+1}행: SKU/수량 필수`);
+      else if(!skuLookup(r.sku)) errs.push(`블록${bi+1}-${ri+1}행: SKU번호를 찾을 수 없음`);
+      else if(r.qty>r.avail) errs.push(`블록${bi+1}-${ri+1}행: 이동수량 > 출발 보유재고`); else total++; }); });
+  if(errs.length){ toast('⚠ '+errs[0]+(errs.length>1?` 외 ${errs.length-1}건`:'')); return; }
+  const pcs=imvBlocks.reduce((s,b)=>s+b.rows.reduce((a,r)=>a+(r.qty||0),0),0);
+  if(!confirm(`총 ${total}건 / ${pcs}pcs 재고이동을 지시하시겠습니까?`)) return;
+  imvBlocks.forEach(b=>{ const valid=b.rows.filter(r=>r.sku&&r.qty); if(!valid.length) return;
+    const tinfo=IMV_TYPES.find(t=>t.key===b.type); const q=valid.reduce((a,r)=>a+r.qty,0);
+    const sub=(b.type!=='ss'&&b.outDate)?`수동 등록 · 출고예정 ${b.outDate}`:'수동 등록';
+    imvData.unshift({no:'2607'+String(Date.now()).slice(-8),reason:tinfo.reason,sub:sub,pay:'승인',status:'출고대기',from:b.from,to:b.to,rep:valid[0].name,more:valid.length-1,reqQty:q,outQty:0,inQty:0,amount:q*10000,regAt:'26.07.10 09:00',regBy:'taehwan.yeom@musinsa.com',cancelable:true,skus:valid.map(r=>({sku:r.sku,barcode:r.barcode,name:r.name,opt:r.opt,qty:r.qty}))}); });
+  imvBlocks.length=0; renderImvList(); closeImvForm();
+  toast(`✅ ${total}건 재고이동 지시 → MWMS 전송 (mock)`);
+}
+function imvFormHTML(){
+  return `<div id="imv-formview" style="display:none;">
+    <div class="rf-back" onclick="closeImvForm()">← 목록으로</div>
+    <div class="gridhead"><div class="left"><span class="total">재고이동 신규 등록</span>
+      <span class="muted" style="font-size:11px;">블록마다 이동유형·출발·도착을 지정하고 SKU를 추가하세요 · 유형에 따라 출발/도착이 센터/매장으로 전환됩니다</span></div></div>
+    <div id="imv-blocks"></div>
+    <button class="btn" onclick="addImvBlock()" style="margin-bottom:14px;">＋ 이동 경로 블록 추가</button>
+    <div class="rf-foot">
+      <span class="total" id="imv-summary" style="font-size:13px;">블록 0개</span>
+      <span style="margin-left:auto;"></span>
+      <button class="btn" onclick="closeImvForm()">취소</button>
+      <button class="btn primary" onclick="submitImvForm()">이동 지시</button>
+    </div>
+  </div>`;
+}
+
 // ================= init =================
 document.getElementById('page-mt-request').innerHTML=requestPageHTML('mt','무탠');
 document.getElementById('page-mt-status').innerHTML=statusPageHTML('mt','무탠');
@@ -1500,7 +1681,7 @@ document.getElementById('page-po-pb-asn').innerHTML=placeholderHTML('발주/입�
 document.getElementById('page-po-buy-request').innerHTML=placeholderHTML('발주/입고관리 › 매입 발주 요청 관리 (뷰티)','매입 발주 요청 관리 (뷰티)');
 document.getElementById('page-po-buy-order').innerHTML=placeholderHTML('발주/입고관리 › 매입 발주 관리','매입 발주 관리');
 document.getElementById('page-po-buy-asn').innerHTML=placeholderHTML('발주/입고관리 › 매입 ASN 관리','매입 ASN 관리');
-document.getElementById('page-inv-move').innerHTML=placeholderHTML('재고 관리 › 재고이동','재고이동');
+document.getElementById('page-inv-move').innerHTML=invMovePageHTML(); renderImvList();
 document.getElementById('page-inv-partner-return').innerHTML=partnerReturnPageHTML(); renderPartnerReturn();
 document.getElementById('page-inv-convert').innerHTML=placeholderHTML('재고 관리 › 불량↔정상 전환','불량↔정상 전환');
 document.getElementById('page-inv-special-out').innerHTML=placeholderHTML('재고 관리 › 특수출고','특수출고');
