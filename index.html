@@ -599,6 +599,7 @@ function statusPageHTML(sc, label){
 function returnPageHTML(sc, label){
   const C=RET[sc];
   const typeOptsHtml=C.types.map(t=>`<option>${t}</option>`).join('');
+  const toOpts=[...new Set(DB[sc].ret.map(r=>r.center).filter(Boolean))].map(c=>`<option>${c}</option>`).join('');
   const storeCenterFilters=C.hasStoreCenterFilter
     ? `<select id="${sc}-rt-store" onchange="renderReturn('${sc}')"><option value="all">출발 매장: 전체</option>${storeOpts(sc)}</select>
        <select id="${sc}-rt-center" onchange="renderReturn('${sc}')"><option value="all">도착 센터: 전체</option>${centerFilterOpts(sc)}</select>`
@@ -614,11 +615,13 @@ function returnPageHTML(sc, label){
        <select id="${sc}-rt-status" onchange="renderReturn('${sc}')"><option value="all">이동상태: 전체</option><option value="출고대기">출고대기</option><option value="이동중">이동중</option><option value="입고완료">입고완료</option></select>
        <input type="text" id="${sc}-rt-person" placeholder="등록자" oninput="renderReturn('${sc}')" style="width:110px">`
     : C.combined
-    ? `<select id="${sc}-rt-store" onchange="renderReturn('${sc}')"><option value="all">출발지: 전체</option>${storeOpts(sc)}</select>
+    ? `<input type="text" id="${sc}-rt-move" placeholder="이동번호" oninput="renderReturn('${sc}')" style="width:130px">
+       <select id="${sc}-rt-store" onchange="renderReturn('${sc}')"><option value="all">출발지: 전체</option>${storeOpts(sc)}</select>
+       <select id="${sc}-rt-center" onchange="renderReturn('${sc}')"><option value="all">도착지: 전체</option>${toOpts}</select>
+       <select id="${sc}-rt-brand" onchange="renderReturn('${sc}')"><option value="all">${C.brandLabel}: 전체</option>${brandOpts(sc)}</select>
        <input type="text" placeholder="SKU번호"><input type="text" placeholder="바코드">
-       <select id="${sc}-rt-type" onchange="renderReturn('${sc}')"><option value="all">반품유형: 전체</option>${typeOptsHtml}</select>
-       <select id="${sc}-rt-astatus" onchange="renderReturn('${sc}')"><option value="all">승인상태: 전체</option><option value="대기">대기</option><option value="승인">승인</option><option value="반려">반려</option></select>
        <select id="${sc}-rt-status" onchange="renderReturn('${sc}')"><option value="all">이동상태: 전체</option><option value="출고대기">출고대기</option><option value="이동중">이동중</option><option value="입고완료">입고완료</option></select>
+       <select id="${sc}-rt-astatus" onchange="renderReturn('${sc}')" style="display:none"><option value="all">승인상태: 전체</option><option value="대기">대기</option><option value="승인">승인</option><option value="반려">반려</option></select>
        <input type="text" id="${sc}-rt-person" placeholder="등록자" oninput="renderReturn('${sc}')" style="width:110px">`
     : `<select id="${sc}-rt-brand" onchange="renderReturn('${sc}')"><option value="all">${C.brandLabel}: 전체</option>${brandOpts(sc)}</select>
        ${storeCenterFilters}
@@ -878,10 +881,11 @@ function renderReturn(sc){
   const showType=!(tab&&tab.hideType);
   const destName=!!(tab&&tab.destName);
   const showReqNo=C.reqNoCol&&(!tabbed||(tab&&tab.reqNo));
-  const fb=val(sc+'-rt-brand'), fst=val(sc+'-rt-store'), fc=val(sc+'-rt-center'), ft=val(sc+'-rt-type'), fs=val(sc+'-rt-status'), fas=val(sc+'-rt-astatus'), frt=val(sc+'-rt-rtype');
+  const fb=val(sc+'-rt-brand'), fst=val(sc+'-rt-store'), fc=val(sc+'-rt-center'), ft=val(sc+'-rt-type'), fs=val(sc+'-rt-status'), fas=(tabbed&&cat==='store')?val(sc+'-rt-astatus'):'all', frt=val(sc+'-rt-rtype');
   const fmove=val(sc+'-rt-move'), freqno=(tabbed&&cat==='store')?val(sc+'-rt-reqno'):'', fperson=val(sc+'-rt-person');
   const txtOk=(f,v)=>(f==='all'||f==='')||String(v||'').toLowerCase().includes(String(f).toLowerCase());
   const rq=document.getElementById(sc+'-rt-reqno'); if(rq) rq.style.display=(tabbed&&cat==='store')?'inline-block':'none';
+  const ras=document.getElementById(sc+'-rt-astatus'); if(ras) ras.style.display=(tabbed&&cat==='store')?'inline-block':'none';
   const personLbl=(cat==='store')?'요청자':'등록자';
   const pe=document.getElementById(sc+'-rt-person'); if(pe) pe.placeholder=personLbl;
   const rows=d.filter(r=>(!tabbed||r.tabKey===cat)&&(frt==='all'||r.rtype===frt)&&(fb==='all'||r.brand===fb)&&(fst==='all'||r.store===fst)&&(fc==='all'||r.center===fc)&&(ft==='all'||r.type===ft)&&(fs==='all'||r.status===fs)&&(fas==='all'||r.astatus===fas)&&txtOk(fmove,r.move)&&txtOk(freqno,r.reqNo)&&txtOk(fperson,approve?r.requester:r.lastBy));
@@ -908,7 +912,7 @@ function renderReturn(sc){
         <td>${r.store}</td><td>${dest}</td>
         ${ss(sc)?`<td>${r.style||'-'}</td>`:''}<td>${r.sku}</td><td>${r.barcode}</td><td>${r.name}</td><td>${r.opt}</td><td>${r.brand}</td>
         <td class="num">${r.qty}</td><td class="num">${r.out>0?r.out:'<span class="muted">-</span>'}</td><td class="num">${r.inq>0?r.inq:'<span class="muted">-</span>'}</td>${C.availLabel?`<td class="num">${r.avail}</td>`:''}
-        <td class="center"><span class="st ${stClass(r.status)}">${r.status}</span></td>
+        <td class="center">${(approve&&r.astatus==='대기')?'<span class="muted">-</span>':`<span class="st ${stClass(r.status)}">${r.status}</span>`}</td>
         <td>${r.lastAt?r.lastAt:'<span class="muted">-</span>'}</td><td>${r.lastBy&&r.lastBy!=='-'?r.lastBy:'<span class="muted">-</span>'}</td>${approve?`<td>${r.requester||'<span class="muted">-</span>'}</td>`:''}</tr>`);
     });
     document.getElementById(sc+'-rt-total').textContent=rows.length;
