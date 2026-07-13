@@ -11,7 +11,11 @@
   .sidebar { width: 232px; background: #1f2329; color: #cbd2d9; flex-shrink: 0; }
   .sidebar .logo { height: 52px; display:flex; align-items:center; padding: 0 18px; color:#fff; font-weight:700; font-size:15px; border-bottom:1px solid #2f3640; }
   .nav-sec { padding: 14px 0 4px; }
-  .nav-sec .sec-title { padding: 6px 18px; font-size: 11px; color:#6b7785; font-weight:700; letter-spacing:.3px; }
+  .nav-sec .sec-title { padding: 6px 18px; font-size: 11px; color:#6b7785; font-weight:700; letter-spacing:.3px; cursor:pointer; display:flex; align-items:center; justify-content:space-between; user-select:none; }
+  .nav-sec .sec-title:hover { color:#9aa6b4; }
+  .nav-sec .sec-title::after { content:"▾"; font-size:9px; transition:transform .15s; opacity:.7; }
+  .nav-sec.collapsed .sec-title::after { transform:rotate(-90deg); }
+  .nav-sec.collapsed .nav-item { display:none; }
   .nav-item { padding: 9px 18px 9px 30px; cursor: pointer; font-size: 13px; color:#cbd2d9; }
   .nav-item:hover { background:#2a2f3a; color:#fff; }
   .nav-item.active { background:#2563eb; color:#fff; font-weight:600; }
@@ -118,7 +122,7 @@
   <aside class="sidebar">
     <div class="logo">SCM-Hub</div>
     <div class="nav-sec">
-      <div class="sec-title">무탠 스토어 관리</div>
+      <div class="sec-title" onclick="toggleSec(this)">무탠 스토어 관리</div>
       <div class="nav-item active" data-page="mt-request" onclick="goPage('mt-request')">무탠 재고 보충 요청/승인</div>
       <div class="nav-item" data-page="mt-status" onclick="goPage('mt-status')">무탠 재고 보충 현황</div>
       <div class="nav-item" data-page="mt-return" onclick="goPage('mt-return')">무탠 재고 반납 관리</div>
@@ -126,14 +130,14 @@
       <div class="nav-item" data-page="mt-autoship-group" onclick="goPage('mt-autoship-group')">자동출고그룹관리</div>
     </div>
     <div class="nav-sec">
-      <div class="sec-title">편집샵 스토어 관리</div>
+      <div class="sec-title" onclick="toggleSec(this)">편집샵 스토어 관리</div>
       <div class="nav-item" data-page="ep-request" onclick="goPage('ep-request')">편집샵 재고 보충 요청/승인</div>
       <div class="nav-item" data-page="ep-status" onclick="goPage('ep-status')">편집샵 재고 보충 현황</div>
       <div class="nav-item" data-page="ep-return" onclick="goPage('ep-return')">편집샵 재고 반납 관리</div>
       <div class="nav-item" data-page="ep-product" onclick="goPage('ep-product')">전개상품관리</div>
     </div>
     <div class="nav-sec">
-      <div class="sec-title">발주/입고관리</div>
+      <div class="sec-title" onclick="toggleSec(this)">발주/입고관리</div>
       <div class="nav-item" data-page="po-consign-approve" onclick="goPage('po-consign-approve')">위탁 상품 입고 승인</div>
       <div class="nav-item" data-page="po-consign-status" onclick="goPage('po-consign-status')">위탁 상품 입고 현황</div>
       <div class="nav-item" data-page="po-pb-review" onclick="goPage('po-pb-review')">PB 상품 입고 검토</div>
@@ -143,7 +147,7 @@
       <div class="nav-item" data-page="po-buy-asn" onclick="goPage('po-buy-asn')">매입 ASN 관리</div>
     </div>
     <div class="nav-sec">
-      <div class="sec-title">재고 관리</div>
+      <div class="sec-title" onclick="toggleSec(this)">재고 관리</div>
       <div class="nav-item" data-page="inv-move" onclick="goPage('inv-move')">재고이동</div>
       <div class="nav-item" data-page="inv-partner-return" onclick="goPage('inv-partner-return')">파트너사 반출/반품</div>
       <div class="nav-item" data-page="inv-convert" onclick="goPage('inv-convert')">불량↔정상 전환</div>
@@ -503,10 +507,10 @@ function requestPageHTML(sc, label){
   <div class="crumb">${label} 스토어 관리 › ${label} 재고 보충 요청/승인</div>
   <h1>${label} 재고 보충 요청/승인 <span class="muted" style="font-size:12px;font-weight:400;">· MOCK</span></h1>
   <div id="${sc}-rq-mainview">
-  <div class="tabs">
+  ${sc==='mt'?`<div class="tabs">
     <div class="tab active" id="${sc}-tab-req-btn" onclick="switchTab('${sc}','req')">본사 요청 <span class="cnt" id="${sc}-cnt-req"></span></div>
     <div class="tab" id="${sc}-tab-appr-btn" onclick="switchTab('${sc}','appr')">매장 요청 <span class="cnt" id="${sc}-cnt-appr"></span></div>
-  </div>
+  </div>`:''}
   <div id="${sc}-tab-req">
     <div class="filters">
       <select id="${sc}-f-brand" onchange="renderReq('${sc}')"><option value="all">브랜드: 전체</option>${brandOpts(sc)}</select>
@@ -536,7 +540,7 @@ function requestPageHTML(sc, label){
     </tr></thead><tbody id="${sc}-req-body"></tbody></table></div>
     <div class="footnote">· 전개상품관리 여부 = Y 인 SKU만 노출 · 자동보충 Y=당일 자동보충 완료(보충 지시 완료 수량에 자동수량) / N=미완료(수동 입력)</div>
   </div>
-  <div id="${sc}-tab-appr" style="display:none;">
+  ${sc==='mt'?`<div id="${sc}-tab-appr" style="display:none;">
     <div class="filters">
       <input type="text" placeholder="요청일자 (달력)">
       <select id="${sc}-a-store" onchange="renderAppr('${sc}')"><option value="all">요청매장: 전체</option>${storeOpts(sc)}</select>
@@ -561,7 +565,7 @@ function requestPageHTML(sc, label){
       <th>브랜드</th><th>마지막 처리일시</th><th>처리자</th>
     </tr></thead><tbody id="${sc}-appr-body"></tbody></table></div>
     <div class="footnote">· 승인 클릭 시 가용재고·컷오프 검증 후 즉시 출고지시 · 반려 시 사유 입력해 매장(MOSS)에 회신</div>
-  </div>
+  </div>`:''}
   </div>
   ${moveFormHTML(sc,label)}`;
 }
@@ -679,7 +683,7 @@ function renderReq(sc){
       <td>${r.lastAt?r.lastAt:'<span class="muted">-</span>'}</td><td>${r.lastBy?r.lastBy:'<span class="muted">-</span>'}</td></tr>`);
   });
   document.getElementById(sc+'-req-total').textContent=rows.length;
-  document.getElementById(sc+'-cnt-req').textContent=`(${d.length})`;
+  const cnt=document.getElementById(sc+'-cnt-req'); if(cnt) cnt.textContent=`(${d.length})`;
 }
 function onQty(sc,el){ const d=DB[sc].req, i=+el.dataset.i; let v=parseInt(el.value); if(isNaN(v)||v<0)v=0; if(v>d[i].stock){v=d[i].stock;toast('보충 가능 재고를 초과할 수 없습니다.');} el.value=v; d[i].req=v; el.classList.toggle('req',v>0); }
 function setMax(sc,i){ DB[sc].req[i].req=DB[sc].req[i].stock; renderReq(sc); }
@@ -694,6 +698,7 @@ function confirmReq(sc){
 }
 
 function renderAppr(sc){
+  if(!document.getElementById(sc+'-appr-body')) return;   // 편집샵은 매장요청 탭 없음
   const d=DB[sc].appr;
   const fs=val(sc+'-a-status'), fst=val(sc+'-a-store');
   const rows=d.filter(r=>(fs==='all'||r.astatus===fs)&&(fst==='all'||r.store===fst));
@@ -790,6 +795,7 @@ function switchTab(sc,t){
   document.getElementById(sc+'-tab-req').style.display=t==='req'?'block':'none';
   document.getElementById(sc+'-tab-appr').style.display=t==='appr'?'block':'none';
 }
+function toggleSec(el){ el.parentElement.classList.toggle('collapsed'); }
 function goPage(p){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===p));
   ['mt-request','mt-status','ep-request','ep-status','mt-return','ep-return','mt-product','mt-autoship-group','ep-product','po-consign-approve','po-consign-status','po-pb-review','po-pb-asn','po-buy-request','po-buy-order','po-buy-asn','inv-move','inv-partner-return','inv-convert','inv-special-out','inv-disposal','inv-adjust'].forEach(pg=>{ document.getElementById('page-'+pg).style.display = pg===p?'block':'none'; });
@@ -1484,7 +1490,8 @@ function openPartnerMoveDetail(i){ const r0=partnerReturnData[i]; if(!r0||!r0.mo
 // ================= 재고이동 (inv-move) =================
 const IMV_CENTERS=['여주1센터','여주2센터','여주3센터','여주4센터'];
 const IMV_STORES=[...new Set([...STORES.mt, ...STORES.ep, '무신사 메가스토어 아이파크몰 용산점','이구홈 성수'])];
-const IMV_PLANTS=['MUSINSA','29CM'];
+const IMV_PLANTS_FROM=['MUSINSA 스토리지','29CM 스토리지'];
+const IMV_PLANTS_TO=['29CM 스토리지','MUSINSA 스토리지'];
 const IMV_TYPES=[{key:'pp',label:'플랜트간(MUSINSA↔29CM) 재고이동',reason:'재고이동 (플랜트간)'},{key:'cc',label:'센터↔센터 재고이동',reason:'재고이동 (센터↔센터)'},{key:'cs',label:'센터→매장 재고이동',reason:'재고이동 (센터→매장)'},{key:'ss',label:'매장→매장 재고이동',reason:'재고이동 (매장→매장)'}];
 // 목록 mock 데이터
 let imvData=[
@@ -1569,8 +1576,8 @@ function cancelImv(i){ const r=imvData[i]; if(!r) return; if(r.status!=='출고�
   r.status='취소'; renderImvList(); toast('✅ 출고취소 완료 → MWMS 출고지시 취소 (mock)'); }
 // ----- 신규 등록 인라인 폼 (유형 탭 + 블록) -----
 const imvBlocks=[];
-const imvFromList=t=> (t==='pp')?IMV_PLANTS:(t==='ss')?IMV_STORES:IMV_CENTERS;
-const imvToList=t=> (t==='pp')?IMV_PLANTS:(t==='cc')?IMV_CENTERS:IMV_STORES;
+const imvFromList=t=> (t==='pp')?IMV_PLANTS_FROM:(t==='ss')?IMV_STORES:IMV_CENTERS;
+const imvToList=t=> (t==='pp')?IMV_PLANTS_TO:(t==='cc')?IMV_CENTERS:IMV_STORES;
 const imvFromLabel=t=> (t==='pp')?'출발 플랜트':(t==='ss')?'출발 매장':'출발 센터';
 const imvToLabel=t=> (t==='pp')?'도착 플랜트':(t==='cc')?'도착 센터':'도착 매장';
 function blankImvRow(){ return {sku:'',barcode:'',name:'',opt:'',style:'',qty:0,avail:0}; }
@@ -1617,7 +1624,6 @@ function renderImvForm(){
       </div>
       <div class="rf-block-tools">
         <button class="btn sm" onclick="addImvRow(${bi})">+ SKU 행 추가</button>
-        <button class="btn sm" onclick="toast('엑셀 양식: SKU번호/바코드, 이동수량 (mock)')">⬆ 엑셀 업로드</button>
       </div>
       <div class="rf-block-body"><table><thead><tr>
         <th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th><th class="num">이동 수량</th><th class="num">출발 보유재고</th><th class="center">삭제</th>
@@ -1651,7 +1657,8 @@ function imvFormHTML(){
   return `<div id="imv-formview" style="display:none;">
     <div class="rf-back" onclick="closeImvForm()">← 목록으로</div>
     <div class="gridhead"><div class="left"><span class="total">재고이동 신규 등록</span>
-      <span class="muted" style="font-size:11px;">블록마다 이동유형·출발·도착을 지정하고 SKU를 추가하세요 · 유형에 따라 출발/도착이 센터/매장으로 전환됩니다</span></div></div>
+      <span class="muted" style="font-size:11px;">블록마다 이동유형·출발·도착을 지정하고 SKU를 추가하세요 · 유형에 따라 출발/도착이 센터/매장으로 전환됩니다</span></div>
+      <div class="right"><button class="btn" onclick="toast('엑셀 양식: 이동유형,출발,도착,SKU번호/바코드,이동수량 · 유형×출발×도착 조합별로 블록 자동 생성 (mock)')">⬆ 엑셀 일괄 업로드</button></div></div>
     <div id="imv-blocks"></div>
     <button class="btn" onclick="addImvBlock()" style="margin-bottom:14px;">＋ 이동 경로 블록 추가</button>
     <div class="rf-foot">
