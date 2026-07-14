@@ -1586,7 +1586,7 @@ const imvToList=t=> (t==='pp')?IMV_PLANTS_TO:(t==='cc')?IMV_CENTERS:IMV_STORES;
 const imvFromLabel=t=> (t==='pp')?'출발 플랜트':(t==='ss')?'출발 매장':'출발 센터';
 const imvToLabel=t=> (t==='pp')?'도착 플랜트':(t==='cc')?'도착 센터':'도착 매장';
 function blankImvRow(){ return {sku:'',barcode:'',name:'',opt:'',style:'',qty:0,avail:0}; }
-function blankImvBlock(){ return {type:'cc',from:'',to:'',outDate:'',rows:[blankImvRow()]}; }
+function blankImvBlock(){ return {reqName:'',type:'cc',from:'',to:'',memo:'',outDate:'',rows:[blankImvRow()]}; }
 function openImvForm(){ if(!imvBlocks.length) imvBlocks.push(blankImvBlock());
   document.getElementById('imv-listview').style.display='none';
   document.getElementById('imv-formview').style.display='block'; renderImvForm(); }
@@ -1620,9 +1620,11 @@ function renderImvForm(){
     const bpcs=b.rows.reduce((s,r)=>s+(r.qty||0),0), bcnt=b.rows.filter(r=>r.sku).length;
     wrap.insertAdjacentHTML('beforeend',`<div class="rf-block">
       <div class="rf-block-head">
+        <span class="fld">요청명 <input class="m-in" style="width:130px" value="${b.reqName||''}" onchange="imvBlockField(${bi},'reqName',this.value)" placeholder="요청명"></span>
         <span class="fld">이동유형 <select class="m-sel" onchange="imvBlockType(${bi},this.value)">${IMV_TYPES.map(t=>`<option value="${t.key}" ${t.key===b.type?'selected':''}>${t.label}</option>`).join('')}</select></span>
         <span class="fld">${imvFromLabel(b.type)} <select class="m-sel ${(!b.from||dup)?'m-err':''}" onchange="imvBlockField(${bi},'from',this.value)">${optSel(fromList,b.from)}</select></span>
         <span class="fld">${imvToLabel(b.type)} <select class="m-sel ${(!b.to||dup)?'m-err':''}" onchange="imvBlockField(${bi},'to',this.value)">${optSel(toList,b.to)}</select></span>
+        <span class="fld">메모 <input class="m-in" style="width:160px" value="${b.memo||''}" onchange="imvBlockField(${bi},'memo',this.value)" placeholder="메모"></span>
         ${b.type!=='ss'?`<span class="fld">출고요청일 <span class="tip">i<span class="tipbox">먼 미래로 출고요청 하더라도 가용재고는 이동 지시 즉시 차감됩니다. 실 출고는 요청일에 이루어집니다.</span></span> <input type="date" class="m-in" value="${b.outDate||''}" onchange="imvBlockField(${bi},'outDate',this.value)"></span>`:''}
         ${dup?'<span class="muted" style="color:#dc2626;font-size:11px;">출발=도착 불가</span>':''}
         <button class="btn sm del" onclick="delImvBlock(${bi})">🗑 블록 삭제</button>
@@ -1653,8 +1655,10 @@ function submitImvForm(){
   if(!confirm(`총 ${total}건 / ${pcs}pcs 재고이동을 지시하시겠습니까?`)) return;
   imvBlocks.forEach(b=>{ const valid=b.rows.filter(r=>r.sku&&r.qty); if(!valid.length) return;
     const tinfo=IMV_TYPES.find(t=>t.key===b.type); const q=valid.reduce((a,r)=>a+r.qty,0);
-    const sub=(b.type!=='ss'&&b.outDate)?`수동 등록 · 출고요청일 ${b.outDate}`:'수동 등록';
-    imvData.unshift({no:'2607'+String(Date.now()).slice(-8),reason:tinfo.reason,sub:sub,pay:'승인',status:'출고대기',from:b.from,to:b.to,rep:valid[0].name,more:valid.length-1,reqQty:q,outQty:0,inQty:0,amount:q*10000,regAt:'26.07.10 09:00',regBy:'taehwan.yeom@musinsa.com',cancelable:true,skus:valid.map(r=>({sku:r.sku,barcode:r.barcode,name:r.name,opt:r.opt,qty:r.qty}))}); });
+    let sub=b.reqName||'수동 등록';
+    if(b.type!=='ss'&&b.outDate) sub+=` · 출고요청일 ${b.outDate}`;
+    if(b.memo) sub+=` · 메모: ${b.memo}`;
+    imvData.unshift({no:'2607'+String(Date.now()).slice(-8),reason:tinfo.reason,sub:sub,reqName:b.reqName,memo:b.memo,pay:'승인',status:'출고대기',from:b.from,to:b.to,rep:valid[0].name,more:valid.length-1,reqQty:q,outQty:0,inQty:0,amount:q*10000,regAt:'26.07.10 09:00',regBy:'taehwan.yeom@musinsa.com',cancelable:true,skus:valid.map(r=>({sku:r.sku,barcode:r.barcode,name:r.name,opt:r.opt,qty:r.qty}))}); });
   imvBlocks.length=0; renderImvList(); closeImvForm();
   toast(`✅ ${total}건 재고이동 지시 → MWMS 전송 (mock)`);
 }
