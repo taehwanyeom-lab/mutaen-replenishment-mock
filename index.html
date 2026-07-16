@@ -471,8 +471,8 @@ const CENTERS = {
 const centerFilterOpts = sc => CENTERS[sc].map(c=>`<option>${c}</option>`).join('');
 // SKU 마스터 (반품 지시 모달에서 SKU번호 입력 시 자동 조회) — scope별 보충요청 데이터에서 구성
 const SKU_MASTER = { mt:{}, ep:{} };
-baseReq.forEach(r=>{ SKU_MASTER.mt[r.sku] = { barcode:r.barcode, name:r.name, opt:[r.color,r.size].filter(x=>x&&x!=='-').join(' / ')||'-', style:r.style, brand:r.brand, avail:r.storeStock }; });
-epReq.forEach(r=>{ SKU_MASTER.ep[r.sku] = { barcode:r.barcode, name:r.name, opt:[r.color,r.size].filter(x=>x&&x!=='-').join(' / ')||'-', style:'', brand:r.brand, avail:r.storeStock }; });
+baseReq.forEach(r=>{ SKU_MASTER.mt[r.sku] = { barcode:r.barcode, name:r.name, opt:[r.color,r.size].filter(x=>x&&x!=='-').join(' / ')||'-', style:r.style, brand:r.brand, avail:r.storeStock, sellable:r.storeStock-Math.floor(r.storeStock*0.2) }; });
+epReq.forEach(r=>{ SKU_MASTER.ep[r.sku] = { barcode:r.barcode, name:r.name, opt:[r.color,r.size].filter(x=>x&&x!=='-').join(' / ')||'-', style:'', brand:r.brand, avail:r.storeStock, sellable:r.storeStock-Math.floor(r.storeStock*0.2) }; });
 // 편집샵 파트너(화주) = 브랜드사
 const PARTNERS = { ep: BRANDS.ep };
 // 파트너사 반출/반품 출발지 후보 (무탠 센터 + 편집샵 센터·매장 통합)
@@ -1218,7 +1218,7 @@ function returnFormHTML(sc){
 
 // ===== 매장간 이동 — 인라인 전용 폼 (하이브리드: 출발/도착 헤더 고정 + 블록) · scope 공통 =====
 const mvBlocks={mt:[],ep:[]};
-function blankMvRow(){ return {sku:'',barcode:'',name:'',opt:'',style:'',qty:0,avail:0}; }
+function blankMvRow(){ return {sku:'',barcode:'',name:'',opt:'',style:'',qty:0,avail:0,sellable:0}; }
 function blankMvBlock(){ return {from:'',to:'',rows:[blankMvRow()]}; }
 function openMoveForm(sc){ if(!mvBlocks[sc].length) mvBlocks[sc]=[blankMvBlock()];
   document.getElementById(sc+'-rq-mainview').style.display='none';
@@ -1233,8 +1233,8 @@ function addMvRow(sc,bi){ mvBlocks[sc][bi].rows.push(blankMvRow()); renderMvForm
 function delMvRow(sc,bi,ri){ mvBlocks[sc][bi].rows.splice(ri,1); if(!mvBlocks[sc][bi].rows.length) mvBlocks[sc][bi].rows.push(blankMvRow()); renderMvForm(sc); }
 function mvRowSku(sc,bi,ri,v){ const r=mvBlocks[sc][bi].rows[ri]; r.sku=(v||'').trim().toUpperCase();
   const m=SKU_MASTER[sc][r.sku];
-  if(m){ r.barcode=m.barcode; r.name=m.name; r.opt=m.opt; r.style=m.style; r.avail=m.avail; }
-  else { r.barcode=''; r.name=''; r.opt=''; r.style=''; r.avail=0; }
+  if(m){ r.barcode=m.barcode; r.name=m.name; r.opt=m.opt; r.style=m.style; r.avail=m.avail; r.sellable=(m.sellable!=null?m.sellable:0); }
+  else { r.barcode=''; r.name=''; r.opt=''; r.style=''; r.avail=0; r.sellable=0; }
   renderMvForm(sc); }
 function mvRowQty(sc,bi,ri,v){ mvBlocks[sc][bi].rows[ri].qty=parseInt(v)||0; renderMvForm(sc); }
 function renderMvForm(sc){
@@ -1253,6 +1253,7 @@ function renderMvForm(sc){
         <td>${r.opt||'<span class="muted">-</span>'}</td>
         <td class="num"><input type="number" min="0" class="m-in num ${over?'m-err':''}" value="${r.qty}" onchange="mvRowQty('${sc}',${bi},${ri},this.value)"></td>
         <td class="num">${r.avail}</td>
+        <td class="num">${r.sellable}</td>
         <td class="center"><button class="btn sm" onclick="delMvRow('${sc}',${bi},${ri})">🗑</button></td></tr>`;
     });
     const bpcs=b.rows.reduce((s,r)=>s+(r.qty||0),0), bcnt=b.rows.filter(r=>r.sku).length;
@@ -1268,7 +1269,7 @@ function renderMvForm(sc){
         <button class="btn sm" onclick="toast('엑셀 양식: SKU번호/바코드, 이동수량 (mock)')">⬆ 엑셀 업로드</button>
       </div>
       <div class="rf-block-body"><table><thead><tr>
-        ${hasStyle?'<th>대표스타일</th>':''}<th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th><th class="num">이동 수량</th><th class="num">출발 보유재고</th><th class="center">삭제</th>
+        ${hasStyle?'<th>대표스타일</th>':''}<th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th><th class="num">이동 수량</th><th class="num">정상 가용 재고</th><th class="num">판매가능재고</th><th class="center">삭제</th>
       </tr></thead><tbody>${rowsHtml}</tbody></table></div>
       <div class="rf-block-sum">${b.from||'<span style="color:#dc2626">출발?</span>'} → ${b.to||'<span style="color:#dc2626">도착?</span>'} · ${bcnt}건 / ${bpcs}pcs</div>
     </div>`);
@@ -1287,7 +1288,7 @@ function submitMoveForm(sc){
     valid.forEach((r,ri)=>{
       if(!r.sku||!r.qty) errs.push(`블록${bi+1}-${ri+1}행: SKU/수량 필수`);
       else if(!SKU_MASTER[sc][r.sku]) errs.push(`블록${bi+1}-${ri+1}행: SKU번호를 찾을 수 없음`);
-      else if(r.qty>r.avail) errs.push(`블록${bi+1}-${ri+1}행: 이동수량 > 출발 보유재고`);
+      else if(r.qty>r.avail) errs.push(`블록${bi+1}-${ri+1}행: 이동수량 > 정상 가용 재고`);
       else total++;
     });
   });
@@ -1585,7 +1586,7 @@ const imvFromList=t=> (t==='pp')?IMV_PLANTS_FROM:(t==='ss')?IMV_STORES:IMV_CENTE
 const imvToList=t=> (t==='pp')?IMV_PLANTS_TO:(t==='cc')?IMV_CENTERS:IMV_STORES;
 const imvFromLabel=t=> (t==='pp')?'출발 플랜트':(t==='ss')?'출발 매장':'출발 센터';
 const imvToLabel=t=> (t==='pp')?'도착 플랜트':(t==='cc')?'도착 센터':'도착 매장';
-function blankImvRow(){ return {sku:'',barcode:'',name:'',opt:'',style:'',qty:0,avail:0}; }
+function blankImvRow(){ return {sku:'',barcode:'',name:'',opt:'',style:'',qty:0,avail:0,sellable:0}; }
 function blankImvBlock(){ return {reqName:'',type:'cc',from:'',to:'',memo:'',outDate:'',rows:[blankImvRow()]}; }
 function openImvForm(){ if(!imvBlocks.length) imvBlocks.push(blankImvBlock());
   document.getElementById('imv-listview').style.display='none';
@@ -1599,8 +1600,8 @@ function imvBlockField(bi,f,v){ imvBlocks[bi][f]=v; renderImvForm(); }
 function addImvRow(bi){ imvBlocks[bi].rows.push(blankImvRow()); renderImvForm(); }
 function delImvRow(bi,ri){ imvBlocks[bi].rows.splice(ri,1); if(!imvBlocks[bi].rows.length) imvBlocks[bi].rows.push(blankImvRow()); renderImvForm(); }
 function imvRowSku(bi,ri,v){ const r=imvBlocks[bi].rows[ri]; r.sku=(v||'').trim().toUpperCase(); const m=skuLookup(r.sku);
-  if(m){ r.barcode=m.barcode; r.name=m.name; r.opt=m.opt; r.style=m.style; r.avail=m.avail; }
-  else { r.barcode=''; r.name=''; r.opt=''; r.style=''; r.avail=0; } renderImvForm(); }
+  if(m){ r.barcode=m.barcode; r.name=m.name; r.opt=m.opt; r.style=m.style; r.avail=m.avail; r.sellable=(m.sellable!=null?m.sellable:0); }
+  else { r.barcode=''; r.name=''; r.opt=''; r.style=''; r.avail=0; r.sellable=0; } renderImvForm(); }
 function imvRowQty(bi,ri,v){ imvBlocks[bi].rows[ri].qty=parseInt(v)||0; renderImvForm(); }
 function renderImvForm(){
   const wrap=document.getElementById('imv-blocks'); wrap.innerHTML='';
@@ -1616,6 +1617,7 @@ function renderImvForm(){
         <td>${r.opt||'<span class="muted">-</span>'}</td>
         <td class="num"><input type="number" min="0" class="m-in num ${over?'m-err':''}" value="${r.qty}" onchange="imvRowQty(${bi},${ri},this.value)"></td>
         <td class="num">${r.avail}</td>
+        <td class="num">${r.sellable}</td>
         <td class="center"><button class="btn sm" onclick="delImvRow(${bi},${ri})">🗑</button></td></tr>`; });
     const bpcs=b.rows.reduce((s,r)=>s+(r.qty||0),0), bcnt=b.rows.filter(r=>r.sku).length;
     wrap.insertAdjacentHTML('beforeend',`<div class="rf-block">
@@ -1633,7 +1635,7 @@ function renderImvForm(){
         <button class="btn sm" onclick="addImvRow(${bi})">+ SKU 행 추가</button>
       </div>
       <div class="rf-block-body"><table><thead><tr>
-        <th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th><th class="num">이동 수량</th><th class="num">출발 보유재고</th><th class="center">삭제</th>
+        <th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th><th class="num">이동 수량</th><th class="num">정상 가용 재고</th><th class="num">판매가능재고</th><th class="center">삭제</th>
       </tr></thead><tbody>${rowsHtml}</tbody></table></div>
       <div class="rf-block-sum">${b.from||'<span style="color:#dc2626">출발?</span>'} → ${b.to||'<span style="color:#dc2626">도착?</span>'} · ${bcnt}건 / ${bpcs}pcs</div>
     </div>`);
@@ -1649,7 +1651,7 @@ function submitImvForm(){
     if(!valid.length) errs.push(`블록${bi+1}: SKU를 1건 이상 추가`);
     valid.forEach((r,ri)=>{ if(!r.sku||!r.qty) errs.push(`블록${bi+1}-${ri+1}행: SKU/수량 필수`);
       else if(!skuLookup(r.sku)) errs.push(`블록${bi+1}-${ri+1}행: SKU번호를 찾을 수 없음`);
-      else if(r.qty>r.avail) errs.push(`블록${bi+1}-${ri+1}행: 이동수량 > 출발 보유재고`); else total++; }); });
+      else if(r.qty>r.avail) errs.push(`블록${bi+1}-${ri+1}행: 이동수량 > 정상 가용 재고`); else total++; }); });
   if(errs.length){ toast('⚠ '+errs[0]+(errs.length>1?` 외 ${errs.length-1}건`:'')); return; }
   const pcs=imvBlocks.reduce((s,b)=>s+b.rows.reduce((a,r)=>a+(r.qty||0),0),0);
   if(!confirm(`총 ${total}건 / ${pcs}pcs 재고이동을 지시하시겠습니까?`)) return;
