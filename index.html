@@ -131,7 +131,7 @@
     </div>
     <div class="nav-sec">
       <div class="sec-title" onclick="toggleSec(this)">편집샵 스토어 관리</div>
-      <div class="nav-item" data-page="ep-request" onclick="goPage('ep-request')">편집샵 재고 보충 요청/승인</div>
+      <div class="nav-item" data-page="ep-request" onclick="goPage('ep-request')">편집샵 재고 보충 요청</div>
       <div class="nav-item" data-page="ep-status" onclick="goPage('ep-status')">편집샵 재고 보충 현황</div>
       <div class="nav-item" data-page="ep-return" onclick="goPage('ep-return')">편집샵 재고 반납 관리</div>
       <div class="nav-item" data-page="ep-product" onclick="goPage('ep-product')">전개상품관리</div>
@@ -320,21 +320,21 @@ const baseStatus = [
   { auto:'N', store:'명동', style:'MBPS-014', sku:'S003', barcode:'8809000000023', name:'와이드 슬랙스', color:'네이비', size:'30', brand:'무신사 스탠다드', conf:5, out:5, inq:2, status:'이동중', at:'2026-06-23 18:16',
     centers:[ {center:'스타필드 수원', move:'MV2406303', out:'OUT500303', in:'-', outQty:5, moveQty:5, inQty:2, status:'이동중', at:'2026-06-24 06:30'} ] },
 ];
-// ===== 무탠 반품 지시 내역 샘플 (탭 통합: rtype=반품유형, type=반품사유) =====
+// ===== 무탠 반품 지시 내역 샘플 (탭 통합: rtype=반품유형, type=반납사유) =====
 const baseReturn = [
   { tabKey:'hq', move:'TX-MVR2606230011', rtype:'매장→센터', type:'시즌반품', store:'타임빌라스 수원', center:'여주1', sku:'S025', barcode:'8809000000250', name:'우먼 크롭 가디건', opt:'아이보리 / S', style:'MWTS-330', brand:'무신사 스탠다드 우먼', qty:8, out:8, inq:3, avail:16, status:'이동중', lastAt:'2026-06-23 11:05', lastBy:'이엠디' },
   { tabKey:'hq', move:'TX-MVR2606230012', rtype:'매장→센터', type:'시즌반품', store:'강남', center:'여주1', sku:'S003', barcode:'8809000000023', name:'와이드 슬랙스', opt:'네이비 / 30', style:'MBPS-014', brand:'무신사 스탠다드', qty:12, out:0, inq:0, avail:18, status:'출고대기', lastAt:'2026-06-23 09:40', lastBy:'System' },
-  // 본사 지시 불량반품 (추가)
+  // 본사 지시 불량 (추가)
   { tabKey:'hq', move:'TX-MVR2606250001', rtype:'매장→센터', type:'불량반품', store:'강남', center:'여주1', sku:'S003', barcode:'8809000000023', name:'와이드 슬랙스', opt:'네이비 / 30', style:'MBPS-014', brand:'무신사 스탠다드', qty:3, out:0, inq:0, avail:18, status:'출고대기', lastAt:'2026-06-25 09:10', lastBy:'염태환' },
   { tabKey:'hq', move:'TX-MVR2606250002', rtype:'매장→센터', type:'불량반품', store:'성수', center:'여주1', sku:'S005', barcode:'8809000000045', name:'오버핏 후디', opt:'그레이 / L', style:'MHDS-220', brand:'무신사 스탠다드', qty:4, out:4, inq:2, avail:25, status:'이동중', lastAt:'2026-06-25 09:15', lastBy:'염태환' },
   { tabKey:'hq', move:'TX-MVR2606250003', rtype:'매장→센터', type:'불량반품', store:'명동', center:'여주1', sku:'S014', barcode:'8809000000144', name:'미니멀 볼캡', opt:'블랙 / FREE', style:'MCPS-455', brand:'무신사 스탠다드', qty:2, out:2, inq:2, avail:14, status:'입고완료', lastAt:'2026-06-25 09:20', lastBy:'염태환' },
-  // 본사 지시 기타반품 (추가)
+  // 본사 지시 기타 (추가)
   { tabKey:'hq', move:'TX-MVR2606250004', rtype:'매장→센터', type:'기타반품', store:'한남', center:'여주1', sku:'S001', barcode:'8809000000001', name:'베이직 크루넥 티셔츠', opt:'블랙 / M', style:'MTSS-001', brand:'무신사 스탠다드', qty:5, out:5, inq:1, avail:42, status:'이동중', lastAt:'2026-06-25 09:30', lastBy:'염태환' },
   { tabKey:'hq', move:'TX-MVR2606250005', rtype:'매장→센터', type:'기타반품', store:'서면', center:'여주1', sku:'S008', barcode:'8809000000088', name:'데일리 양말 3p', opt:'멀티 / FREE', style:'MSCS-301', brand:'무신사 스탠다드', qty:6, out:0, inq:0, avail:120, status:'출고대기', lastAt:'2026-06-25 09:35', lastBy:'System' },
-  // 본사 지시 폐기반품 (추가)
+  // 본사 지시 폐기 (추가)
   { tabKey:'hq', move:'TX-MVR2606250006', rtype:'매장→센터', type:'폐기반품', store:'홍대', center:'여주1', sku:'S002', barcode:'8809000000012', name:'스탠다드 셔츠', opt:'화이트 / 95', style:'MSHS-008', brand:'무신사 스탠다드', qty:3, out:0, inq:0, avail:12, status:'출고대기', lastAt:'2026-06-25 09:40', lastBy:'염태환' },
   { tabKey:'hq', move:'TX-MVR2606250007', rtype:'매장→센터', type:'폐기반품', store:'현대백화점 중동', center:'여주1', sku:'S030', barcode:'8809000000300', name:'홈 워싱 베개커버', opt:'그레이 / 50x70', style:'MHMS-077', brand:'무탠홈매입', qty:6, out:6, inq:0, avail:8, status:'이동중', lastAt:'2026-06-25 09:45', lastBy:'염태환' },
-  // 본사 지시 시즌반품 (추가)
+  // 본사 지시 시즌 (추가)
   { tabKey:'hq', move:'TX-MVR2606250008', rtype:'매장→센터', type:'시즌반품', store:'타임빌라스 수원', center:'여주1', sku:'S025', barcode:'8809000000250', name:'우먼 크롭 가디건', opt:'아이보리 / S', style:'MWTS-330', brand:'무신사 스탠다드 우먼', qty:7, out:7, inq:7, avail:16, status:'입고완료', lastAt:'2026-06-25 10:00', lastBy:'염태환' },
   { tabKey:'hq', move:'TX-MVR2606250009', rtype:'매장→센터', type:'시즌반품', store:'강남', center:'여주1', sku:'S011', barcode:'8809000000111', name:'카고 조거팬츠', opt:'베이지 / 32', style:'MBPS-077', brand:'무신사 스탠다드', qty:5, out:0, inq:0, avail:9, status:'출고대기', lastAt:'2026-06-25 10:05', lastBy:'System' },
   { tabKey:'hq', move:'TX-MVR2606250010', rtype:'매장→센터', type:'시즌반품', store:'스타필드 수원', center:'여주1', sku:'S033', barcode:'8809000000333', name:'키즈 기모 맨투맨', opt:'네이비 / 130', style:'MKDS-210', brand:'무신사 스탠다드 키즈', qty:4, out:4, inq:1, avail:22, status:'이동중', lastAt:'2026-06-25 10:10', lastBy:'염태환' },
@@ -346,7 +346,7 @@ const baseReturn = [
   { tabKey:'store', move:'TX-MVR2606220016', rtype:'매장→센터', astatus:'승인', type:'기타반품', store:'서면', center:'여주1', reqNo:'RR2606220002', sku:'S002', barcode:'8809000000012', name:'스탠다드 셔츠', color:'화이트', size:'95', opt:'화이트 / 95', style:'MSHS-008', brand:'무신사 스탠다드', qty:4, out:4, inq:4, avail:12, status:'입고완료', lastAt:'2026-06-22 16:20', lastBy:'염태환' },
   { tabKey:'store', move:'TX-MVR2606220016', rtype:'매장→센터', astatus:'승인', type:'기타반품', store:'서면', center:'여주1', reqNo:'RR2606220002', sku:'S043', barcode:'8809000000431', name:'스탠다드 셔츠', color:'화이트', size:'100', opt:'화이트 / 100', style:'MSHS-008', brand:'무신사 스탠다드', qty:2, out:2, inq:2, avail:8, status:'입고완료', lastAt:'2026-06-22 16:21', lastBy:'염태환' },
   { tabKey:'store', move:'TX-MVR2606230018', rtype:'매장→센터', astatus:'반려', type:'폐기반품', store:'현대백화점 중동', center:'여주1', reqNo:'RR2606230003', sku:'S030', barcode:'8809000000300', name:'홈 워싱 베개커버', color:'그레이', size:'50x70', opt:'그레이 / 50x70', style:'MHMS-077', brand:'무탠홈매입', qty:6, out:0, inq:0, avail:8, status:'출고대기', lastAt:'2026-06-23 15:10', lastBy:'염태환' },
-  // 매장 요청 시즌반품 (추가)
+  // 매장 요청 시즌 (추가)
   { tabKey:'store', move:'TX-MVR2606240001', rtype:'매장→센터', astatus:'대기', type:'시즌반품', store:'한남', center:'여주1', reqNo:'RR2606240001', sku:'S014', barcode:'8809000000144', name:'미니멀 볼캡', color:'블랙', size:'FREE', opt:'블랙 / FREE', style:'MCPS-455', brand:'무신사 스탠다드', qty:5, out:0, inq:0, avail:14, status:'출고대기', lastAt:'2026-06-24 09:10', lastBy:'한남매장' },
   { tabKey:'store', move:'TX-MVR2606240002', rtype:'매장→센터', astatus:'대기', type:'시즌반품', store:'성수', center:'여주1', reqNo:'RR2606240002', sku:'S005', barcode:'8809000000045', name:'오버핏 후디', color:'그레이', size:'L', opt:'그레이 / L', style:'MHDS-220', brand:'무신사 스탠다드', qty:3, out:0, inq:0, avail:25, status:'출고대기', lastAt:'2026-06-24 09:20', lastBy:'성수매장' },
   { tabKey:'store', move:'TX-MVR2606240003', rtype:'매장→센터', astatus:'승인', type:'시즌반품', store:'홍대', center:'여주1', reqNo:'RR2606240003', sku:'S001', barcode:'8809000000001', name:'베이직 크루넥 티셔츠', color:'블랙', size:'M', opt:'블랙 / M', style:'MTSS-001', brand:'무신사 스탠다드', qty:6, out:6, inq:2, avail:42, status:'이동중', lastAt:'2026-06-24 09:35', lastBy:'염태환' },
@@ -439,6 +439,8 @@ const epReturn = [
   { tabKey:'hq',move:'TX-MVR2606230049', type:'매장→파트너', store:'무신사 스토어 대구', center:'A브랜드 물류센터', destAddr:'경기 파주시 문발로 77', destReceiver:'A브랜드 물류팀', destPhone:'031-555-1212', sku:'E003', barcode:'8809100000035', name:'A브랜드 베이직 후디', opt:'그레이 / L', brand:'A브랜드', qty:4, out:0, inq:0, avail:7, status:'출고대기', lastAt:'2026-06-23 15:35', lastBy:'오프라인MD' },
   { tabKey:'hq',move:'TX-MVR2606230050', type:'매장→파트너', store:'무신사 스토어 명동', center:'B브랜드 반품처', destAddr:'인천 연수구 송도과학로 32', destReceiver:'B브랜드 반품팀', destPhone:'032-444-7788', sku:'E008', barcode:'8809100000080', name:'B브랜드 크루넥 니트', opt:'아이보리 / S', brand:'B브랜드', qty:3, out:3, inq:3, avail:9, status:'입고완료', lastAt:'2026-06-23 15:50', lastBy:'오프라인MD' },
 ];
+// 편집샵 반납사유(rreason) 부여 — 매장→센터 행에 시즌/기획/불량/기타 순환 배정
+epReturn.forEach((r,i)=>{ if(r.type==='매장→센터') r.rreason=['시즌반품','기획반품','불량반품','기타반품'][i%4]; });
 const DB = {
   mt: { req:cp(baseReq), appr:cp(baseAppr), status:cp(baseStatus), ret:cp(baseReturn).filter(r=>r.rtype!=='센터→파트너사') },
   ep: { req:epReq, appr:epAppr, status:epStatus, ret:epReturn.filter(r=>r.type!=='센터→파트너'&&r.type!=='매장→파트너') },
@@ -491,12 +493,12 @@ const RETURN_FLOWS = {
 // 반품관리 scope별 구성 (라벨/유형/필터)
 const RET = {
   mt: { fromLabel:'출발지', toLabel:'도착지', availLabel:'', outLabel:'출고 확정<br>수량', inLabel:'입고 완료<br>수량',
-        brandLabel:'브랜드', lastByLabel:'요청자', types:['시즌반품','불량반품','기타반품','폐기반품'], rtypes:['매장→센터'], partnerReturn:true, partnerOrigin:'여주1센터', noCheckbox:true, combined:true, moveCol:true, reqNoCol:true, rtypeKey:'rtype', rtypeCol:false, reasonCol:true, approveCol:false,
+        brandLabel:'브랜드', lastByLabel:'요청자', types:['시즌반품','불량반품','기타반품','폐기반품'], rtypes:['매장→센터'], partnerReturn:true, partnerOrigin:'여주1센터', noCheckbox:true, combined:true, moveCol:true, reqNoCol:true, rtypeKey:'rtype', rtypeCol:false, reasonCol:true, reasonKey:'type', approveCol:false,
         tabs:[{key:'hq',label:'본사 지시',register:true},{key:'store',label:'매장 요청',reqNo:true}],
         tip:'본사가 매장→센터 반품을 지시 · 파트너사向 반출/반품은 [재고 관리 › 파트너사 반출/반품]',
         note:'본사가 매장→센터 반품을 지시 · 무탠은 전량 1P(PB) → 반품 시 SAP 자산이동 자동 전송 · 파트너사向은 [파트너사 반출/반품] 메뉴 · 상태: 출고대기 → 이동중 → 입고완료' },
   ep: { menuName:'반품 관리', fromLabel:'출발지', toLabel:'도착지', availLabel:'', outLabel:'출고확정<br>수량', inLabel:'입고완료<br>수량',
-        brandLabel:'파트너(브랜드)', types:['매장→센터'], combined:true, moveCol:true, reqNoCol:true, rtypeKey:'type', rtypeCol:false, reasonCol:false, approveCol:true, partnerReturn:true, partnerBtnLabel:'파트너사 반출/반품', partnerOrigin:'동탄 MFS',
+        brandLabel:'파트너(브랜드)', types:['시즌반품','기획반품','불량반품','기타반품'], combined:true, moveCol:true, reqNoCol:true, rtypeKey:'type', rtypeCol:false, reasonCol:true, reasonKey:'rreason', approveCol:true, partnerReturn:true, partnerBtnLabel:'파트너사 반출/반품', partnerOrigin:'동탄 MFS',
         tabs:[{key:'hq',label:'본사 지시',register:true},{key:'store',label:'매장 요청',approve:true,reqNo:true}],
         tip:'매장→센터 반품 · 매장→센터는 매장 요청 승인/반려 · 파트너사向은 [재고 관리 › 파트너사 반출/반품]',
         note:'매장→센터 반품 · 위탁(2P)은 SAP 미연동 · 파트너사向 반출/반품은 [파트너사 반출/반품] 메뉴 · 상태: 출고대기 → 이동중 → 입고완료' },
@@ -504,8 +506,8 @@ const RET = {
 
 function requestPageHTML(sc, label){
   return `
-  <div class="crumb">${label} 스토어 관리 › ${label} 재고 보충 요청/승인</div>
-  <h1>${label} 재고 보충 요청/승인 <span class="muted" style="font-size:12px;font-weight:400;">· MOCK</span></h1>
+  <div class="crumb">${label} 스토어 관리 › ${label} 재고 보충 요청${sc==='mt'?'/승인':''}</div>
+  <h1>${label} 재고 보충 요청${sc==='mt'?'/승인':''} <span class="muted" style="font-size:12px;font-weight:400;">· MOCK</span></h1>
   <div id="${sc}-rq-mainview">
   ${sc==='mt'?`<div class="tabs">
     <div class="tab active" id="${sc}-tab-req-btn" onclick="switchTab('${sc}','req')">본사 요청 <span class="cnt" id="${sc}-cnt-req"></span></div>
@@ -523,8 +525,7 @@ function requestPageHTML(sc, label){
     </div>
     <div class="gridhead">
       <div class="left"><span class="total">전체 <span id="${sc}-req-total">0</span>건</span>
-        <button class="btn primary btn-confirm" onclick="confirmReq('${sc}')">보충확정</button>
-        <button class="btn" onclick="openMoveForm('${sc}')">＋ 매장간 보충</button></div>
+        <button class="btn primary btn-confirm" onclick="confirmReq('${sc}')">보충확정</button></div>
       <div class="right">
         <label class="chk-inline"><input type="checkbox" id="${sc}-f-stock1" onchange="renderReq('${sc}')"> 보충 가능 재고 1이상 보기</label>
         <button class="btn" onclick="toast('엑셀 양식 업로드 (mock)')">⬆ 일괄 업로드</button>
@@ -605,13 +606,13 @@ function returnPageHTML(sc, label){
        <select id="${sc}-rt-center" onchange="renderReturn('${sc}')"><option value="all">도착 센터: 전체</option>${centerFilterOpts(sc)}</select>`
     : '';
   const rtypeOptsHtml=(C.rtypes||[]).map(t=>`<option>${t}</option>`).join('');
-  const filtersInner=(C.combined&&C.reasonCol)
+  const filtersInner=(C.combined&&!C.approveCol)
     ? `<input type="text" id="${sc}-rt-move" placeholder="이동번호" oninput="renderReturn('${sc}')" style="width:130px">
        <input type="text" id="${sc}-rt-reqno" placeholder="요청번호" oninput="renderReturn('${sc}')" style="width:130px;display:none">
        <select id="${sc}-rt-brand" onchange="renderReturn('${sc}')"><option value="all">${C.brandLabel}: 전체</option>${brandOpts(sc)}</select>
        <select id="${sc}-rt-store" onchange="renderReturn('${sc}')"><option value="all">출발지: 전체</option>${storeOpts(sc)}</select>
        <input type="text" placeholder="SKU번호"><input type="text" placeholder="바코드">${styFilter(sc)}
-       <select id="${sc}-rt-type" onchange="renderReturn('${sc}')"><option value="all">반품사유: 전체</option>${typeOptsHtml}</select>
+       <select id="${sc}-rt-type" onchange="renderReturn('${sc}')"><option value="all">반납사유: 전체</option>${typeOptsHtml}</select>
        <select id="${sc}-rt-status" onchange="renderReturn('${sc}')"><option value="all">이동상태: 전체</option><option value="출고대기">출고대기</option><option value="이동중">이동중</option><option value="입고완료">입고완료</option></select>
        <input type="text" id="${sc}-rt-person" placeholder="등록자" oninput="renderReturn('${sc}')" style="width:110px">`
     : C.combined
@@ -619,6 +620,7 @@ function returnPageHTML(sc, label){
        <select id="${sc}-rt-store" onchange="renderReturn('${sc}')"><option value="all">출발지: 전체</option>${storeOpts(sc)}</select>
        <select id="${sc}-rt-center" onchange="renderReturn('${sc}')"><option value="all">도착지: 전체</option>${toOpts}</select>
        <select id="${sc}-rt-brand" onchange="renderReturn('${sc}')"><option value="all">${C.brandLabel}: 전체</option>${brandOpts(sc)}</select>
+       <select id="${sc}-rt-reason" onchange="renderReturn('${sc}')"><option value="all">반납사유: 전체</option>${C.types.map(t=>`<option>${t}</option>`).join('')}</select>
        <input type="text" placeholder="SKU번호"><input type="text" placeholder="바코드">
        <select id="${sc}-rt-status" onchange="renderReturn('${sc}')"><option value="all">이동상태: 전체</option><option value="출고대기">출고대기</option><option value="이동중">이동중</option><option value="입고완료">입고완료</option></select>
        <select id="${sc}-rt-astatus" onchange="renderReturn('${sc}')" style="display:none"><option value="all">승인상태: 전체</option><option value="대기">대기</option><option value="승인">승인</option><option value="반려">반려</option></select>
@@ -644,7 +646,7 @@ function returnPageHTML(sc, label){
   <div class="gridhead">
     <div class="left"><span class="total">전체 <span id="${sc}-rt-total">0</span>건</span>
       <span id="${sc}-rt-register-btns">${C.partnerReturn
-        ? `<button class="btn primary" id="${sc}-rt-btn-store" onclick="openReturnForm('${sc}')">＋ 매장 반품 지시</button>`
+        ? `<button class="btn primary" id="${sc}-rt-btn-store" onclick="openReturnForm('${sc}')">＋ 매장 반납지시</button>`
         : `<button class="btn primary" onclick="openReturn('${sc}')">＋ 반품 지시</button>`}</span>
       <span id="${sc}-rt-approve-btns" style="display:none;">
         <button class="btn green" onclick="approveReturn('${sc}')">승인</button>
@@ -862,7 +864,7 @@ function submitMove(){
 }
 
 // ================= 반품관리 (조회 + 본사 반품 지시) =================
-function typeBadge(t){ const m={'불량반품':'t-defect','시즌반품':'t-season','폐기반품':'t-disposal','기타반품':'t-normal','매장→센터':'t-normal','센터→파트너':'t-season','센터→파트너사':'t-season','매장→파트너':'t-defect'}; return `<span class="badge ${m[t]||'t-normal'}">${t}</span>`; }
+function typeBadge(t){ const m={'불량반품':'t-defect','시즌반품':'t-season','폐기반품':'t-disposal','기타반품':'n','기획반품':'t-normal','매장→센터':'t-normal','센터→파트너':'t-season','센터→파트너사':'t-season','매장→파트너':'t-defect'}; return `<span class="badge ${m[t]||'t-normal'}">${t}</span>`; }
 const returnTab = { mt:'hq', ep:'hq' };
 function switchReturnTab(sc,key){
   returnTab[sc]=key;
@@ -882,13 +884,13 @@ function renderReturn(sc){
   const destName=!!(tab&&tab.destName);
   const showReqNo=C.reqNoCol&&(!tabbed||(tab&&tab.reqNo));
   const fb=val(sc+'-rt-brand'), fst=val(sc+'-rt-store'), fc=val(sc+'-rt-center'), ft=val(sc+'-rt-type'), fs=val(sc+'-rt-status'), fas=(tabbed&&cat==='store')?val(sc+'-rt-astatus'):'all', frt=val(sc+'-rt-rtype');
-  const fmove=val(sc+'-rt-move'), freqno=(tabbed&&cat==='store')?val(sc+'-rt-reqno'):'', fperson=val(sc+'-rt-person');
+  const fmove=val(sc+'-rt-move'), freqno=(tabbed&&cat==='store')?val(sc+'-rt-reqno'):'', fperson=val(sc+'-rt-person'), frs=val(sc+'-rt-reason');
   const txtOk=(f,v)=>(f==='all'||f==='')||String(v||'').toLowerCase().includes(String(f).toLowerCase());
   const rq=document.getElementById(sc+'-rt-reqno'); if(rq) rq.style.display=(tabbed&&cat==='store')?'inline-block':'none';
   const ras=document.getElementById(sc+'-rt-astatus'); if(ras) ras.style.display=(tabbed&&cat==='store')?'inline-block':'none';
   const personLbl=(cat==='store')?'요청자':'등록자';
   const pe=document.getElementById(sc+'-rt-person'); if(pe) pe.placeholder=personLbl;
-  const rows=d.filter(r=>(!tabbed||r.tabKey===cat)&&(frt==='all'||r.rtype===frt)&&(fb==='all'||r.brand===fb)&&(fst==='all'||r.store===fst)&&(fc==='all'||r.center===fc)&&(ft==='all'||r.type===ft)&&(fs==='all'||r.status===fs)&&(fas==='all'||r.astatus===fas)&&txtOk(fmove,r.move)&&txtOk(freqno,r.reqNo)&&txtOk(fperson,approve?r.requester:r.lastBy));
+  const rows=d.filter(r=>(!tabbed||r.tabKey===cat)&&(frt==='all'||r.rtype===frt)&&(fb==='all'||r.brand===fb)&&(fst==='all'||r.store===fst)&&(fc==='all'||r.center===fc)&&(ft==='all'||r.type===ft)&&(fs==='all'||r.status===fs)&&(fas==='all'||r.astatus===fas)&&txtOk(fmove,r.move)&&txtOk(freqno,r.reqNo)&&txtOk(fperson,approve?r.requester:r.lastBy)&&(frs==='all'||r.rreason===frs));
   const head=document.getElementById(sc+'-rt-head'), tb=document.getElementById(sc+'-rt-body'); tb.innerHTML='';
   const reg=document.getElementById(sc+'-rt-register-btns'); if(reg) reg.style.display=isApprove?'none':'inline';
   const ab=document.getElementById(sc+'-rt-approve-btns'); if(ab) ab.style.display=(isApprove||approve)?'inline':'none';
@@ -899,7 +901,7 @@ function renderReturn(sc){
   if(C.combined){
     head.innerHTML=`<tr>
       <th class="center"><input type="checkbox" onclick="toggleAllReturn('${sc}',this)"></th>
-      ${C.moveCol?'<th>이동번호</th>':''}${C.rtypeCol===false?'':'<th class="center">반품유형</th>'}${C.reasonCol?'<th class="center">반품사유</th>':''}${approve?'<th class="center">승인상태</th>':''}${showReqNo?'<th>요청번호</th>':''}
+      ${C.moveCol?'<th>이동번호</th>':''}${C.rtypeCol===false?'':'<th class="center">반품유형</th>'}${C.reasonCol?'<th class="center">반납사유</th>':''}${approve?'<th class="center">승인상태</th>':''}${showReqNo?'<th>요청번호</th>':''}
       <th>${C.fromLabel}</th><th>${C.toLabel}</th>
       ${styTh(sc)}<th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th><th>${C.brandLabel}</th>
       <th class="num">반품지시<br>수량</th><th class="num">${C.outLabel}</th><th class="num">${C.inLabel}</th>${C.availLabel?`<th class="num">${C.availLabel}</th>`:''}
@@ -908,7 +910,7 @@ function renderReturn(sc){
       const dest=r.destAddr?`<a href="javascript:void(0)" onclick="openDestView('${sc}',${i})" style="color:#2563eb;font-weight:600;text-decoration:underline;">${r.center}</a>`:r.center;
       tb.insertAdjacentHTML('beforeend',`<tr>
         <td class="center">${r.status==='출고대기'?`<input type="checkbox" class="${sc}-rt-chk" data-i="${i}">`:''}</td>
-        ${C.moveCol?`<td>${r.move?`<a href="javascript:void(0)" onclick="openMoveDetail('${sc}',${i})" style="color:#2563eb;font-weight:600;text-decoration:underline;">${r.move}</a>`:'<span class="muted">-</span>'}</td>`:''}${C.rtypeCol===false?'':`<td class="center">${typeBadge(r[C.rtypeKey])}</td>`}${C.reasonCol?`<td class="center">${typeBadge(r.type)}</td>`:''}${approve?`<td class="center">${r.astatus?`<span class="ast ${r.astatus}">${r.astatus}</span>`:'<span class="ast 승인">자동승인</span>'}</td>`:''}${showReqNo?`<td>${r.reqNo||'<span class="muted">-</span>'}</td>`:''}
+        ${C.moveCol?`<td>${r.move?`<a href="javascript:void(0)" onclick="openMoveDetail('${sc}',${i})" style="color:#2563eb;font-weight:600;text-decoration:underline;">${r.move}</a>`:'<span class="muted">-</span>'}</td>`:''}${C.rtypeCol===false?'':`<td class="center">${typeBadge(r[C.rtypeKey])}</td>`}${C.reasonCol?`<td class="center">${r[C.reasonKey]?typeBadge(r[C.reasonKey]):'<span class="muted">-</span>'}</td>`:''}${approve?`<td class="center">${r.astatus?`<span class="ast ${r.astatus}">${r.astatus}</span>`:'<span class="ast 승인">자동승인</span>'}</td>`:''}${showReqNo?`<td>${r.reqNo||'<span class="muted">-</span>'}</td>`:''}
         <td>${r.store}</td><td>${dest}</td>
         ${ss(sc)?`<td>${r.style||'-'}</td>`:''}<td>${r.sku}</td><td>${r.barcode}</td><td>${r.name}</td><td>${r.opt}</td><td>${r.brand}</td>
         <td class="num">${r.qty}</td><td class="num">${r.out>0?r.out:'<span class="muted">-</span>'}</td><td class="num">${r.inq>0?r.inq:'<span class="muted">-</span>'}</td>${C.availLabel?`<td class="num">${r.avail}</td>`:''}
@@ -984,7 +986,7 @@ function openMoveDetail(sc,i){ const r0=DB[sc].ret[i]; if(!r0||!r0.move) return;
     <td class="num">${r.qty}</td><td class="num">${r.out>0?r.out:'<span class="muted">-</span>'}</td><td class="num">${r.inq>0?r.inq:'<span class="muted">-</span>'}</td>
     <td class="center"><span class="st ${stClass(r.status)}">${r.status}</span></td></tr>`).join('');
   document.getElementById('mvdetail-body').innerHTML=head
-    +`<table style="margin-top:14px;"><thead><tr><th>SKU번호</th><th>바코드</th><th>옵션명</th>${hasReason?'<th class="center">반품사유</th>':''}<th class="num">반품지시<br>수량</th><th class="num">출고 확정<br>수량</th><th class="num">입고 완료<br>수량</th><th class="center">상태</th></tr></thead><tbody>${rows}</tbody></table>`;
+    +`<table style="margin-top:14px;"><thead><tr><th>SKU번호</th><th>바코드</th><th>옵션명</th>${hasReason?'<th class="center">반납사유</th>':''}<th class="num">반품지시<br>수량</th><th class="num">출고 확정<br>수량</th><th class="num">입고 완료<br>수량</th><th class="center">상태</th></tr></thead><tbody>${rows}</tbody></table>`;
   document.getElementById('mvdetail-bg').classList.add('show'); }
 function closeMoveDetail(){ document.getElementById('mvdetail-bg').classList.remove('show'); }
 function approveReturn(sc){
@@ -1003,7 +1005,7 @@ function rejectReturn(sc){
   let n=0; checked.forEach(c=>{ const r=DB[sc].ret[+c.dataset.i]; if(r&&r.astatus==='대기'){ r.astatus='반려'; r.reason=reason.trim(); r.lastAt='2026-06-23 17:46'; r.lastBy='염태환'; n++; } });
   renderReturn(sc); toast(`⛔ ${n}건 반려 → 사유 회신 (mock)`);
 }
-function resetReturn(sc){ [sc+'-rt-brand',sc+'-rt-store',sc+'-rt-center',sc+'-rt-type',sc+'-rt-status',sc+'-rt-astatus',sc+'-rt-rtype'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='all';}); [sc+'-rt-move',sc+'-rt-reqno',sc+'-rt-person'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';}); renderReturn(sc); }
+function resetReturn(sc){ [sc+'-rt-brand',sc+'-rt-store',sc+'-rt-center',sc+'-rt-type',sc+'-rt-reason',sc+'-rt-status',sc+'-rt-astatus',sc+'-rt-rtype'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='all';}); [sc+'-rt-move',sc+'-rt-reqno',sc+'-rt-person'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';}); renderReturn(sc); }
 
 // ----- 반품 지시 모달 (매장→센터, 매장간 이동 모달 참고) -----
 let returnScope='mt';
@@ -1023,7 +1025,7 @@ function openReturn(sc, mode='store'){ returnScope=sc; returnMode=mode;
     if(ph){ph.style.display='block'; const dd=document.getElementById('partner-dest-display'); if(dd) dd.innerHTML='<span class="muted">배송지를 추가해 주세요</span>';}
     renderReturnModal();
   } else {
-    document.getElementById('return-title').textContent=(sc==='mt'?'무탠':'편집샵')+' 매장 반품 지시';
+    document.getElementById('return-title').textContent=(sc==='mt'?'무탠':'편집샵')+' 매장 반납지시';
     if(ph) ph.style.display='none'; addReturnRow();
   }
   document.getElementById('return-bg').classList.add('show'); }
@@ -1113,12 +1115,12 @@ function submitReturn(){
   }
 }
 
-// ===== 매장 반품 지시 — 인라인 전용 폼 (하이브리드: 헤더 고정 + 블록) · scope 공통 =====
+// ===== 매장 반납지시 — 인라인 전용 폼 (하이브리드: 헤더 고정 + 블록) · scope 공통 =====
 const rfBlocks={mt:[],ep:[]};
 const rfHasStyle=sc=>sc==='mt';   // 대표스타일 노출 (무탠만)
-const rfHasReason=sc=>sc==='mt';  // 반품사유 선택 (무탠만 · 편집샵은 매장→센터 단일)
+const rfHasReason=sc=>true;  // 반납사유 선택 (무탠·편집샵 모두)
 function blankRfRow(){ return {sku:'',barcode:'',name:'',opt:'',style:'',brand:'',qty:0,avail:0}; }
-function blankRfBlock(sc){ return {store:'',center:'',reason:(rfHasReason(sc)?RET.mt.types[0]:'매장→센터'),rows:[blankRfRow()]}; }
+function blankRfBlock(sc){ return {store:'',center:'',reason:(rfHasReason(sc)?RET[sc].types[0]:'매장→센터'),rows:[blankRfRow()]}; }
 function openReturnForm(sc){ if(!rfBlocks[sc].length) rfBlocks[sc]=[blankRfBlock(sc)];
   document.getElementById(sc+'-rt-listview').style.display='none';
   document.getElementById(sc+'-rt-formview').style.display='block';
@@ -1154,7 +1156,7 @@ function renderRfForm(sc){
         <td class="center"><button class="btn sm" onclick="delRfRow('${sc}',${bi},${ri})">🗑</button></td></tr>`;
     });
     const bpcs=b.rows.reduce((s,r)=>s+(r.qty||0),0), bcnt=b.rows.filter(r=>r.sku).length;
-    const reasonFld=hasReason?`<span class="fld">반품 사유 <select class="m-sel" onchange="rfBlockField('${sc}',${bi},'reason',this.value)">${RET.mt.types.map(t=>`<option ${t===b.reason?'selected':''}>${t}</option>`).join('')}</select></span>`:'';
+    const reasonFld=hasReason?`<span class="fld">반납 사유 <select class="m-sel" onchange="rfBlockField('${sc}',${bi},'reason',this.value)">${RET[sc].types.map(t=>`<option ${t===b.reason?'selected':''}>${t}</option>`).join('')}</select></span>`:'';
     wrap.insertAdjacentHTML('beforeend',`<div class="rf-block">
       <div class="rf-block-head">
         <span class="fld">출발 매장 <select class="m-sel ${!b.store?'m-err':''}" onchange="rfBlockField('${sc}',${bi},'store',this.value)">${optSel(STORES[sc],b.store)}</select></span>
@@ -1193,7 +1195,7 @@ function submitReturnForm(sc){
   if(!confirm(`총 ${total}건 / ${pcs}pcs 반품을 지시하시겠습니까?`)) return;
   rfBlocks[sc].forEach(b=>{ b.rows.filter(r=>r.sku&&r.qty).forEach(r=>{
     const rec={tabKey:'hq',move:'TX-MVR'+String(Date.now()).slice(-10),type:(sc==='mt'?b.reason:'매장→센터'),store:b.store,center:b.center,sku:r.sku,barcode:r.barcode,name:r.name,opt:r.opt,style:r.style,brand:r.brand,qty:r.qty,out:0,inq:0,avail:r.avail,status:'출고대기',lastAt:'2026-06-23 17:50',lastBy:'염태환'};
-    if(sc==='mt') rec.rtype='매장→센터';
+    if(sc==='mt') rec.rtype='매장→센터'; else rec.rreason=b.reason;
     DB[sc].ret.unshift(rec); }); });
   rfBlocks[sc]=[]; renderReturn(sc); closeReturnForm(sc);
   toast(`✅ ${total}건 반품 지시 → MWMS 전송${sc==='mt'?' · SAP 자산이동':' · 위탁(2P) SAP 미연동'} (mock)`);
@@ -1202,9 +1204,9 @@ function returnFormHTML(sc){
   const label=sc==='mt'?'무탠':'편집샵';
   return `<div id="${sc}-rt-formview" style="display:none;">
     <div class="rf-back" onclick="closeReturnForm('${sc}')">← 목록으로</div>
-    <div class="gridhead"><div class="left"><span class="total">${label} 매장 반품 지시 등록</span>
+    <div class="gridhead"><div class="left"><span class="total">${label} 매장 반납지시 등록</span>
       <span class="muted" style="font-size:11px;">출발매장·도착센터${rfHasReason(sc)?'·사유':''}를 블록 단위로 지정하고 SKU를 추가하세요 · 조합이 다르면 블록을 추가하면 됩니다</span></div>
-      <div class="right"><button class="btn" onclick="toast('엑셀 양식: 출발매장,도착센터,${rfHasReason(sc)?'반품사유,':''}SKU번호/바코드,반품수량 · 매장×센터${rfHasReason(sc)?'×사유':''} 조합별로 블록 자동 생성 (mock)')">⬆ 엑셀 일괄 업로드</button></div></div>
+      <div class="right"><button class="btn" onclick="toast('엑셀 양식: 출발매장,도착센터,${rfHasReason(sc)?'반납사유,':''}SKU번호/바코드,반품수량 · 매장×센터${rfHasReason(sc)?'×사유':''} 조합별로 블록 자동 생성 (mock)')">⬆ 엑셀 일괄 업로드</button></div></div>
     <div id="${sc}-rf-blocks"></div>
     <button class="btn" onclick="addRfBlock('${sc}')" style="margin-bottom:14px;">＋ 매장/도착지 블록 추가</button>
     <div class="rf-foot">
@@ -1315,7 +1317,7 @@ function moveFormHTML(sc,label){
 }
 
 // ================= 파트너사 반출/반품 (무탠+편집샵 통합 조회/등록) =================
-// ===== 파트너사 반출/반품 — 인라인 전용 폼 (매장 반품 지시와 동일 블록 스타일) =====
+// ===== 파트너사 반출/반품 — 인라인 전용 폼 (매장 반납지시와 동일 블록 스타일) =====
 const pfBlocks=[];
 let pfDestTarget=null;
 function blankPfRow(){ return {sku:'',barcode:'',name:'',opt:'',style:'',brand:'',scope:undefined,qty:0}; }
