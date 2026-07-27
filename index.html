@@ -370,6 +370,8 @@ const epReq = [
   { auto:'Y', store:'무신사 스토어 강남', sku:'E009', barcode:'8809100000097', name:'나이키 윈드러너 자켓', color:'블랙', size:'XL', sales7:6, sales14:11, storeStock:2, inbound:1, done:5, req:null, stock:20, chodo:'N', brand:'나이키', lastAt:'2026-06-23 09:12', lastBy:'System' },
   { auto:'N', store:'무신사 스토어 홍대', sku:'E010', barcode:'8809100000103', name:'아디다스 삼선 양말 3p', color:'화이트', size:'FREE', sales7:1, sales14:2, storeStock:30, inbound:0, done:0, req:null, stock:80, chodo:'N', brand:'아디다스', lastAt:'', lastBy:'' },
 ];
+// 편집샵 매입형태(pform) — 나이키·아디다스=위탁(2P), A·B브랜드=매입(1P)
+epReq.forEach(r=>{ r.pform=(r.brand==='나이키'||r.brand==='아디다스')?'위탁':'매입'; });
 const epAppr = [
   { store:'무신사 스토어 대구', requester:'대구매장', sku:'E003', barcode:'8809100000035', name:'A브랜드 베이직 후디', color:'그레이', size:'L', inbound:0, done:0, storeReq:5, req:5, stock:7, brand:'A브랜드', astatus:'대기', reason:'', lastAt:'2026-06-23 08:30', lastBy:'-' },
   { store:'무신사 스토어 명동', requester:'명동매장', sku:'E004', barcode:'8809100000042', name:'B브랜드 조거팬츠', color:'네이비', size:'M', inbound:1, done:0, storeReq:8, req:8, stock:18, brand:'B브랜드', astatus:'대기', reason:'', lastAt:'2026-06-23 08:50', lastBy:'-' },
@@ -517,6 +519,7 @@ function requestPageHTML(sc, label){
     <div class="filters">
       <select id="${sc}-f-brand" onchange="renderReq('${sc}')"><option value="all">브랜드: 전체</option>${brandOpts(sc)}</select>
       <select id="${sc}-f-store" onchange="renderReq('${sc}')"><option value="all">스토어: 전체</option>${storeOpts(sc)}</select>
+      ${sc==='ep'?`<select id="${sc}-f-pform" onchange="renderReq('${sc}')"><option value="all">매입/위탁: 전체</option><option value="매입">매입</option><option value="위탁">위탁</option></select>`:''}
       <input type="text" placeholder="SKU번호"><input type="text" placeholder="바코드">${styFilter(sc)}
       <select id="${sc}-f-auto" onchange="renderReq('${sc}')"><option value="all">당일자동보충여부: 전체</option><option value="Y">자동보충 Y</option><option value="N">자동보충 N</option></select>
       <select id="${sc}-f-chodo" onchange="renderReq('${sc}')"><option value="all">초도 입고 여부: 전체</option><option value="Y">초도 Y</option><option value="N">초도 N</option></select>
@@ -670,8 +673,8 @@ function chk(id){ const e=document.getElementById(id); return e?e.checked:false;
 
 function renderReq(sc){
   const d=DB[sc].req;
-  const fa=val(sc+'-f-auto'), fc=val(sc+'-f-chodo'), fb=val(sc+'-f-brand'), fst=val(sc+'-f-store'), fs=chk(sc+'-f-stock1');
-  const rows=d.filter(r=>(fa==='all'||r.auto===fa)&&(fc==='all'||r.chodo===fc)&&(fb==='all'||r.brand===fb)&&(fst==='all'||r.store===fst)&&(!fs||r.stock>=1));
+  const fa=val(sc+'-f-auto'), fc=val(sc+'-f-chodo'), fb=val(sc+'-f-brand'), fst=val(sc+'-f-store'), fp=val(sc+'-f-pform'), fs=chk(sc+'-f-stock1');
+  const rows=d.filter(r=>(fa==='all'||r.auto===fa)&&(fc==='all'||r.chodo===fc)&&(fb==='all'||r.brand===fb)&&(fst==='all'||r.store===fst)&&(fp==='all'||r.pform===fp)&&(!fs||r.stock>=1));
   const tb=document.getElementById(sc+'-req-body'); tb.innerHTML='';
   rows.forEach((r)=>{
     const i=d.indexOf(r), reqVal=r.req===null?'':r.req;
@@ -693,7 +696,7 @@ function renderReq(sc){
 function onQty(sc,el){ const d=DB[sc].req, i=+el.dataset.i; let v=parseInt(el.value); if(isNaN(v)||v<0)v=0; if(v>d[i].stock){v=d[i].stock;toast('보충 가능 재고를 초과할 수 없습니다.');} el.value=v; d[i].req=v; el.classList.toggle('req',v>0); }
 function setMax(sc,i){ DB[sc].req[i].req=DB[sc].req[i].stock; renderReq(sc); }
 function toggleAll(sc,el){ document.querySelectorAll('.'+sc+'-row-chk').forEach(c=>c.checked=el.checked); }
-function resetReq(sc){ [sc+'-f-auto',sc+'-f-chodo',sc+'-f-brand',sc+'-f-store'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='all';}); const s1=document.getElementById(sc+'-f-stock1'); if(s1)s1.checked=false; renderReq(sc); }
+function resetReq(sc){ [sc+'-f-auto',sc+'-f-chodo',sc+'-f-brand',sc+'-f-store',sc+'-f-pform'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='all';}); const s1=document.getElementById(sc+'-f-stock1'); if(s1)s1.checked=false; renderReq(sc); }
 function confirmReq(sc){
   const d=DB[sc].req, sel=[...document.querySelectorAll('.'+sc+'-row-chk:checked')].map(c=>d[+c.dataset.i]);
   if(!sel.length){toast('확정할 행을 선택해 주세요.');return;}
@@ -1500,7 +1503,7 @@ const IMV_CENTERS=['여주1센터','여주2센터','여주3센터','여주4센�
 const IMV_STORES=[...new Set([...STORES.mt, ...STORES.ep, '무신사 메가스토어 아이파크몰 용산점','이구홈 성수'])];
 const IMV_PLANTS_FROM=['MUSINSA 스토리지','29CM 스토리지'];
 const IMV_PLANTS_TO=['29CM 스토리지','MUSINSA 스토리지'];
-const IMV_TYPES=[{key:'pp',label:'플랜트간(MUSINSA↔29CM) 재고이동',reason:'재고이동 (플랜트간)'},{key:'cc',label:'센터↔센터 재고이동',reason:'재고이동 (센터↔센터)'},{key:'cs',label:'센터→매장 재고이동',reason:'재고이동 (센터→매장)'},{key:'ss',label:'매장→매장 재고이동',reason:'재고이동 (매장→매장)'}];
+const IMV_TYPES=[{key:'cc',label:'센터↔센터 재고이동',reason:'재고이동 (센터↔센터)'},{key:'cs',label:'센터→매장 재고이동',reason:'재고이동 (센터→매장)'},{key:'ss',label:'매장→매장 재고이동',reason:'재고이동 (매장→매장)'}];
 // 목록 mock 데이터
 let imvData=[
   {no:'2607090000327',reason:'재고보충 (물류센터 → 매장)',sub:'[영업 요청] 배드블러더 - 무신사 메가스토어 아이파크몰 용산점',pay:'승인',status:'출고대기',from:'여주3-무신사-온라인',to:'무신사 메가스토어 아이파크몰 용산점',rep:'로 엣지 컨벡스 조거 - 블랙 S',more:25,reqQty:47,outQty:0,inQty:0,amount:7573000,regAt:'26.07.09 16:17',regBy:'juyoun.lee@musinsa.com',cancelable:true,skus:[{sku:'S101',barcode:'8809000010101',name:'로 엣지 컨벡스 조거',opt:'블랙 / S',qty:5},{sku:'S102',barcode:'8809000010102',name:'로 엣지 컨벡스 조거',opt:'블랙 / M',qty:8}]},
