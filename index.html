@@ -443,6 +443,8 @@ const epReturn = [
 ];
 // 편집샵 반납사유(rreason) 부여 — 매장→센터 행에 시즌/기획/불량/기타 순환 배정
 epReturn.forEach((r,i)=>{ if(r.type==='매장→센터') r.rreason=['시즌반품','기획반품','불량반품','기타반품'][i%4]; });
+// 보충 현황 보충확정자(confBy) 부여
+[baseStatus, epStatus].forEach(arr=>arr.forEach((r,i)=>{ r.confBy=['이엠디','김상품','염태환','최매장','한MD'][i%5]; }));
 const DB = {
   mt: { req:cp(baseReq), appr:cp(baseAppr), status:cp(baseStatus), ret:cp(baseReturn).filter(r=>r.rtype!=='센터→파트너사') },
   ep: { req:epReq, appr:epAppr, status:epStatus, ret:epReturn.filter(r=>r.type!=='센터→파트너'&&r.type!=='매장→파트너') },
@@ -595,7 +597,7 @@ function statusPageHTML(sc, label){
   <div class="tablewrap"><table><thead><tr>
     <th class="center" style="width:34px;"><input type="checkbox" onclick="toggleAllStatus('${sc}',this)"></th><th style="width:28px;"></th><th class="center">자동보충여부</th><th>입고 스토어명</th><th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th>${styTh(sc)}<th>브랜드</th>
     <th class="num">보충 확정 수량</th><th class="num">출고 확정 수량</th><th class="num">입고 확정 수량</th>
-    <th class="center">상태</th><th>출고지 정보</th><th>보충 확정 일시</th>
+    <th class="center">상태</th><th>출고지 정보</th><th>보충 확정 일시</th><th>보충확정자</th>
   </tr></thead><tbody id="${sc}-status-body"></tbody></table></div>
   <div class="footnote">· 보충 확정된 건만 노출 · 상태: 출고대기 → 이동중 → 입고완료 · 행 확장 시 센터별 출고 상세(읽기 전용)</div>`;
 }
@@ -776,7 +778,7 @@ function renderStatus(sc){
   const fs=val(sc+'-s-status'), fst=val(sc+'-st-store'), fb=val(sc+'-st-brand'), fa=val(sc+'-st-auto');
   const rows=d.filter(r=>(fs==='all'||r.status===fs)&&(fst==='all'||r.store===fst)&&(fb==='all'||r.brand===fb)&&(fa==='all'||r.auto===fa));
   const tb=document.getElementById(sc+'-status-body'); tb.innerHTML='';
-  const span=ss(sc)?16:15;
+  const span=ss(sc)?17:16;
   rows.forEach((r)=>{
     const i=d.indexOf(r), opt=[r.color,r.size].filter(x=>x&&x!=='-').join(' / ')||'-', centers=r.centers.map(c=>c.center).join(', ');
     const autoBadge=r.auto==='Y'?'<span class="badge y">Y</span>':'<span class="badge n">N</span>';
@@ -786,7 +788,7 @@ function renderStatus(sc){
       <td class="center">${autoBadge}</td>
       <td>${r.store}</td><td>${r.sku}</td><td>${r.barcode}</td><td>${r.name}</td><td>${opt}</td>${ss(sc)?`<td>${r.style}</td>`:''}<td>${r.brand}</td>
       <td class="num">${r.conf}</td><td class="num">${r.out}</td><td class="num">${r.inq}</td>
-      <td class="center"><span class="st ${stClass(r.status)}">${r.status}</span></td><td>${centers}</td><td>${r.at}</td></tr>
+      <td class="center"><span class="st ${stClass(r.status)}">${r.status}</span></td><td>${centers}</td><td>${r.at}</td><td>${r.confBy||'<span class="muted">-</span>'}</td></tr>
       <tr class="subrow" id="${sc}-sub-${i}" style="display:none;"><td colspan="${span}"><div class="subwrap">
         <table><thead><tr><th>출고지</th><th>이동번호</th><th>출고번호</th><th>입고번호</th><th class="num">출고</th><th class="num">이동</th><th class="num">입고</th><th class="center">상태</th><th>처리일시</th></tr></thead>
         <tbody>${r.centers.map(c=>`<tr><td>${c.center}</td><td>${c.move}</td><td>${c.out}</td><td>${c.in}</td><td class="num">${c.outQty}</td><td class="num">${c.moveQty}</td><td class="num">${c.inQty}</td><td class="center"><span class="st ${stClass(c.status)}">${c.status}</span></td><td>${c.at}</td></tr>`).join('')}</tbody></table>
@@ -1598,7 +1600,7 @@ function openImvForm(){ if(!imvBlocks.length) imvBlocks.push(blankImvBlock());
   document.getElementById('imv-formview').style.display='block'; renderImvForm(); }
 function closeImvForm(){ document.getElementById('imv-formview').style.display='none';
   document.getElementById('imv-listview').style.display='block'; }
-function imvBlockType(bi,v){ const b=imvBlocks[bi]; b.type=v; b.from=''; b.to=''; if(!(v==='cc'||v==='cs')) b.outDate=''; renderImvForm(); }
+function imvBlockType(bi,v){ const b=imvBlocks[bi]; b.type=v; b.from=''; b.to=''; renderImvForm(); }
 function addImvBlock(){ imvBlocks.push(blankImvBlock()); renderImvForm(); }
 function delImvBlock(bi){ imvBlocks.splice(bi,1); if(!imvBlocks.length) imvBlocks.push(blankImvBlock()); renderImvForm(); }
 function imvBlockField(bi,f,v){ imvBlocks[bi][f]=v; renderImvForm(); }
@@ -1632,7 +1634,7 @@ function renderImvForm(){
         <span class="fld">${imvFromLabel(b.type)} <select class="m-sel ${(!b.from||dup)?'m-err':''}" onchange="imvBlockField(${bi},'from',this.value)">${optSel(fromList,b.from)}</select></span>
         <span class="fld">${imvToLabel(b.type)} <select class="m-sel ${(!b.to||dup)?'m-err':''}" onchange="imvBlockField(${bi},'to',this.value)">${optSel(toList,b.to)}</select></span>
         <span class="fld">메모 <input class="m-in" style="width:160px" value="${b.memo||''}" onchange="imvBlockField(${bi},'memo',this.value)" placeholder="메모"></span>
-        ${(b.type==='cc'||b.type==='cs')?`<span class="fld">출고요청일 <span class="tip">i<span class="tipbox">먼 미래로 출고요청 하더라도 가용재고는 이동 지시 즉시 차감됩니다. 실 출고는 요청일에 이루어집니다.</span></span> <input type="date" class="m-in" value="${b.outDate||''}" onchange="imvBlockField(${bi},'outDate',this.value)"></span>`:''}
+        <span class="fld">출고요청일 <span class="tip">i<span class="tipbox">먼 미래로 출고요청 하더라도 가용재고는 이동 지시 즉시 차감됩니다. 실 출고는 요청일에 이루어집니다.</span></span> <input type="date" class="m-in" value="${b.outDate||''}" onchange="imvBlockField(${bi},'outDate',this.value)"></span>
         ${dup?'<span class="muted" style="color:#dc2626;font-size:11px;">출발=도착 불가</span>':''}
         <button class="btn sm del" onclick="delImvBlock(${bi})">🗑 블록 삭제</button>
       </div>
@@ -1663,7 +1665,7 @@ function submitImvForm(){
   imvBlocks.forEach(b=>{ const valid=b.rows.filter(r=>r.sku&&r.qty); if(!valid.length) return;
     const tinfo=IMV_TYPES.find(t=>t.key===b.type); const q=valid.reduce((a,r)=>a+r.qty,0);
     let sub=b.reqName||'수동 등록';
-    if((b.type==='cc'||b.type==='cs')&&b.outDate) sub+=` · 출고요청일 ${b.outDate}`;
+    if(b.outDate) sub+=` · 출고요청일 ${b.outDate}`;
     if(b.memo) sub+=` · 메모: ${b.memo}`;
     imvData.unshift({no:'2607'+String(Date.now()).slice(-8),reason:tinfo.reason,sub:sub,reqName:b.reqName,memo:b.memo,pay:'승인',status:'출고대기',from:b.from,to:b.to,rep:valid[0].name,more:valid.length-1,reqQty:q,outQty:0,inQty:0,amount:q*10000,regAt:'26.07.10 09:00',regBy:'taehwan.yeom@musinsa.com',cancelable:true,skus:valid.map(r=>({sku:r.sku,barcode:r.barcode,name:r.name,opt:r.opt,qty:r.qty}))}); });
   imvBlocks.length=0; renderImvList(); closeImvForm();
@@ -1687,24 +1689,24 @@ function imvFormHTML(){
 }
 
 // ================= 가용↔불용재고 전환 내역 (inv-convert) =================
-const CONV_DIRS=['불량입고','가용→불용','불용→가용'];
+const CONV_DIRS=['가용→불용','불용→가용'];
 const CONV_REASONS=['고객반품 불량','파트너귀책','내부귀책','분실','재검수 정상','오분류 정정','수선 완료'];
 const convBadge=r=>{ const m={'고객반품 불량':'t-defect','파트너귀책':'t-season','내부귀책':'t-normal','분실':'t-disposal','재검수 정상':'y','오분류 정정':'y','수선 완료':'y'}; return `<span class="badge ${m[r]||'t-normal'}">${r}</span>`; };
-const dirBadge=d=>{ const m={'불량입고':'t-season','가용→불용':'t-defect','불용→가용':'y'}; return `<span class="badge ${m[d]||'t-normal'}">${d}</span>`; };
+const dirBadge=d=>{ const m={'가용→불용':'t-defect','불용→가용':'y'}; return `<span class="badge ${m[d]||'t-normal'}">${d}</span>`; };
 const convData=[
-  {loc:'여주1센터',sku:'S001',name:'베이직 크루넥 티셔츠',barcode:'8809000000001',qty:3,dir:'불량입고',reason:'고객반품 불량',by:'김상품',at:'2026-07-15 10:12'},
+  {loc:'여주1센터',sku:'S001',name:'베이직 크루넥 티셔츠',barcode:'8809000000001',qty:3,dir:'가용→불용',reason:'고객반품 불량',by:'김상품',at:'2026-07-15 10:12'},
   {loc:'무신사 스탠다드 동성로점',sku:'S005',name:'오버핏 후디',barcode:'8809000000045',qty:2,dir:'가용→불용',reason:'내부귀책',by:'이엠디',at:'2026-07-15 09:40'},
-  {loc:'여주2센터',sku:'E003',name:'A브랜드 베이직 후디',barcode:'8809100000035',qty:5,dir:'불량입고',reason:'파트너귀책',by:'오프라인MD',at:'2026-07-14 17:22'},
+  {loc:'여주2센터',sku:'E003',name:'A브랜드 베이직 후디',barcode:'8809100000035',qty:5,dir:'가용→불용',reason:'파트너귀책',by:'오프라인MD',at:'2026-07-14 17:22'},
   {loc:'무신사 메가스토어 성수',sku:'S014',name:'미니멀 볼캡',barcode:'8809000000144',qty:1,dir:'가용→불용',reason:'분실',by:'염태환',at:'2026-07-14 15:05'},
   {loc:'무신사 스탠다드 동성로점',sku:'S005',name:'오버핏 후디',barcode:'8809000000045',qty:1,dir:'불용→가용',reason:'재검수 정상',by:'이엠디',at:'2026-07-14 14:20'},
-  {loc:'무신사 스탠다드 강남점',sku:'S003',name:'와이드 슬랙스',barcode:'8809000000023',qty:4,dir:'불량입고',reason:'고객반품 불량',by:'최매장',at:'2026-07-14 11:30'},
-  {loc:'여주1센터',sku:'E006',name:'아디다스 트랙탑',barcode:'8809100000066',qty:2,dir:'불량입고',reason:'파트너귀책',by:'오프라인MD',at:'2026-07-13 16:48'},
+  {loc:'무신사 스탠다드 강남점',sku:'S003',name:'와이드 슬랙스',barcode:'8809000000023',qty:4,dir:'가용→불용',reason:'고객반품 불량',by:'최매장',at:'2026-07-14 11:30'},
+  {loc:'여주1센터',sku:'E006',name:'아디다스 트랙탑',barcode:'8809100000066',qty:2,dir:'가용→불용',reason:'파트너귀책',by:'오프라인MD',at:'2026-07-13 16:48'},
   {loc:'여주2센터',sku:'E003',name:'A브랜드 베이직 후디',barcode:'8809100000035',qty:2,dir:'불용→가용',reason:'오분류 정정',by:'오프라인MD',at:'2026-07-13 15:30'},
   {loc:'여주3센터',sku:'S030',name:'홈 워싱 베개커버',barcode:'8809000000300',qty:6,dir:'가용→불용',reason:'내부귀책',by:'박반품',at:'2026-07-13 14:10'},
   {loc:'무신사 스탠다드 서면점',sku:'S008',name:'데일리 양말 3p',barcode:'8809000000088',qty:2,dir:'가용→불용',reason:'분실',by:'서면매장',at:'2026-07-13 10:02'},
   {loc:'무신사 스탠다드 동성로점',sku:'S002',name:'스탠다드 셔츠',barcode:'8809000000012',qty:1,dir:'불용→가용',reason:'수선 완료',by:'동성로매장',at:'2026-07-12 19:40'},
-  {loc:'무신사 스탠다드 강남점',sku:'E009',name:'나이키 윈드러너 자켓',barcode:'8809100000097',qty:1,dir:'불량입고',reason:'고객반품 불량',by:'강남매장',at:'2026-07-12 18:55'},
-  {loc:'여주1센터',sku:'S025',name:'우먼 크롭 가디건',barcode:'8809000000250',qty:3,dir:'불량입고',reason:'파트너귀책',by:'이엠디',at:'2026-07-12 13:20'},
+  {loc:'무신사 스탠다드 강남점',sku:'E009',name:'나이키 윈드러너 자켓',barcode:'8809100000097',qty:1,dir:'가용→불용',reason:'고객반품 불량',by:'강남매장',at:'2026-07-12 18:55'},
+  {loc:'여주1센터',sku:'S025',name:'우먼 크롭 가디건',barcode:'8809000000250',qty:3,dir:'가용→불용',reason:'파트너귀책',by:'이엠디',at:'2026-07-12 13:20'},
   {loc:'무신사 스탠다드 동성로점',sku:'S002',name:'스탠다드 셔츠',barcode:'8809000000012',qty:2,dir:'가용→불용',reason:'내부귀책',by:'동성로매장',at:'2026-07-11 17:00'},
   {loc:'무신사 메가스토어 성수',sku:'E004',name:'B브랜드 조거팬츠',barcode:'8809100000042',qty:1,dir:'가용→불용',reason:'분실',by:'명동매장',at:'2026-07-11 09:33'},
 ];
@@ -1717,7 +1719,7 @@ function invConvertPageHTML(){
     <input type="text" id="cv-sku" placeholder="SKU번호" oninput="renderConvert()" style="width:120px">
     <input type="text" placeholder="바코드" style="width:120px">
     <select id="cv-dir" onchange="renderConvert()"><option value="all">전환유형: 전체</option>${CONV_DIRS.map(d=>`<option>${d}</option>`).join('')}</select>
-    <select id="cv-reason" onchange="renderConvert()"><option value="all">사유: 전체</option>${CONV_REASONS.map(r=>`<option>${r}</option>`).join('')}</select>
+    <input type="text" id="cv-reason" placeholder="사유" oninput="renderConvert()" style="width:130px">
     <input type="text" id="cv-by" placeholder="처리자" oninput="renderConvert()" style="width:110px">
     <button class="btn primary" onclick="renderConvert()">검색</button>
     <button class="btn" onclick="resetConvert()">초기화 ↻</button>
@@ -1725,23 +1727,23 @@ function invConvertPageHTML(){
   <div class="gridhead"><div class="left"><span class="total">전체 <span id="cv-total">0</span>건</span></div>
     <div class="right"><button class="btn" onclick="toast('전체 엑셀 다운로드 (mock)')">⬇ 전체 엑셀 다운로드</button></div></div>
   <div class="tablewrap"><table><thead><tr>
-    <th>위치</th><th>SKU번호</th><th>SKU명</th><th>바코드</th><th class="num">수량</th><th class="center">전환유형</th><th class="center">사유</th><th>처리자</th><th>처리일시</th>
+    <th>위치</th><th>SKU번호</th><th>SKU명</th><th>바코드</th><th class="num">수량</th><th class="center">전환유형</th><th>사유</th><th>처리자</th><th>처리일시</th>
   </tr></thead><tbody id="cv-body"></tbody></table></div>
-  <div class="footnote">· 센터·매장의 재고 상태 전환 내역 조회 (본사 모니터링) · 가용↔불용 양방향 · 불량사유: 고객반품 불량/파트너귀책/내부귀책/분실 · 복원사유: 재검수 정상/오분류 정정/수선 완료</div>`;
+  <div class="footnote">· 센터·매장의 재고 상태 전환 내역 조회 (본사 모니터링) · 가용↔불용 양방향 · 사유는 원천 시스템(MWMS/MOSS)에서 입력한 자유 텍스트로 표기</div>`;
 }
 function renderConvert(){
   const floc=val('cv-loc'), fsku=val('cv-sku'), fd=val('cv-dir'), fr=val('cv-reason'), fby=val('cv-by');
   const txtOk=(f,v)=>(!f||f==='all')||String(v||'').toLowerCase().includes(String(f).toLowerCase());
-  const rows=convData.filter(r=>(floc==='all'||r.loc===floc)&&txtOk(fsku,r.sku)&&(fd==='all'||r.dir===fd)&&(fr==='all'||r.reason===fr)&&txtOk(fby,r.by));
+  const rows=convData.filter(r=>(floc==='all'||r.loc===floc)&&txtOk(fsku,r.sku)&&(fd==='all'||r.dir===fd)&&txtOk(fr,r.reason)&&txtOk(fby,r.by));
   const tb=document.getElementById('cv-body'); tb.innerHTML='';
   rows.forEach(r=>{
     tb.insertAdjacentHTML('beforeend',`<tr>
       <td>${r.loc}</td><td>${r.sku}</td><td>${r.name}</td><td>${r.barcode}</td><td class="num">${r.qty}</td>
-      <td class="center">${dirBadge(r.dir)}</td><td class="center">${convBadge(r.reason)}</td><td>${r.by}</td><td>${r.at}</td></tr>`);
+      <td class="center">${dirBadge(r.dir)}</td><td>${r.reason}</td><td>${r.by}</td><td>${r.at}</td></tr>`);
   });
   document.getElementById('cv-total').textContent=rows.length;
 }
-function resetConvert(){ ['cv-loc','cv-dir','cv-reason'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='all';}); ['cv-sku','cv-by'].forEach(id=>{const x=document.getElementById(id);if(x)x.value='';}); renderConvert(); }
+function resetConvert(){ ['cv-loc','cv-dir'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='all';}); ['cv-sku','cv-reason','cv-by'].forEach(id=>{const x=document.getElementById(id);if(x)x.value='';}); renderConvert(); }
 
 // ================= init =================
 document.getElementById('page-mt-request').innerHTML=requestPageHTML('mt','무탠');
