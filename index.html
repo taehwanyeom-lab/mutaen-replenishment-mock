@@ -101,7 +101,8 @@
   /* 무탠 반품 지시 인라인 폼 (블록형) */
   .rf-back { display:inline-flex; align-items:center; gap:6px; cursor:pointer; color:#2563eb; font-weight:600; font-size:13px; margin-bottom:10px; }
   .rf-back:hover { text-decoration:underline; }
-  .rf-block { background:#fff; border:1px solid #e5e7eb; border-radius:8px; margin-bottom:12px; overflow:hidden; }
+  .rf-block { background:#fff; border:1px solid #e5e7eb; border-radius:8px; margin-bottom:12px; }
+  .rf-block-head { border-radius:8px 8px 0 0; }
   .rf-block-head { display:flex; align-items:center; gap:16px; flex-wrap:wrap; padding:12px 14px; background:#f9fafb; border-bottom:1px solid #eef0f2; }
   .rf-block-head .fld { display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#374151; }
   .rf-block-head .m-sel { height:30px; }
@@ -109,12 +110,49 @@
   .rf-block-tools { padding:8px 14px; display:flex; gap:8px; align-items:center; border-bottom:1px solid #f0f1f3; }
   .rf-block-body { overflow:auto; }
   .rf-block-body table { width:100%; }
-  .rf-block-sum { padding:8px 14px; font-size:12px; color:#6b7280; text-align:right; background:#fbfcfe; }
+  .rf-block-sum { padding:8px 14px; font-size:12px; color:#6b7280; text-align:right; background:#fbfcfe; border-radius:0 0 8px 8px; }
   .rf-foot { position:sticky; bottom:0; background:#fff; border:1px solid #e5e7eb; border-radius:8px; padding:12px 16px; display:flex; align-items:center; gap:10px; box-shadow:0 -2px 10px rgba(0,0,0,.05); }
   .tip { position:relative; display:inline-flex; align-items:center; justify-content:center; width:15px; height:15px; border-radius:50%; background:#9ca3af; color:#fff; font-size:10px; font-weight:700; font-style:normal; cursor:help; margin-left:3px; }
   .tip .tipbox { visibility:hidden; opacity:0; position:absolute; top:150%; left:-8px; background:#1f2329; color:#fff; padding:9px 11px; border-radius:7px; font-size:11px; font-weight:400; line-height:1.55; width:250px; white-space:normal; text-align:left; z-index:60; box-shadow:0 6px 20px rgba(0,0,0,.28); transition:opacity .15s; }
   .tip .tipbox::after { content:""; position:absolute; bottom:100%; left:12px; border:5px solid transparent; border-bottom-color:#1f2329; }
   .tip:hover .tipbox { visibility:visible; opacity:1; }
+  /* 우측 끝에 놓인 툴팁 — 오른쪽 기준으로 펼쳐 화면 밖으로 넘치지 않게 */
+  .tip.right .tipbox { left:auto; right:-8px; }
+  .tip.right .tipbox::after { left:auto; right:12px; }
+  /* 입고예정일 캘린더 (반품 지시 시 센터 입고캐파 확인) */
+  .cal-wrap { display:flex; gap:22px; padding:6px 0 2px; }
+  .cal-side { width:112px; flex:none; padding-top:6px; }
+  .cal-side .t { font-size:13px; font-weight:700; color:#374151; }
+  .cal-side .s { font-size:11px; color:#9ca3af; margin-top:2px; }
+  .cal-box { flex:1; border:1px solid #e5e7eb; border-radius:10px; padding:14px 16px 10px; }
+  .cal-nav { display:flex; align-items:center; justify-content:center; gap:20px; margin-bottom:6px; }
+  .cal-nav .mo { font-size:19px; font-weight:700; letter-spacing:-.01em; }
+  .cal-nav button { border:none; background:none; font-size:17px; line-height:1; color:#9ca3af; cursor:pointer; padding:4px 8px; border-radius:5px; }
+  .cal-nav button:hover:not(:disabled) { color:#111827; background:#f3f4f6; }
+  .cal-nav button:disabled { opacity:.3; cursor:not-allowed; }
+  .cal-dow { display:grid; grid-template-columns:repeat(7,1fr); }
+  .cal-dow span { text-align:right; font-size:11px; font-weight:700; color:#6b7280; padding:6px 10px 8px; }
+  .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
+  .cal-cell { background:#f5f6f7; border:1px solid transparent; border-radius:4px; min-height:82px; padding:7px 9px; display:flex; flex-direction:column; }
+  .cal-cell .dd { font-size:12px; color:#b6bcc4; text-align:right; }
+  .cal-cell .st { font-size:11px; color:#b6bcc4; text-align:center; margin-top:14px; }
+  .cal-cell .qt { font-size:11px; color:#9ca3af; text-align:center; margin-top:2px; font-variant-numeric:tabular-nums; }
+  .cal-cell.on { background:#fff; border-color:#e5e7eb; cursor:pointer; }
+  .cal-cell.on .dd { color:#111827; font-weight:700; }
+  .cal-cell.on .st { color:#111827; font-weight:600; }
+  .cal-cell.on .qt { color:#6b7280; }
+  .cal-cell.on:hover { border-color:#2563eb; }
+  .cal-cell.sel { background:#eff6ff; border-color:#2563eb; }
+  .cal-cell.sel .st { color:#2563eb; }
+  .cal-cell.short { cursor:not-allowed; }
+  .cal-cell.short .st { color:#dc2626; }
+  .cal-cell.short .qt { color:#dc2626; }
+  .cal-note { text-align:right; font-size:11px; color:#9ca3af; margin-top:9px; }
+  .cal-chips { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+  .cal-chip { border:1px solid #d1d5db; background:#fff; border-radius:15px; padding:4px 11px; font-size:12px; cursor:pointer; }
+  .cal-chip.active { border-color:#2563eb; background:#eff6ff; color:#2563eb; font-weight:700; }
+  .cal-chip .dt { color:#6b7280; font-weight:400; margin-left:4px; }
+  .cal-chip.active .dt { color:#2563eb; }
 </style>
 </head>
 <body>
@@ -229,6 +267,34 @@
       </tr></thead><tbody id="return-body"></tbody></table>
     </div>
     <div class="modal-foot"><button class="btn" onclick="closeReturn()">취소</button><button class="btn primary" onclick="submitReturn()">반품 지시</button></div>
+  </div>
+</div>
+
+<!-- 입고예정일 선택 모달 (반품 지시 → 센터 입고캐파 확인) -->
+<div class="modal-bg" id="eta-bg">
+  <div class="modal" style="width:920px;">
+    <div class="modal-head"><h3>입고예정일 선택</h3><span class="x" onclick="closeEta()">✕</span></div>
+    <div class="modal-tools">
+      <span class="muted" style="font-size:12px;" id="eta-need"></span>
+      <span class="muted" id="eta-picked" style="margin-left:auto;font-size:12px;"></span>
+    </div>
+    <div class="modal-body">
+      <div class="cal-chips" id="eta-chips"></div>
+      <div class="cal-wrap">
+        <div class="cal-side"><div class="t">입고 예정일</div><div class="s">(센터 도착일)</div></div>
+        <div class="cal-box">
+          <div class="cal-nav">
+            <button type="button" id="eta-prev" onclick="etaMonth(-1)" aria-label="이전 달">&lt;</button>
+            <span class="mo" id="eta-mo">—</span>
+            <button type="button" id="eta-next" onclick="etaMonth(1)" aria-label="다음 달">&gt;</button>
+          </div>
+          <div class="cal-dow"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div>
+          <div class="cal-grid" id="eta-grid"></div>
+          <div class="cal-note">* 입고 가능 여부 아래 숫자는 해당일 기준 입고 가능 수량입니다.</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn" onclick="closeEta()">취소</button><button class="btn primary" id="eta-ok" onclick="confirmEta()">반품 지시</button></div>
   </div>
 </div>
 
@@ -454,6 +520,20 @@ const partnerReturnData = [
   ...baseReturn.filter(r=>r.rtype==='센터→파트너사').map(r=>({...r, scope:'무탠', rtype:'센터→파트너'})),
   ...epReturn.filter(r=>r.type==='센터→파트너'||r.type==='매장→파트너').map(r=>({...r, scope:'편집샵', rtype:r.type})),
 ];
+// (mock) 기존 반납 데이터에 입고예정일 채우기 — 이동상태에 맞춰 지시일 기준으로 산출, 주말(미운영)은 건너뜀
+function seedEta(r){
+  const base = (r.lastAt && r.lastAt.slice(0,10)) || '2026-06-23';
+  const d = new Date(+base.slice(0,4), +base.slice(5,7)-1, +base.slice(8,10));
+  let h=0; const k=(r.move||'')+(r.sku||''); for(let i=0;i<k.length;i++) h=(h*31+k.charCodeAt(i))>>>0;
+  // 입고완료 = 이미 지난 일자 / 이동중 = 임박 / 출고대기 = 며칠 뒤
+  const add = r.status==='입고완료' ? -(h%2) : (r.status==='이동중' ? 1+(h%2) : 2+(h%4));
+  d.setDate(d.getDate()+add);
+  const back = r.status==='입고완료';
+  while(d.getDay()===0||d.getDay()===6) d.setDate(d.getDate()+(back?-1:1));   // 토·일 미운영
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+[DB.mt.ret, DB.ep.ret, partnerReturnData].forEach(list=>list.forEach(r=>{ if(!r.eta) r.eta=seedEta(r); }));
+
 const ss = scope => scope==='mt';   // 대표스타일 노출 (무탠만)
 
 // ================= 페이지 셸 빌드 =================
@@ -477,8 +557,15 @@ const CENTERS = {
 const centerFilterOpts = sc => CENTERS[sc].map(c=>`<option>${c}</option>`).join('');
 // SKU 마스터 (반품 지시 모달에서 SKU번호 입력 시 자동 조회) — scope별 보충요청 데이터에서 구성
 const SKU_MASTER = { mt:{}, ep:{} };
-baseReq.forEach(r=>{ SKU_MASTER.mt[r.sku] = { barcode:r.barcode, name:r.name, opt:[r.color,r.size].filter(x=>x&&x!=='-').join(' / ')||'-', style:r.style, brand:r.brand, avail:r.storeStock, sellable:r.storeStock-Math.floor(r.storeStock*0.2) }; });
-epReq.forEach(r=>{ SKU_MASTER.ep[r.sku] = { barcode:r.barcode, name:r.name, opt:[r.color,r.size].filter(x=>x&&x!=='-').join(' / ')||'-', style:'', brand:r.brand, avail:r.storeStock, sellable:r.storeStock-Math.floor(r.storeStock*0.2) }; });
+// 매장 재고 = 가용재고(판매가능) + 불용재고(불량·폐기 대상). 총보관재고 = 가용 + 불용.
+// (mock) SKU별 매장 보유재고를 결정적으로 생성 — 보충 화면의 현재고와 별개
+function stkHash(s){ let h=2166136261; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return (h>>>0)%1000; }
+function storeSellable(sku, base){ return base + 14 + (stkHash(sku+'|ok')%27); }   // 가용재고
+function storeDead(sku){ return 5 + (stkHash(sku+'|ng')%20); }                     // 불용재고
+baseReq.forEach(r=>{ const ok=storeSellable(r.sku,r.storeStock), ng=storeDead(r.sku);
+  SKU_MASTER.mt[r.sku] = { barcode:r.barcode, name:r.name, opt:[r.color,r.size].filter(x=>x&&x!=='-').join(' / ')||'-', style:r.style, brand:r.brand, avail:ok+ng, sellable:ok, dead:ng }; });
+epReq.forEach(r=>{ const ok=storeSellable(r.sku,r.storeStock), ng=storeDead(r.sku);
+  SKU_MASTER.ep[r.sku] = { barcode:r.barcode, name:r.name, opt:[r.color,r.size].filter(x=>x&&x!=='-').join(' / ')||'-', style:'', brand:r.brand, avail:ok+ng, sellable:ok, dead:ng }; });
 // 편집샵 파트너(화주) = 브랜드사
 const PARTNERS = { ep: BRANDS.ep };
 // 파트너사 반출/반품 출발지 후보 (무탠 센터 + 편집샵 센터·매장 통합)
@@ -907,7 +994,7 @@ function renderReturn(sc){
     head.innerHTML=`<tr>
       <th class="center"><input type="checkbox" onclick="toggleAllReturn('${sc}',this)"></th>
       ${C.moveCol?'<th>이동번호</th>':''}${C.rtypeCol===false?'':'<th class="center">반품유형</th>'}${C.reasonCol?'<th class="center">반납사유</th>':''}${approve?'<th class="center">승인상태</th>':''}${showReqNo?'<th>요청번호</th>':''}
-      <th>${C.fromLabel}</th><th>${C.toLabel}</th>
+      <th>${C.fromLabel}</th><th>${C.toLabel}</th><th class="center">입고<br>예정일</th>
       ${styTh(sc)}<th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th><th>${C.brandLabel}</th>
       <th class="num">반품지시<br>수량</th><th class="num">${C.outLabel}</th><th class="num">${C.inLabel}</th>${C.availLabel?`<th class="num">${C.availLabel}</th>`:''}
       <th class="center">이동상태</th><th>마지막 처리일시</th><th>${approve?(C.lastByLabel||'처리자'):personLbl}</th>${approve?'<th>요청자</th>':''}</tr>`;
@@ -916,7 +1003,7 @@ function renderReturn(sc){
       tb.insertAdjacentHTML('beforeend',`<tr>
         <td class="center">${r.status==='출고대기'?`<input type="checkbox" class="${sc}-rt-chk" data-i="${i}">`:''}</td>
         ${C.moveCol?`<td>${r.move?`<a href="javascript:void(0)" onclick="openMoveDetail('${sc}',${i})" style="color:#2563eb;font-weight:600;text-decoration:underline;">${r.move}</a>`:'<span class="muted">-</span>'}</td>`:''}${C.rtypeCol===false?'':`<td class="center">${typeBadge(r[C.rtypeKey])}</td>`}${C.reasonCol?`<td class="center">${r[C.reasonKey]?typeBadge(r[C.reasonKey]):'<span class="muted">-</span>'}</td>`:''}${approve?`<td class="center">${r.astatus?`<span class="ast ${r.astatus}">${r.astatus}</span>`:'<span class="ast 승인">자동승인</span>'}</td>`:''}${showReqNo?`<td>${r.reqNo||'<span class="muted">-</span>'}</td>`:''}
-        <td>${r.store}</td><td>${dest}</td>
+        <td>${r.store}</td><td>${dest}</td><td class="center">${r.eta?r.eta:'<span class="muted">-</span>'}</td>
         ${ss(sc)?`<td>${r.style||'-'}</td>`:''}<td>${r.sku}</td><td>${r.barcode}</td><td>${r.name}</td><td>${r.opt}</td><td>${r.brand}</td>
         <td class="num">${r.qty}</td><td class="num">${r.out>0?r.out:'<span class="muted">-</span>'}</td><td class="num">${r.inq>0?r.inq:'<span class="muted">-</span>'}</td>${C.availLabel?`<td class="num">${r.avail}</td>`:''}
         <td class="center">${(approve&&r.astatus==='대기')?'<span class="muted">-</span>':`<span class="st ${stClass(r.status)}">${r.status}</span>`}</td>
@@ -1103,6 +1190,18 @@ function submitReturn(){
   });
   if(errs.length){ toast('⚠ '+errs[0]+(errs.length>1?` 외 ${errs.length-1}건`:'')); return; }
   const pcs=d.reduce((s,r)=>s+r.qty,0);
+  if(returnMode!=='partner'){
+    const sc0=returnScope, need={};
+    d.forEach(r=>{ if(r.center&&r.qty) need[r.center]=(need[r.center]||0)+r.qty; });
+    openEta(need, function(eta){
+      d.forEach(r=>{ const tk=RET[sc0].tabs?'hq':undefined; const rtype=(sc0==='mt')?'매장→센터':undefined;
+        DB[sc0].ret.unshift({tabKey:tk,move:'TX-MVR'+String(Date.now()).slice(-10),rtype:rtype,type:r.type,store:r.store,center:r.center,eta:eta[r.center],sku:r.sku,barcode:r.barcode,name:r.name,opt:r.opt,style:r.style,brand:r.brand,qty:r.qty,out:0,inq:0,avail:r.avail,status:'출고대기',lastAt:'2026-06-23 17:50',lastBy:'염태환'}); });
+      const days=[...new Set(Object.values(eta))].join(', ');
+      returnData[sc0]=[]; renderReturn(sc0); closeReturn();
+      toast(`✅ ${d.length}건 반품 지시 · 입고예정일 ${days} → MWMS 전송${sc0==='mt'?' · SAP 자산이동':''} (mock)`);
+    });
+    return;
+  }
   if(confirm(`총 ${d.length}건 / ${pcs}pcs 반품을 지시하시겠습니까?`)){
     const sc=returnScope;
     if(returnMode==='partner'){
@@ -1124,7 +1223,12 @@ function submitReturn(){
 const rfBlocks={mt:[],ep:[]};
 const rfHasStyle=sc=>sc==='mt';   // 대표스타일 노출 (무탠만)
 const rfHasReason=sc=>true;  // 반납사유 선택 (무탠·편집샵 모두)
-function blankRfRow(){ return {sku:'',barcode:'',name:'',opt:'',style:'',brand:'',qty:0,avail:0}; }
+function blankRfRow(){ return {sku:'',barcode:'',name:'',opt:'',style:'',brand:'',qty:0,avail:0,sellable:0,dead:0}; }
+// 반납사유별 반납가능수량 기준 — 시즌·기타·기획반품 = 가용재고 / 불량·폐기반품 = 불용재고
+const RF_DEAD_REASONS=['불량반품','폐기반품'];
+function rfLimit(reason, r){ return RF_DEAD_REASONS.includes(reason) ? (r.dead||0) : (r.sellable||0); }
+function rfLimitLabel(reason){ return RF_DEAD_REASONS.includes(reason) ? '불용재고' : '가용재고'; }
+const RF_STOCK_TIP='반납가능수량 기준<br>· 시즌반품 / 기타반품 → <b>가용재고</b><br>· 불량반품 / 폐기반품 → <b>불용재고</b><br>반납사유에 따라 기준 재고를 초과할 수 없습니다.';
 function blankRfBlock(sc){ return {store:'',center:'',reason:(rfHasReason(sc)?RET[sc].types[0]:'매장→센터'),rows:[blankRfRow()]}; }
 function openReturnForm(sc){ if(!rfBlocks[sc].length) rfBlocks[sc]=[blankRfBlock(sc)];
   document.getElementById(sc+'-rt-listview').style.display='none';
@@ -1139,8 +1243,8 @@ function addRfRow(sc,bi){ rfBlocks[sc][bi].rows.push(blankRfRow()); renderRfForm
 function delRfRow(sc,bi,ri){ rfBlocks[sc][bi].rows.splice(ri,1); if(!rfBlocks[sc][bi].rows.length) rfBlocks[sc][bi].rows.push(blankRfRow()); renderRfForm(sc); }
 function rfRowSku(sc,bi,ri,v){ const r=rfBlocks[sc][bi].rows[ri]; r.sku=(v||'').trim().toUpperCase();
   const m=SKU_MASTER[sc][r.sku];
-  if(m){ r.barcode=m.barcode; r.name=m.name; r.opt=m.opt; r.style=m.style; r.brand=m.brand; r.avail=m.avail; }
-  else { r.barcode=''; r.name=''; r.opt=''; r.style=''; r.brand=''; r.avail=0; }
+  if(m){ r.barcode=m.barcode; r.name=m.name; r.opt=m.opt; r.style=m.style; r.brand=m.brand; r.avail=m.avail; r.sellable=m.sellable; r.dead=m.dead; }
+  else { r.barcode=''; r.name=''; r.opt=''; r.style=''; r.brand=''; r.avail=0; r.sellable=0; r.dead=0; }
   renderRfForm(sc); }
 function rfRowQty(sc,bi,ri,v){ rfBlocks[sc][bi].rows[ri].qty=parseInt(v)||0; renderRfForm(sc); }
 function renderRfForm(sc){
@@ -1149,7 +1253,8 @@ function renderRfForm(sc){
   rfBlocks[sc].forEach((b,bi)=>{
     let rowsHtml='';
     b.rows.forEach((r,ri)=>{
-      const noSku=r.sku&&!SKU_MASTER[sc][r.sku], over=r.sku&&r.qty>r.avail;
+      const noSku=r.sku&&!SKU_MASTER[sc][r.sku], lim=rfLimit(b.reason,r), over=r.sku&&r.qty>lim;
+      const useOk=!RF_DEAD_REASONS.includes(b.reason);
       rowsHtml+=`<tr>
         ${hasStyle?`<td>${r.style||'<span class="muted">-</span>'}</td>`:''}
         <td><input class="m-in ${noSku?'m-err':''}" style="width:90px" value="${r.sku}" onchange="rfRowSku('${sc}',${bi},${ri},this.value)" placeholder="SKU번호"></td>
@@ -1157,7 +1262,8 @@ function renderRfForm(sc){
         <td>${r.name||'<span class="muted">-</span>'}</td>
         <td>${r.opt||'<span class="muted">-</span>'}</td>
         <td class="num"><input type="number" min="0" class="m-in num ${over?'m-err':''}" value="${r.qty}" onchange="rfRowQty('${sc}',${bi},${ri},this.value)"></td>
-        <td class="num">${r.avail}</td>
+        <td class="num${useOk?'':' muted'}"${useOk?' style="font-weight:700;"':''}>${r.sku?r.sellable:'-'}</td>
+        <td class="num${useOk?' muted':''}"${useOk?'':' style="font-weight:700;"'}>${r.sku?r.dead:'-'}</td>
         <td class="center"><button class="btn sm" onclick="delRfRow('${sc}',${bi},${ri})">🗑</button></td></tr>`;
     });
     const bpcs=b.rows.reduce((s,r)=>s+(r.qty||0),0), bcnt=b.rows.filter(r=>r.sku).length;
@@ -1171,9 +1277,13 @@ function renderRfForm(sc){
       </div>
       <div class="rf-block-tools">
         <button class="btn sm" onclick="addRfRow('${sc}',${bi})">+ SKU 행 추가</button>
+        <span class="muted" style="font-size:11px;margin-left:auto;display:inline-flex;align-items:center;">
+          반납가능수량 기준<i class="tip right">i<span class="tipbox">${RF_STOCK_TIP}</span></i>
+          <b style="color:#374151;margin-left:5px;">${b.reason} → ${rfLimitLabel(b.reason)}</b></span>
       </div>
       <div class="rf-block-body"><table><thead><tr>
-        ${hasStyle?'<th>대표스타일</th>':''}<th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th><th class="num">반품 수량</th><th class="num">총보관재고<br>(가용+불용)</th><th class="center">삭제</th>
+        ${hasStyle?'<th>대표스타일</th>':''}<th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th>
+        <th class="num">반품 수량</th><th class="num">가용재고</th><th class="num">불용재고</th><th class="center">삭제</th>
       </tr></thead><tbody>${rowsHtml}</tbody></table></div>
       <div class="rf-block-sum">${b.store||'<span style="color:#dc2626">매장?</span>'} → ${b.center||'<span style="color:#dc2626">센터?</span>'}${hasReason?' · '+b.reason:''} · ${bcnt}건 / ${bpcs}pcs</div>
     </div>`);
@@ -1182,6 +1292,86 @@ function renderRfForm(sc){
   const totCnt=rfBlocks[sc].reduce((s,b)=>s+b.rows.filter(r=>r.sku).length,0);
   document.getElementById(sc+'-rf-summary').textContent=`블록 ${rfBlocks[sc].length}개 · 총 ${totCnt}건 / ${totPcs}pcs`;
 }
+// ===== 입고예정일 선택 (센터 입고캐파) =====
+const ETA_TODAY=new Date(2026,5,23);   // mock 기준일 2026-06-23
+const etaState={ centers:[], need:{}, sel:{}, cur:'', y:2026, m:5, cb:null };
+function etaKey(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function etaHash(s){ let h=2166136261; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return ((h>>>0)%10000)/10000; }
+// 센터별 일자 입고 가능 수량 (토·일 미운영, 지난 일자 입고마감)
+function etaCap(center,d){
+  const dow=d.getDay();
+  if(dow===0||dow===6) return {state:'미운영',qty:0};
+  const t=new Date(ETA_TODAY.getFullYear(),ETA_TODAY.getMonth(),ETA_TODAY.getDate());
+  if(d<t) return {state:'입고마감',qty:0};
+  const h=etaHash(center+'|'+etaKey(d));
+  // 약 20%는 잔여 캐파가 빠듯한 날 (수량 부족 케이스 확인용)
+  if(h<0.2) return {state:'입고가능', qty: Math.round((10+h*300)/5)*5 };
+  return {state:'입고가능', qty: Math.round((600+h*2600)/10)*10 };
+}
+function openEta(needByCenter, cb){
+  etaState.centers=Object.keys(needByCenter);
+  etaState.need=needByCenter; etaState.sel={}; etaState.cb=cb;
+  etaState.cur=etaState.centers[0];
+  etaState.y=ETA_TODAY.getFullYear(); etaState.m=ETA_TODAY.getMonth();
+  renderEta();
+  document.getElementById('eta-bg').classList.add('show');
+}
+function closeEta(){ document.getElementById('eta-bg').classList.remove('show'); etaState.cb=null; }
+function etaMonth(step){
+  let y=etaState.y, m=etaState.m+step;
+  if(m<0){ m=11; y--; } if(m>11){ m=0; y++; }
+  etaState.y=y; etaState.m=m; renderEta();
+}
+function etaPickCenter(c){ etaState.cur=c; renderEta(); }
+function etaPick(k){
+  const need=etaState.need[etaState.cur]||0;
+  const d=new Date(k.slice(0,4),+k.slice(5,7)-1,+k.slice(8,10));
+  const c=etaCap(etaState.cur,d);
+  if(c.state!=='입고가능'){ toast('해당 일자는 '+c.state+' 상태입니다.'); return; }
+  if(c.qty<need){ toast(`입고 가능 수량 부족 · ${etaState.cur} ${k} 가능 ${c.qty.toLocaleString()} / 요청 ${need.toLocaleString()}pcs`); return; }
+  etaState.sel[etaState.cur]=k;
+  const next=etaState.centers.find(x=>!etaState.sel[x]);
+  if(next) etaState.cur=next;
+  renderEta();
+}
+function renderEta(){
+  const cur=etaState.cur, need=etaState.need[cur]||0;
+  document.getElementById('eta-need').textContent=`${cur} 도착 ${need.toLocaleString()}pcs · 입고 가능 수량이 충족되는 일자만 선택할 수 있습니다`;
+  // 센터 칩 (도착센터 2곳 이상일 때만)
+  const chips=document.getElementById('eta-chips');
+  chips.style.display=etaState.centers.length>1?'flex':'none';
+  chips.innerHTML=etaState.centers.map(c=>`<div class="cal-chip ${c===cur?'active':''}" onclick="etaPickCenter('${c}')">${c}<span class="dt">${etaState.sel[c]?etaState.sel[c].slice(5):'미선택'}</span></div>`).join('');
+  // 월 그리드
+  document.getElementById('eta-mo').textContent=etaState.y+'-'+String(etaState.m+1).padStart(2,'0');
+  const first=new Date(etaState.y,etaState.m,1), lead=first.getDay();
+  const dim=new Date(etaState.y,etaState.m+1,0).getDate();
+  const cells=[];
+  for(let i=lead;i>0;i--) cells.push({d:new Date(etaState.y,etaState.m,1-i),out:true});
+  for(let i=1;i<=dim;i++) cells.push({d:new Date(etaState.y,etaState.m,i),out:false});
+  while(cells.length%7!==0){ const last=cells[cells.length-1].d; cells.push({d:new Date(last.getFullYear(),last.getMonth(),last.getDate()+1),out:true}); }
+  document.getElementById('eta-grid').innerHTML=cells.map(({d,out})=>{
+    const k=etaKey(d), c=etaCap(cur,d);
+    const ok=!out&&c.state==='입고가능', short=ok&&c.qty<need;
+    const cls=['cal-cell']; if(ok&&!short) cls.push('on'); if(short) cls.push('short');
+    if(etaState.sel[cur]===k) cls.push('sel');
+    const st=out?'':(short?'수량 부족':c.state);
+    const qt=(ok?c.qty.toLocaleString():'');
+    return `<div class="${cls.join(' ')}" ${ok&&!short?`onclick="etaPick('${k}')"`:''}>
+      <div class="dd">${out?'':String(d.getDate()).padStart(2,'0')}</div>
+      <div class="st">${st}</div><div class="qt">${qt}</div></div>`;
+  }).join('');
+  document.getElementById('eta-prev').disabled = new Date(etaState.y,etaState.m,0) < new Date(ETA_TODAY.getFullYear(),ETA_TODAY.getMonth(),1);
+  // 선택 현황
+  const done=etaState.centers.filter(c=>etaState.sel[c]).length;
+  document.getElementById('eta-picked').textContent=`입고예정일 ${done}/${etaState.centers.length} 선택`;
+  document.getElementById('eta-ok').disabled = done<etaState.centers.length;
+}
+function confirmEta(){
+  const cb=etaState.cb, sel=Object.assign({},etaState.sel);
+  if(etaState.centers.some(c=>!sel[c])){ toast('도착센터별 입고예정일을 모두 선택해 주세요.'); return; }
+  closeEta(); if(cb) cb(sel);
+}
+
 function submitReturnForm(sc){
   const errs=[]; let total=0;
   rfBlocks[sc].forEach((b,bi)=>{
@@ -1191,19 +1381,24 @@ function submitReturnForm(sc){
     valid.forEach((r,ri)=>{
       if(!r.sku||!r.qty) errs.push(`블록${bi+1}-${ri+1}행: SKU/수량 필수`);
       else if(!SKU_MASTER[sc][r.sku]) errs.push(`블록${bi+1}-${ri+1}행: SKU번호를 찾을 수 없음`);
-      else if(r.qty>r.avail) errs.push(`블록${bi+1}-${ri+1}행: 반품수량 > 보유재고`);
+      else if(r.qty>rfLimit(b.reason,r)) errs.push(`블록${bi+1}-${ri+1}행: ${b.reason}은 ${rfLimitLabel(b.reason)}(${rfLimit(b.reason,r)}) 초과 불가`);
       else total++;
     });
   });
   if(errs.length){ toast('⚠ '+errs[0]+(errs.length>1?` 외 ${errs.length-1}건`:'')); return; }
-  const pcs=rfBlocks[sc].reduce((s,b)=>s+b.rows.reduce((a,r)=>a+(r.qty||0),0),0);
-  if(!confirm(`총 ${total}건 / ${pcs}pcs 반품을 지시하시겠습니까?`)) return;
-  rfBlocks[sc].forEach(b=>{ b.rows.filter(r=>r.sku&&r.qty).forEach(r=>{
-    const rec={tabKey:'hq',move:'TX-MVR'+String(Date.now()).slice(-10),type:(sc==='mt'?b.reason:'매장→센터'),store:b.store,center:b.center,sku:r.sku,barcode:r.barcode,name:r.name,opt:r.opt,style:r.style,brand:r.brand,qty:r.qty,out:0,inq:0,avail:r.avail,status:'출고대기',lastAt:'2026-06-23 17:50',lastBy:'염태환'};
-    if(sc==='mt') rec.rtype='매장→센터'; else rec.rreason=b.reason;
-    DB[sc].ret.unshift(rec); }); });
-  rfBlocks[sc]=[]; renderReturn(sc); closeReturnForm(sc);
-  toast(`✅ ${total}건 반품 지시 → MWMS 전송${sc==='mt'?' · SAP 자산이동':' · 위탁(2P) SAP 미연동'} (mock)`);
+  // 도착센터별 반품 수량 집계 → 입고예정일(센터 입고캐파) 선택
+  const need={};
+  rfBlocks[sc].forEach(b=>{ const q=b.rows.filter(r=>r.sku&&r.qty).reduce((a,r)=>a+r.qty,0);
+    if(q>0) need[b.center]=(need[b.center]||0)+q; });
+  openEta(need, function(eta){
+    rfBlocks[sc].forEach(b=>{ b.rows.filter(r=>r.sku&&r.qty).forEach(r=>{
+      const rec={tabKey:'hq',move:'TX-MVR'+String(Date.now()).slice(-10),type:(sc==='mt'?b.reason:'매장→센터'),store:b.store,center:b.center,eta:eta[b.center],sku:r.sku,barcode:r.barcode,name:r.name,opt:r.opt,style:r.style,brand:r.brand,qty:r.qty,out:0,inq:0,avail:rfLimit(b.reason,r),status:'출고대기',lastAt:'2026-06-23 17:50',lastBy:'염태환'};
+      if(sc==='mt') rec.rtype='매장→센터'; else rec.rreason=b.reason;
+      DB[sc].ret.unshift(rec); }); });
+    const days=[...new Set(Object.values(eta))].join(', ');
+    rfBlocks[sc]=[]; renderReturn(sc); closeReturnForm(sc);
+    toast(`✅ ${total}건 반품 지시 · 입고예정일 ${days} → MWMS 전송${sc==='mt'?' · SAP 자산이동':' · 위탁(2P) SAP 미연동'} (mock)`);
+  });
 }
 function returnFormHTML(sc){
   const label=sc==='mt'?'무탠':'편집샵';
