@@ -63,12 +63,15 @@
   .badge.t-defect { background:#fee2e2; color:#b91c1c; }
   .badge.t-season { background:#fef9c3; color:#a16207; }
   .badge.t-disposal { background:#e5e7eb; color:#374151; }
+  .badge.t-etc { background:#e0f2fe; color:#0369a1; }      /* 기타반품 — 하늘 */
+  .badge.t-scrap { background:#f3e8ff; color:#7e22ce; }    /* 폐기반품 — 보라 */
   .st { display:inline-block; padding:2px 9px; border-radius:11px; font-size:11px; font-weight:700; }
   .st.지시 { background:#f3f4f6; color:#6b7280; }
   .st.대기 { background:#dbeafe; color:#1d4ed8; }
   .st.이동 { background:#ffedd5; color:#c2410c; }
   .st.완료 { background:#dcfce7; color:#15803d; }
   .st.취소 { background:#fee2e2; color:#b91c1c; text-decoration:line-through; }
+  .st.미회수 { background:#fee2e2; color:#b91c1c; }
   .ast { display:inline-block; padding:2px 9px; border-radius:11px; font-size:11px; font-weight:700; }
   .ast.대기 { background:#fef9c3; color:#a16207; }
   .ast.승인 { background:#dcfce7; color:#15803d; }
@@ -388,15 +391,15 @@ const baseStatus = [
 ];
 // ===== 무탠 반품 지시 내역 샘플 (탭 통합: rtype=반품유형, type=반납사유) =====
 const baseReturn = [
-  { tabKey:'hq', move:'TX-MVR2606230011', rtype:'매장→센터', type:'시즌반품', store:'타임빌라스 수원', center:'여주1', sku:'S025', barcode:'8809000000250', name:'우먼 크롭 가디건', opt:'아이보리 / S', style:'MWTS-330', brand:'무신사 스탠다드 우먼', qty:8, out:8, inq:3, avail:16, status:'이동중', lastAt:'2026-06-23 11:05', lastBy:'이엠디' },
-  { tabKey:'hq', move:'TX-MVR2606230012', rtype:'매장→센터', type:'시즌반품', store:'강남', center:'여주1', sku:'S003', barcode:'8809000000023', name:'와이드 슬랙스', opt:'네이비 / 30', style:'MBPS-014', brand:'무신사 스탠다드', qty:12, out:0, inq:0, avail:18, status:'출고대기', lastAt:'2026-06-23 09:40', lastBy:'System' },
+  { tabKey:'hq', move:'TX-MVR2606230011', rtype:'매장→센터', type:'기타반품', store:'타임빌라스 수원', center:'여주1', sku:'S025', barcode:'8809000000250', name:'우먼 크롭 가디건', opt:'아이보리 / S', style:'MWTS-330', brand:'무신사 스탠다드 우먼', qty:8, out:8, inq:3, avail:16, status:'이동중', lastAt:'2026-06-23 11:05', lastBy:'이엠디' },
+  { tabKey:'hq', move:'TX-MVR2606230012', rtype:'매장→센터', type:'기타반품', store:'강남', center:'여주1', sku:'S003', barcode:'8809000000023', name:'와이드 슬랙스', opt:'네이비 / 30', style:'MBPS-014', brand:'무신사 스탠다드', qty:12, out:0, inq:0, avail:18, status:'출고대기', lastAt:'2026-06-23 09:40', lastBy:'System' },
   // 본사 지시 불량 (추가)
   { tabKey:'hq', move:'TX-MVR2606250001', rtype:'매장→센터', type:'불량반품', store:'강남', center:'여주1', sku:'S003', barcode:'8809000000023', name:'와이드 슬랙스', opt:'네이비 / 30', style:'MBPS-014', brand:'무신사 스탠다드', qty:3, out:0, inq:0, avail:18, status:'출고대기', lastAt:'2026-06-25 09:10', lastBy:'염태환' },
   { tabKey:'hq', move:'TX-MVR2606250002', rtype:'매장→센터', type:'불량반품', store:'성수', center:'여주1', sku:'S005', barcode:'8809000000045', name:'오버핏 후디', opt:'그레이 / L', style:'MHDS-220', brand:'무신사 스탠다드', qty:4, out:4, inq:2, avail:25, status:'이동중', lastAt:'2026-06-25 09:15', lastBy:'염태환' },
   { tabKey:'hq', move:'TX-MVR2606250003', rtype:'매장→센터', type:'불량반품', store:'명동', center:'여주1', sku:'S014', barcode:'8809000000144', name:'미니멀 볼캡', opt:'블랙 / FREE', style:'MCPS-455', brand:'무신사 스탠다드', qty:2, out:2, inq:2, avail:14, status:'입고완료', lastAt:'2026-06-25 09:20', lastBy:'염태환' },
   // 본사 지시 기타 (추가)
-  { tabKey:'hq', move:'TX-MVR2606250004', rtype:'매장→센터', type:'기타반품', store:'한남', center:'여주1', sku:'S001', barcode:'8809000000001', name:'베이직 크루넥 티셔츠', opt:'블랙 / M', style:'MTSS-001', brand:'무신사 스탠다드', qty:5, out:5, inq:1, avail:42, status:'이동중', lastAt:'2026-06-25 09:30', lastBy:'염태환' },
-  { tabKey:'hq', move:'TX-MVR2606250005', rtype:'매장→센터', type:'기타반품', store:'서면', center:'여주1', sku:'S008', barcode:'8809000000088', name:'데일리 양말 3p', opt:'멀티 / FREE', style:'MSCS-301', brand:'무신사 스탠다드', qty:6, out:0, inq:0, avail:120, status:'출고대기', lastAt:'2026-06-25 09:35', lastBy:'System' },
+  { tabKey:'hq', move:'TX-MVR2606250004', rtype:'매장→센터', type:'시즌반품', store:'한남', center:'여주1', sku:'S001', barcode:'8809000000001', name:'베이직 크루넥 티셔츠', opt:'블랙 / M', style:'MTSS-001', brand:'무신사 스탠다드', qty:5, out:5, inq:1, avail:42, status:'이동중', lastAt:'2026-06-25 09:30', lastBy:'염태환' },
+  { tabKey:'hq', move:'TX-MVR2606250005', rtype:'매장→센터', type:'시즌반품', store:'서면', center:'여주1', sku:'S008', barcode:'8809000000088', name:'데일리 양말 3p', opt:'멀티 / FREE', style:'MSCS-301', brand:'무신사 스탠다드', qty:6, out:0, inq:0, avail:120, status:'출고대기', lastAt:'2026-06-25 09:35', lastBy:'System' },
   // 본사 지시 폐기 (추가)
   { tabKey:'hq', move:'TX-MVR2606250006', rtype:'매장→센터', type:'폐기반품', store:'홍대', center:'여주1', sku:'S002', barcode:'8809000000012', name:'스탠다드 셔츠', opt:'화이트 / 95', style:'MSHS-008', brand:'무신사 스탠다드', qty:3, out:0, inq:0, avail:12, status:'출고대기', lastAt:'2026-06-25 09:40', lastBy:'염태환' },
   { tabKey:'hq', move:'TX-MVR2606250007', rtype:'매장→센터', type:'폐기반품', store:'현대백화점 중동', center:'여주1', sku:'S030', barcode:'8809000000300', name:'홈 워싱 베개커버', opt:'그레이 / 50x70', style:'MHMS-077', brand:'무탠홈매입', qty:6, out:6, inq:0, avail:8, status:'이동중', lastAt:'2026-06-25 09:45', lastBy:'염태환' },
@@ -406,17 +409,17 @@ const baseReturn = [
   { tabKey:'hq', move:'TX-MVR2606250010', rtype:'매장→센터', type:'시즌반품', store:'스타필드 수원', center:'여주1', sku:'S033', barcode:'8809000000333', name:'키즈 기모 맨투맨', opt:'네이비 / 130', style:'MKDS-210', brand:'무신사 스탠다드 키즈', qty:4, out:4, inq:1, avail:22, status:'이동중', lastAt:'2026-06-25 10:10', lastBy:'염태환' },
   { tabKey:'hq', move:'TX-MVR2606250011', rtype:'매장→센터', type:'시즌반품', store:'홍대', center:'여주1', sku:'S001', barcode:'8809000000001', name:'베이직 크루넥 티셔츠', opt:'블랙 / M', style:'MTSS-001', brand:'무신사 스탠다드', qty:8, out:0, inq:0, avail:42, status:'출고대기', lastAt:'2026-06-25 10:15', lastBy:'System' },
   { tabKey:'hq', move:'TX-MVR2606250012', rtype:'매장→센터', type:'시즌반품', store:'명동', center:'여주1', sku:'S003', barcode:'8809000000023', name:'와이드 슬랙스', opt:'네이비 / 30', style:'MBPS-014', brand:'무신사 스탠다드', qty:6, out:6, inq:6, avail:18, status:'입고완료', lastAt:'2026-06-25 10:20', lastBy:'염태환' },
-  { tabKey:'store', move:'TX-MVR2606230013', rtype:'매장→센터', astatus:'대기', type:'불량반품', store:'명동', center:'여주1', reqNo:'RR2606230001', sku:'S011', barcode:'8809000000111', name:'카고 조거팬츠', color:'베이지', size:'32', opt:'베이지 / 32', style:'MBPS-077', brand:'무신사 스탠다드', qty:2, out:2, inq:0, avail:9, status:'이동중', lastAt:'2026-06-23 14:30', lastBy:'최매장' },
-  { tabKey:'store', move:'TX-MVR2606230013', rtype:'매장→센터', astatus:'대기', type:'불량반품', store:'명동', center:'여주1', reqNo:'RR2606230001', sku:'S041', barcode:'8809000000411', name:'카고 조거팬츠', color:'베이지', size:'30', opt:'베이지 / 30', style:'MBPS-077', brand:'무신사 스탠다드', qty:1, out:0, inq:0, avail:5, status:'출고대기', lastAt:'2026-06-23 14:31', lastBy:'최매장' },
-  { tabKey:'store', move:'TX-MVR2606230013', rtype:'매장→센터', astatus:'대기', type:'불량반품', store:'명동', center:'여주1', reqNo:'RR2606230001', sku:'S042', barcode:'8809000000412', name:'카고 조거팬츠', color:'베이지', size:'34', opt:'베이지 / 34', style:'MBPS-077', brand:'무신사 스탠다드', qty:1, out:1, inq:1, avail:3, status:'입고완료', lastAt:'2026-06-23 14:32', lastBy:'최매장' },
+  { tabKey:'store', move:'TX-MVR2606230013', rtype:'매장→센터', astatus:'대기', type:'폐기반품', store:'명동', center:'여주1', reqNo:'RR2606230001', sku:'S011', barcode:'8809000000111', name:'카고 조거팬츠', color:'베이지', size:'32', opt:'베이지 / 32', style:'MBPS-077', brand:'무신사 스탠다드', qty:2, out:2, inq:0, avail:9, status:'이동중', lastAt:'2026-06-23 14:30', lastBy:'최매장' },
+  { tabKey:'store', move:'TX-MVR2606230013', rtype:'매장→센터', astatus:'대기', type:'폐기반품', store:'명동', center:'여주1', reqNo:'RR2606230001', sku:'S041', barcode:'8809000000411', name:'카고 조거팬츠', color:'베이지', size:'30', opt:'베이지 / 30', style:'MBPS-077', brand:'무신사 스탠다드', qty:1, out:0, inq:0, avail:5, status:'출고대기', lastAt:'2026-06-23 14:31', lastBy:'최매장' },
+  { tabKey:'store', move:'TX-MVR2606230013', rtype:'매장→센터', astatus:'대기', type:'폐기반품', store:'명동', center:'여주1', reqNo:'RR2606230001', sku:'S042', barcode:'8809000000412', name:'카고 조거팬츠', color:'베이지', size:'34', opt:'베이지 / 34', style:'MBPS-077', brand:'무신사 스탠다드', qty:1, out:1, inq:1, avail:3, status:'입고완료', lastAt:'2026-06-23 14:32', lastBy:'최매장' },
   { tabKey:'store', move:'TX-MVR2606220016', rtype:'매장→센터', astatus:'승인', type:'기타반품', store:'서면', center:'여주1', reqNo:'RR2606220002', sku:'S002', barcode:'8809000000012', name:'스탠다드 셔츠', color:'화이트', size:'95', opt:'화이트 / 95', style:'MSHS-008', brand:'무신사 스탠다드', qty:4, out:4, inq:4, avail:12, status:'입고완료', lastAt:'2026-06-22 16:20', lastBy:'염태환' },
   { tabKey:'store', move:'TX-MVR2606220016', rtype:'매장→센터', astatus:'승인', type:'기타반품', store:'서면', center:'여주1', reqNo:'RR2606220002', sku:'S043', barcode:'8809000000431', name:'스탠다드 셔츠', color:'화이트', size:'100', opt:'화이트 / 100', style:'MSHS-008', brand:'무신사 스탠다드', qty:2, out:2, inq:2, avail:8, status:'입고완료', lastAt:'2026-06-22 16:21', lastBy:'염태환' },
   { tabKey:'store', move:'TX-MVR2606230018', rtype:'매장→센터', astatus:'반려', type:'폐기반품', store:'현대백화점 중동', center:'여주1', reqNo:'RR2606230003', sku:'S030', barcode:'8809000000300', name:'홈 워싱 베개커버', color:'그레이', size:'50x70', opt:'그레이 / 50x70', style:'MHMS-077', brand:'무탠홈매입', qty:6, out:0, inq:0, avail:8, status:'출고대기', lastAt:'2026-06-23 15:10', lastBy:'염태환' },
   // 매장 요청 시즌 (추가)
-  { tabKey:'store', move:'TX-MVR2606240001', rtype:'매장→센터', astatus:'대기', type:'시즌반품', store:'한남', center:'여주1', reqNo:'RR2606240001', sku:'S014', barcode:'8809000000144', name:'미니멀 볼캡', color:'블랙', size:'FREE', opt:'블랙 / FREE', style:'MCPS-455', brand:'무신사 스탠다드', qty:5, out:0, inq:0, avail:14, status:'출고대기', lastAt:'2026-06-24 09:10', lastBy:'한남매장' },
-  { tabKey:'store', move:'TX-MVR2606240002', rtype:'매장→센터', astatus:'대기', type:'시즌반품', store:'성수', center:'여주1', reqNo:'RR2606240002', sku:'S005', barcode:'8809000000045', name:'오버핏 후디', color:'그레이', size:'L', opt:'그레이 / L', style:'MHDS-220', brand:'무신사 스탠다드', qty:3, out:0, inq:0, avail:25, status:'출고대기', lastAt:'2026-06-24 09:20', lastBy:'성수매장' },
-  { tabKey:'store', move:'TX-MVR2606240003', rtype:'매장→센터', astatus:'승인', type:'시즌반품', store:'홍대', center:'여주1', reqNo:'RR2606240003', sku:'S001', barcode:'8809000000001', name:'베이직 크루넥 티셔츠', color:'블랙', size:'M', opt:'블랙 / M', style:'MTSS-001', brand:'무신사 스탠다드', qty:6, out:6, inq:2, avail:42, status:'이동중', lastAt:'2026-06-24 09:35', lastBy:'염태환' },
-  { tabKey:'store', move:'TX-MVR2606240004', rtype:'매장→센터', astatus:'반려', type:'시즌반품', store:'서면', center:'여주1', reqNo:'RR2606240004', sku:'S008', barcode:'8809000000088', name:'데일리 양말 3p', color:'멀티', size:'FREE', opt:'멀티 / FREE', style:'MSCS-301', brand:'무신사 스탠다드', qty:4, out:0, inq:0, avail:120, status:'출고대기', reason:'시즌 반품 대상 아님', lastAt:'2026-06-24 09:45', lastBy:'염태환' },
+  { tabKey:'store', move:'TX-MVR2606240001', rtype:'매장→센터', astatus:'대기', type:'기타반품', store:'한남', center:'여주1', reqNo:'RR2606240001', sku:'S014', barcode:'8809000000144', name:'미니멀 볼캡', color:'블랙', size:'FREE', opt:'블랙 / FREE', style:'MCPS-455', brand:'무신사 스탠다드', qty:5, out:0, inq:0, avail:14, status:'출고대기', lastAt:'2026-06-24 09:10', lastBy:'한남매장' },
+  { tabKey:'store', move:'TX-MVR2606240002', rtype:'매장→센터', astatus:'대기', type:'기타반품', store:'성수', center:'여주1', reqNo:'RR2606240002', sku:'S005', barcode:'8809000000045', name:'오버핏 후디', color:'그레이', size:'L', opt:'그레이 / L', style:'MHDS-220', brand:'무신사 스탠다드', qty:3, out:0, inq:0, avail:25, status:'출고대기', lastAt:'2026-06-24 09:20', lastBy:'성수매장' },
+  { tabKey:'store', move:'TX-MVR2606240003', rtype:'매장→센터', astatus:'승인', type:'기타반품', store:'홍대', center:'여주1', reqNo:'RR2606240003', sku:'S001', barcode:'8809000000001', name:'베이직 크루넥 티셔츠', color:'블랙', size:'M', opt:'블랙 / M', style:'MTSS-001', brand:'무신사 스탠다드', qty:6, out:6, inq:2, avail:42, status:'이동중', lastAt:'2026-06-24 09:35', lastBy:'염태환' },
+  { tabKey:'store', move:'TX-MVR2606240004', rtype:'매장→센터', astatus:'반려', type:'기타반품', store:'서면', center:'여주1', reqNo:'RR2606240004', sku:'S008', barcode:'8809000000088', name:'데일리 양말 3p', color:'멀티', size:'FREE', opt:'멀티 / FREE', style:'MSCS-301', brand:'무신사 스탠다드', qty:4, out:0, inq:0, avail:120, status:'출고대기', reason:'반품 사유 확인 필요', lastAt:'2026-06-24 09:45', lastBy:'염태환' },
   // 센터→파트너사 반품 — 여주1센터 → 파트너 배송지 (도착지 클릭 시 모달)
   { tabKey:'hq', move:'TX-MVR2606230019', rtype:'센터→파트너사', type:'기타반품', store:'여주1센터', center:'위캔더스 물류창고', destAddr:'경기 이천시 마장면 물류로 123', destReceiver:'김창고', destPhone:'031-123-4567', sku:'S020', barcode:'8809000000200', name:'톤업 선크림', opt:'50ml', style:'MBTS-101', brand:'무신사 스탠다드 뷰티', qty:4, out:0, inq:0, avail:30, status:'출고대기', lastAt:'2026-06-23 16:00', lastBy:'염태환' },
   { tabKey:'hq', move:'TX-MVR2606230020', rtype:'센터→파트너사', type:'폐기반품', store:'여주1센터', center:'무탠홈 반품처', destAddr:'서울 성동구 성수일로 45', destReceiver:'박반품', destPhone:'02-987-6543', sku:'S033', barcode:'8809000000333', name:'키즈 기모 맨투맨', opt:'네이비 / 130', style:'MKDS-210', brand:'무신사 스탠다드 키즈', qty:2, out:2, inq:0, avail:22, status:'이동중', lastAt:'2026-06-23 16:10', lastBy:'염태환' },
@@ -584,7 +587,7 @@ const RETURN_FLOWS = {
 // 반품관리 scope별 구성 (라벨/유형/필터)
 const RET = {
   mt: { fromLabel:'출발지', toLabel:'도착지', availLabel:'', outLabel:'출고 확정<br>수량', inLabel:'입고 완료<br>수량',
-        brandLabel:'브랜드', lastByLabel:'요청자', types:['시즌반품','불량반품','기타반품','폐기반품'], rtypes:['매장→센터'], partnerReturn:true, partnerOrigin:'여주1센터', noCheckbox:true, combined:true, moveCol:true, reqNoCol:true, rtypeKey:'rtype', rtypeCol:false, reasonCol:true, reasonKey:'type', approveCol:false,
+        brandLabel:'브랜드', lastByLabel:'요청자', types:['시즌반품','불량반품','기타반품','폐기반품'], storeTabTypes:['기타반품','폐기반품'], rtypes:['매장→센터'], partnerReturn:true, partnerOrigin:'여주1센터', noCheckbox:true, combined:true, moveCol:true, reqNoCol:true, rtypeKey:'rtype', rtypeCol:false, reasonCol:true, reasonKey:'type', approveCol:false,
         tabs:[{key:'hq',label:'본사 지시',register:true},{key:'store',label:'매장 요청',reqNo:true}],
         tip:'본사가 매장→센터 반품을 지시 · 파트너사向 반출/반품은 [재고 관리 › 파트너사 반출/반품]',
         note:'본사가 매장→센터 반품을 지시 · 무탠은 전량 1P(PB) → 반품 시 SAP 자산이동 자동 전송 · 파트너사向은 [파트너사 반출/반품] 메뉴 · 상태: 출고대기 → 이동중 → 입고완료' },
@@ -955,7 +958,7 @@ function submitMove(){
 }
 
 // ================= 반품관리 (조회 + 본사 반품 지시) =================
-function typeBadge(t){ const m={'불량반품':'t-defect','시즌반품':'t-season','폐기반품':'t-disposal','기타반품':'n','기획반품':'t-normal','매장→센터':'t-normal','센터→파트너':'t-season','센터→파트너사':'t-season','매장→파트너':'t-defect'}; return `<span class="badge ${m[t]||'t-normal'}">${t}</span>`; }
+function typeBadge(t){ const m={'불량반품':'t-defect','시즌반품':'t-season','폐기반품':'t-scrap','기타반품':'t-etc','기획반품':'t-normal','매장→센터':'t-normal','센터→파트너':'t-season','센터→파트너사':'t-season','매장→파트너':'t-defect'}; return `<span class="badge ${m[t]||'t-normal'}">${t}</span>`; }
 const returnTab = { mt:'hq', ep:'hq' };
 function switchReturnTab(sc,key){
   returnTab[sc]=key;
@@ -974,6 +977,11 @@ function renderReturn(sc){
   const showType=!(tab&&tab.hideType);
   const destName=!!(tab&&tab.destName);
   const showReqNo=C.reqNoCol&&(!tabbed||(tab&&tab.reqNo));
+  // 탭별 반납사유 옵션 제한 (무탠: 본사지시=전체 / 매장요청=기타·폐기만)
+  if(C.storeTabTypes){ const te=document.getElementById(sc+'-rt-type');
+    if(te){ const allow=(tabbed&&cat==='store')?C.storeTabTypes:C.types;
+      const want='<option value="all">반납사유: 전체</option>'+allow.map(t=>`<option>${t}</option>`).join('');
+      if(te.innerHTML!==want){ const cur=te.value; te.innerHTML=want; te.value=allow.includes(cur)?cur:'all'; } } }
   const fb=val(sc+'-rt-brand'), fst=val(sc+'-rt-store'), fc=val(sc+'-rt-center'), ft=val(sc+'-rt-type'), fs=val(sc+'-rt-status'), fas=(tabbed&&cat==='store')?val(sc+'-rt-astatus'):'all', frt=val(sc+'-rt-rtype');
   const fmove=val(sc+'-rt-move'), freqno=(tabbed&&cat==='store')?val(sc+'-rt-reqno'):'', fperson=val(sc+'-rt-person'), frs=val(sc+'-rt-reason');
   const txtOk=(f,v)=>(f==='all'||f==='')||String(v||'').toLowerCase().includes(String(f).toLowerCase());
@@ -1192,13 +1200,10 @@ function submitReturn(){
   if(returnMode!=='partner'){
     const sc0=returnScope, need={};
     d.forEach(r=>{ if(r.center&&r.qty) need[r.center]=(need[r.center]||0)+r.qty; });
-    openEta(need, function(eta){
-      d.forEach(r=>{ const tk=RET[sc0].tabs?'hq':undefined; const rtype=(sc0==='mt')?'매장→센터':undefined;
-        DB[sc0].ret.unshift({tabKey:tk,move:'TX-MVR'+String(Date.now()).slice(-10),rtype:rtype,type:r.type,store:r.store,center:r.center,eta:eta[r.center],sku:r.sku,barcode:r.barcode,name:r.name,opt:r.opt,style:r.style,brand:r.brand,qty:r.qty,out:0,inq:0,avail:r.avail,status:'출고대기',lastAt:'2026-06-23 17:50',lastBy:'염태환'}); });
-      const days=[...new Set(Object.values(eta))].join(', ');
-      returnData[sc0]=[]; renderReturn(sc0); closeReturn();
-      toast(`✅ ${d.length}건 반품 지시 · 입고예정일 ${days} → MWMS 전송${sc0==='mt'?' · SAP 자산이동':''} (mock)`);
-    });
+    d.forEach(r=>{ const tk=RET[sc0].tabs?'hq':undefined; const rtype=(sc0==='mt')?'매장→센터':undefined;
+      DB[sc0].ret.unshift({tabKey:tk,move:'TX-MVR'+String(Date.now()).slice(-10),rtype:rtype,type:r.type,store:r.store,center:r.center,sku:r.sku,barcode:r.barcode,name:r.name,opt:r.opt,style:r.style,brand:r.brand,qty:r.qty,out:0,inq:0,avail:r.avail,status:'출고대기',lastAt:'2026-06-23 17:50',lastBy:'염태환'}); });
+    returnData[sc0]=[]; renderReturn(sc0); closeReturn();
+    toast(`✅ ${d.length}건 반품 지시 → MWMS 전송${sc0==='mt'?' · SAP 자산이동':''} (mock)`);
     return;
   }
   if(confirm(`총 ${d.length}건 / ${pcs}pcs 반품을 지시하시겠습니까?`)){
@@ -1385,19 +1390,12 @@ function submitReturnForm(sc){
     });
   });
   if(errs.length){ toast('⚠ '+errs[0]+(errs.length>1?` 외 ${errs.length-1}건`:'')); return; }
-  // 도착센터별 반품 수량 집계 → 입고예정일(센터 입고캐파) 선택
-  const need={};
-  rfBlocks[sc].forEach(b=>{ const q=b.rows.filter(r=>r.sku&&r.qty).reduce((a,r)=>a+r.qty,0);
-    if(q>0) need[b.center]=(need[b.center]||0)+q; });
-  openEta(need, function(eta){
-    rfBlocks[sc].forEach(b=>{ b.rows.filter(r=>r.sku&&r.qty).forEach(r=>{
-      const rec={tabKey:'hq',move:'TX-MVR'+String(Date.now()).slice(-10),type:(sc==='mt'?b.reason:'매장→센터'),store:b.store,center:b.center,eta:eta[b.center],sku:r.sku,barcode:r.barcode,name:r.name,opt:r.opt,style:r.style,brand:r.brand,qty:r.qty,out:0,inq:0,avail:rfLimit(b.reason,r),status:'출고대기',lastAt:'2026-06-23 17:50',lastBy:'염태환'};
-      if(sc==='mt') rec.rtype='매장→센터'; else rec.rreason=b.reason;
-      DB[sc].ret.unshift(rec); }); });
-    const days=[...new Set(Object.values(eta))].join(', ');
-    rfBlocks[sc]=[]; renderReturn(sc); closeReturnForm(sc);
-    toast(`✅ ${total}건 반품 지시 · 입고예정일 ${days} → MWMS 전송${sc==='mt'?' · SAP 자산이동':' · 위탁(2P) SAP 미연동'} (mock)`);
-  });
+  rfBlocks[sc].forEach(b=>{ b.rows.filter(r=>r.sku&&r.qty).forEach(r=>{
+    const rec={tabKey:'hq',move:'TX-MVR'+String(Date.now()).slice(-10),type:(sc==='mt'?b.reason:'매장→센터'),store:b.store,center:b.center,sku:r.sku,barcode:r.barcode,name:r.name,opt:r.opt,style:r.style,brand:r.brand,qty:r.qty,out:0,inq:0,avail:rfLimit(b.reason,r),status:'출고대기',lastAt:'2026-06-23 17:50',lastBy:'염태환'};
+    if(sc==='mt') rec.rtype='매장→센터'; else rec.rreason=b.reason;
+    DB[sc].ret.unshift(rec); }); });
+  rfBlocks[sc]=[]; renderReturn(sc); closeReturnForm(sc);
+  toast(`✅ ${total}건 반품 지시 → MWMS 전송${sc==='mt'?' · SAP 자산이동':' · 위탁(2P) SAP 미연동'} (mock)`);
 }
 function returnFormHTML(sc){
   const label=sc==='mt'?'무탠':'편집샵';
@@ -1550,7 +1548,6 @@ function renderPfForm(){
       const noSku=r.sku&&!skuLookup(r.sku);
       const rtype=(r.sku&&!noSku)?inferPartnerRtype({_scope:r.scope,store:b.origin}):'';
       rowsHtml+=`<tr>
-        <td>${r.style||'<span class="muted">-</span>'}</td>
         <td><input class="m-in ${noSku?'m-err':''}" style="width:90px" value="${r.sku}" onchange="pfRowSku(${bi},${ri},this.value)" placeholder="SKU번호"></td>
         <td><span class="muted">${r.barcode||'-'}</span></td>
         <td>${r.name||'<span class="muted">-</span>'}</td>
@@ -1574,7 +1571,7 @@ function renderPfForm(){
         <button class="btn sm" onclick="addPfRow(${bi})">+ SKU 행 추가</button>
       </div>
       <div class="rf-block-body"><table><thead><tr>
-        <th>대표스타일</th><th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th><th>브랜드</th><th class="center">반품유형</th><th class="num">반품 수량</th><th class="num">총보관재고<br>(가용+불용)</th><th class="center">삭제</th>
+        <th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th><th>브랜드</th><th class="center">반품유형</th><th class="num">반품 수량</th><th class="num">총보관재고<br>(가용+불용)</th><th class="center">삭제</th>
       </tr></thead><tbody>${rowsHtml}</tbody></table></div>
       <div class="rf-block-sum">${b.origin||'<span style="color:#dc2626">출발지?</span>'} → ${b.dest?b.dest.name:'<span style="color:#dc2626">배송지?</span>'} · ${bcnt}건 / ${bpcs}pcs</div>
     </div>`);
@@ -1939,6 +1936,240 @@ function renderConvert(){
 }
 function resetConvert(){ ['cv-loc','cv-dir'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='all';}); ['cv-sku','cv-reason','cv-by'].forEach(id=>{const x=document.getElementById(id);if(x)x.value='';}); renderConvert(); }
 
+// ================= 특수출고 (inv-special-out) =================
+// 출고유형 3분류 · 회수형만 회수예정일 입력 · ERP 계정과목 선택
+const SPO_TYPES=[
+  {key:'b2b',    label:'B2B 대량출고', short:'B2B',  recall:false, stock:'재고차감 (매출)'},
+  {key:'consume',label:'소멸형 출고',  short:'소멸형',recall:false, stock:'재고차감 (비용대체)'},
+  {key:'recall', label:'회수형 출고',  short:'회수형',recall:true,  stock:'재고유지 (반출중)'},
+];
+// ERP 계정과목
+const SPO_ACCOUNTS=[
+  '촬영진행비(소품)',
+  '복리후생비(워크샵, 사내행사)',
+  '소모품비(기타)',
+  '광고선전비(행사)',
+  '접대비(일반)',
+  '기부금',
+  '광고선전비(온라인기타)',
+];
+const SPO_ORIGINS=[...new Set([...IMV_CENTERS,'동탄 MFS','곤지암 MFS', ...IMV_STORES])];
+const spoType=k=>SPO_TYPES.find(t=>t.key===k)||SPO_TYPES[0];
+function spoTypeBadge(k){ const m={b2b:'t-normal',consume:'t-defect',recall:'t-season'}; return `<span class="badge ${m[k]||'t-normal'}">${spoType(k).short}</span>`; }
+function spoStClass(s){ return ({'출고대기':'대기','출고완료':'완료','반출중':'이동','회수완료':'완료','미회수':'미회수','취소':'취소'})[s]||'지시'; }
+const spoToday='2026-08-03';
+
+let spoData=[
+  {no:'SO2608030000012',type:'recall', status:'반출중',   from:'여주1센터',                 acc:'촬영진행비(소품)',          outDate:'2026-08-01', backDate:'2026-08-10', qty:24,  backQty:0,  rep:'로 엣지 컨벡스 조거',        more:3,  amount:1_920_000,  regAt:'26.08.01 10:20', regBy:'taehwan.yeom@musinsa.com', cancelable:false, skus:[{sku:'S101',barcode:'8809000010101',name:'로 엣지 컨벡스 조거',opt:'블랙 / S',qty:6},{sku:'S102',barcode:'8809000010102',name:'로 엣지 컨벡스 조거',opt:'블랙 / M',qty:8}]},
+  {no:'SO2607280000009',type:'recall', status:'미회수',   from:'무신사 스토어 강남',         acc:'광고선전비(온라인기타)',    outDate:'2026-07-20', backDate:'2026-07-31', qty:6,   backQty:2,  rep:'아르떼 스트라이프 롱 슬리브', more:1,  amount:480_000,    regAt:'26.07.20 14:05', regBy:'juyoun.lee@musinsa.com',   cancelable:false, skus:[{sku:'S110',barcode:'8809000011001',name:'아르떼 스트라이프 롱 슬리브',opt:'아이보리 / M',qty:4},{sku:'S111',barcode:'8809000011002',name:'아르떼 스트라이프 롱 슬리브',opt:'아이보리 / L',qty:2}]},
+  {no:'SO2607250000008',type:'consume',status:'출고완료', from:'여주3센터',                 acc:'기부금',                    outDate:'2026-07-25', backDate:'',           qty:320, backQty:0,  rep:'베이직 크루넥 티셔츠',        more:12, amount:4_800_000,  regAt:'26.07.23 09:12', regBy:'daebeom.choi@musinsa.com', cancelable:false, skus:[{sku:'S001',barcode:'8809000000001',name:'베이직 크루넥 티셔츠',opt:'블랙 / M',qty:120},{sku:'S002',barcode:'8809000000012',name:'스탠다드 셔츠',opt:'화이트 / L',qty:80}]},
+  {no:'SO2607220000007',type:'b2b',    status:'출고완료', from:'여주2센터',                 acc:'소모품비(기타)',            outDate:'2026-07-22', backDate:'',           qty:1500,backQty:0,  rep:'와이드 슬랙스',              more:24, amount:37_500_000, regAt:'26.07.18 16:40', regBy:'taehwan.yeom@musinsa.com', cancelable:false, skus:[{sku:'S003',barcode:'8809000000023',name:'와이드 슬랙스',opt:'네이비 / 30',qty:600},{sku:'S004',barcode:'8809000000024',name:'와이드 슬랙스',opt:'네이비 / 32',qty:900}]},
+  {no:'SO2607190000006',type:'consume',status:'출고완료', from:'무신사 메가스토어 성수',     acc:'광고선전비(행사)',          outDate:'2026-07-19', backDate:'',           qty:200, backQty:0,  rep:'미니멀 볼캡',                more:0,  amount:3_000_000,  regAt:'26.07.17 11:30', regBy:'juyoun.lee@musinsa.com',   cancelable:false, skus:[{sku:'S014',barcode:'8809000000144',name:'미니멀 볼캡',opt:'블랙 / FREE',qty:200}]},
+  {no:'SO2608030000013',type:'consume',status:'출고대기', from:'여주1센터',                 acc:'접대비(일반)',              outDate:'2026-08-07', backDate:'',           qty:12,  backQty:0,  rep:'오버핏 후디',                more:1,  amount:540_000,    regAt:'26.08.03 09:05', regBy:'taehwan.yeom@musinsa.com', cancelable:true,  skus:[{sku:'S005',barcode:'8809000000045',name:'오버핏 후디',opt:'그레이 / L',qty:8},{sku:'S006',barcode:'8809000000046',name:'오버핏 후디',opt:'그레이 / M',qty:4}]},
+  {no:'SO2607170000010',type:'consume',status:'출고완료', from:'여주1센터',                 acc:'복리후생비(워크샵, 사내행사)',outDate:'2026-07-17',backDate:'',           qty:80,  backQty:0,  rep:'데일리 양말 3p',             more:2,  amount:400_000,    regAt:'26.07.15 10:40', regBy:'juyoun.lee@musinsa.com',   cancelable:false, skus:[{sku:'S008',barcode:'8809000000088',name:'데일리 양말 3p',opt:'화이트 / FREE',qty:80}]},
+  {no:'SO2607150000005',type:'recall', status:'회수완료', from:'여주1센터',                 acc:'촬영진행비(소품)',          outDate:'2026-07-10', backDate:'2026-07-15', qty:18,  backQty:18, rep:'선데이 바이브 반팔 티셔츠',   more:2,  amount:900_000,    regAt:'26.07.09 13:00', regBy:'daebeom.choi@musinsa.com', cancelable:false, skus:[{sku:'S130',barcode:'8809000013001',name:'선데이 바이브 반팔 티셔츠',opt:'아이보리 / S',qty:9},{sku:'S131',barcode:'8809000013002',name:'선데이 바이브 반팔 티셔츠',opt:'아이보리 / M',qty:9}]},
+  {no:'SO2607110000004',type:'b2b',    status:'취소',     from:'여주4센터',                 acc:'소모품비(기타)',            outDate:'2026-07-14', backDate:'',           qty:400, backQty:0,  rep:'데일리 양말 3p',             more:5,  amount:2_000_000,  regAt:'26.07.11 17:22', regBy:'taehwan.yeom@musinsa.com', cancelable:false, skus:[{sku:'S008',barcode:'8809000000088',name:'데일리 양말 3p',opt:'화이트 / FREE',qty:400}]},
+];
+
+function specialOutPageHTML(){
+  return `
+  <div class="crumb">재고 관리 › 특수출고</div>
+  <h1>특수출고 <span class="muted" style="font-size:12px;font-weight:400;">· MOCK</span></h1>
+  <div id="spo-listview">
+  <div class="filters">
+    <input type="text" value="26.07.03 ~ 26.08.03" style="width:170px" title="등록일">
+    <input type="text" id="spo-no" placeholder="출고번호" oninput="renderSpoList()" style="width:150px">
+    <select id="spo-type" onchange="renderSpoList()"><option value="all">출고유형: 전체</option>${SPO_TYPES.map(t=>`<option value="${t.key}">${t.label}</option>`).join('')}</select>
+    <select id="spo-from" onchange="renderSpoList()"><option value="all">출발지: 전체</option>${[...new Set(spoData.map(r=>r.from))].map(v=>`<option>${v}</option>`).join('')}</select>
+    <select id="spo-acc" onchange="renderSpoList()"><option value="all">ERP 계정과목: 전체</option>${SPO_ACCOUNTS.map(a=>`<option>${a}</option>`).join('')}</select>
+    <select id="spo-status" onchange="renderSpoList()"><option value="all">상태: 전체</option><option>출고대기</option><option>출고완료</option><option>반출중</option><option>회수완료</option><option>미회수</option><option>취소</option></select>
+    <input type="text" placeholder="SKU번호" style="width:100px"><input type="text" placeholder="바코드" style="width:110px">
+    <input type="text" id="spo-by" placeholder="등록자" oninput="renderSpoList()" style="width:130px">
+    <button class="btn primary" onclick="renderSpoList()">검색</button>
+    <button class="btn" onclick="resetSpoList()">초기화 ↻</button>
+  </div>
+  <div class="cards">
+    <div class="card"><div class="lbl">전체 특수출고</div><div class="val"><span id="spo-c-all">0</span>건</div></div>
+    <div class="card"><div class="lbl">출고대기</div><div class="val"><span id="spo-c-wait">0</span>건</div></div>
+    <div class="card"><div class="lbl">회수형 반출중</div><div class="val"><span id="spo-c-out">0</span>건</div></div>
+    <div class="card"><div class="lbl">회수 지연</div><div class="val"><span id="spo-c-late">0</span>건<span class="sub" id="spo-c-latepcs"></span></div></div>
+  </div>
+  <div class="gridhead">
+    <div class="left"><span class="total">전체 <span id="spo-total">0</span>건</span>
+      <button class="btn primary" onclick="openSpoForm()">신규 등록</button></div>
+    <div class="right"><label class="chk-inline"><input type="checkbox" id="spo-only-late" onchange="renderSpoList()"> 회수 지연 건만 보기</label>
+      <button class="btn" onclick="toast('전체 엑셀 다운로드 (mock)')">⬇ 엑셀 다운로드</button></div>
+  </div>
+  <div class="tablewrap"><table><thead><tr>
+    <th style="min-width:130px;">출고유형</th><th style="min-width:150px;">출고번호</th><th class="center">상태</th>
+    <th style="min-width:160px;">출발지</th><th style="min-width:190px;">SKU명</th>
+    <th class="num">출고수량</th><th style="min-width:180px;">ERP 계정과목</th>
+    <th class="center">출고예정일</th><th class="center">회수예정일</th><th class="center">회수현황</th>
+    <th class="num">금액</th><th>등록일시</th><th>등록자</th>
+  </tr></thead><tbody id="spo-body"></tbody></table></div>
+  <div class="footnote">
+    · <b>B2B 대량출고</b> — 재고차감(매출) · 회수 없음 &nbsp;|&nbsp; <b>소멸형 출고</b>(증정·기부·접대) — 재고차감(비용대체) · 회수 없음 &nbsp;|&nbsp; <b>회수형 출고</b>(촬영·협찬) — 재고유지(반출중) · <b>회수예정일 필수</b><br>
+    · 회수예정일이 지났는데 회수수량 &lt; 출고수량이면 <b>미회수</b>로 자동 전환됩니다 · 출고대기 건만 취소 가능
+  </div>
+  </div>
+  ${spoFormHTML()}`;
+}
+
+function renderSpoList(){
+  const fno=val('spo-no'),ft=val('spo-type'),ff=val('spo-from'),fa=val('spo-acc'),fs=val('spo-status'),fby=val('spo-by');
+  const onlyLate=(document.getElementById('spo-only-late')||{}).checked;
+  const txtOk=(f,v)=>(!f||f==='all')||String(v||'').toLowerCase().includes(String(f).toLowerCase());
+  const isLate=r=>r.status==='미회수'||(spoType(r.type).recall&&r.backDate&&r.backDate<spoToday&&r.backQty<r.qty&&r.status!=='회수완료'&&r.status!=='취소');
+  const rows=spoData.filter(r=>txtOk(fno,r.no)&&(ft==='all'||r.type===ft)&&(ff==='all'||r.from===ff)
+    &&(fa==='all'||r.acc===fa)&&(fs==='all'||r.status===fs)&&txtOk(fby,r.regBy)&&(!onlyLate||isLate(r)));
+  const tb=document.getElementById('spo-body'); tb.innerHTML='';
+  rows.forEach(r=>{ const i=spoData.indexOf(r); const t=spoType(r.type); const late=isLate(r);
+    const cxl=r.status==='출고대기'&&r.cancelable?`<div style="margin-top:6px;"><button class="btn sm red" onclick="cancelSpo(${i})">출고 취소</button></div>`:'';
+    const recallCell=t.recall
+      ? `<span style="${late?'color:#dc2626;font-weight:700;':''}">${r.backQty}/${r.qty}</span>${late?`<div style="font-size:11px;color:#dc2626;">${r.backDate} 경과</div>`:''}`
+      : '<span class="muted">-</span>';
+    tb.insertAdjacentHTML('beforeend',`<tr>
+      <td>${spoTypeBadge(r.type)}<div style="font-weight:600;margin-top:4px;">${t.label}</div><div class="muted" style="font-size:11px;">${t.stock}</div></td>
+      <td><a href="javascript:void(0)" onclick="toggleSpoSub(${i})" style="color:#2563eb;font-weight:600;text-decoration:underline;">${r.no}</a>${cxl}</td>
+      <td class="center"><span class="st ${spoStClass(r.status)}">${r.status}</span></td>
+      <td>${r.from}</td>
+      <td>${r.rep}${r.more>0?` <span class="muted">외 ${r.more}</span>`:''}</td>
+      <td class="num">${r.qty.toLocaleString()}</td>
+      <td>${r.acc}</td>
+      <td class="center">${r.outDate}</td>
+      <td class="center">${r.backDate||'<span class="muted">-</span>'}</td>
+      <td class="center">${recallCell}</td>
+      <td class="num">${r.amount.toLocaleString()}원</td><td>${r.regAt}</td><td>${r.regBy}</td></tr>
+      <tr class="subrow" id="spo-sub-${i}" style="display:none;"><td colspan="13"><div class="subwrap">
+        <table><thead><tr><th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th><th class="num">출고수량</th>${t.recall?'<th class="num">회수수량</th>':''}</tr></thead>
+        <tbody>${r.skus.map(s=>`<tr><td>${s.sku}</td><td>${s.barcode}</td><td>${s.name}</td><td>${s.opt}</td><td class="num">${s.qty}</td>${t.recall?`<td class="num">${r.status==='회수완료'?s.qty:0}</td>`:''}</tr>`).join('')}${r.more>0?`<tr><td colspan="${t.recall?6:5}" class="muted" style="text-align:center;">…외 ${r.more}건 (mock)</td></tr>`:''}</tbody></table>
+      </div></td></tr>`);
+  });
+  document.getElementById('spo-total').textContent=rows.length;
+  document.getElementById('spo-c-all').textContent=spoData.length;
+  document.getElementById('spo-c-wait').textContent=spoData.filter(r=>r.status==='출고대기').length;
+  document.getElementById('spo-c-out').textContent=spoData.filter(r=>r.status==='반출중').length;
+  const lates=spoData.filter(isLate);
+  document.getElementById('spo-c-late').textContent=lates.length;
+  document.getElementById('spo-c-latepcs').textContent=lates.length?` (미회수 ${lates.reduce((s,r)=>s+(r.qty-r.backQty),0)}pcs)`:'';
+}
+function toggleSpoSub(i){ const s=document.getElementById('spo-sub-'+i); if(s) s.style.display=s.style.display==='none'?'table-row':'none'; }
+function resetSpoList(){ ['spo-type','spo-from','spo-acc','spo-status'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='all';});
+  ['spo-no','spo-by'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  const c=document.getElementById('spo-only-late'); if(c) c.checked=false; renderSpoList(); }
+function cancelSpo(i){ const r=spoData[i]; if(!r) return;
+  if(r.status!=='출고대기'){ toast('출고대기 상태만 취소 가능합니다.'); return; }
+  if(!confirm(`[${r.no}] 특수출고 건을 취소하시겠습니까?`)) return;
+  r.status='취소'; r.cancelable=false; renderSpoList(); toast('✅ 특수출고 취소 → MWMS 출고지시 취소 / ERP 전표 취소 (mock)'); }
+
+// ----- 신규 등록 인라인 폼 (블록형) -----
+const spoBlocks=[];
+function blankSpoRow(){ return {sku:'',barcode:'',name:'',opt:'',qty:0,avail:0,sellable:0}; }
+function blankSpoBlock(){ return {reqName:'',type:'b2b',from:'',outDate:'',backDate:'',acc:'',memo:'',rows:[blankSpoRow()]}; }
+function openSpoForm(){ if(!spoBlocks.length) spoBlocks.push(blankSpoBlock());
+  document.getElementById('spo-listview').style.display='none';
+  document.getElementById('spo-formview').style.display='block'; renderSpoForm(); }
+function closeSpoForm(){ document.getElementById('spo-formview').style.display='none';
+  document.getElementById('spo-listview').style.display='block'; }
+function spoBlockType(bi,v){ const b=spoBlocks[bi]; b.type=v; if(!spoType(v).recall) b.backDate=''; renderSpoForm(); }
+function spoBlockField(bi,f,v){ spoBlocks[bi][f]=v; renderSpoForm(); }
+function addSpoBlock(){ spoBlocks.push(blankSpoBlock()); renderSpoForm(); }
+function delSpoBlock(bi){ spoBlocks.splice(bi,1); if(!spoBlocks.length) spoBlocks.push(blankSpoBlock()); renderSpoForm(); }
+function addSpoRow(bi){ spoBlocks[bi].rows.push(blankSpoRow()); renderSpoForm(); }
+function delSpoRow(bi,ri){ spoBlocks[bi].rows.splice(ri,1); if(!spoBlocks[bi].rows.length) spoBlocks[bi].rows.push(blankSpoRow()); renderSpoForm(); }
+function spoRowSku(bi,ri,v){ const r=spoBlocks[bi].rows[ri]; r.sku=(v||'').trim().toUpperCase(); const m=skuLookup(r.sku);
+  if(m){ r.barcode=m.barcode; r.name=m.name; r.opt=m.opt; r.avail=m.avail; r.sellable=(m.sellable!=null?m.sellable:0); }
+  else { r.barcode=''; r.name=''; r.opt=''; r.avail=0; r.sellable=0; } renderSpoForm(); }
+function spoRowQty(bi,ri,v){ spoBlocks[bi].rows[ri].qty=parseInt(v)||0; renderSpoForm(); }
+
+function renderSpoForm(){
+  const wrap=document.getElementById('spo-blocks'); wrap.innerHTML='';
+  spoBlocks.forEach((b,bi)=>{
+    const t=spoType(b.type);
+    const badBack=t.recall&&b.backDate&&b.outDate&&b.backDate<b.outDate;
+    let rowsHtml='';
+    b.rows.forEach((r,ri)=>{ const noSku=r.sku&&!skuLookup(r.sku), over=r.sku&&r.qty>r.avail;
+      rowsHtml+=`<tr>
+        <td><input class="m-in ${noSku?'m-err':''}" style="width:90px" value="${r.sku}" onchange="spoRowSku(${bi},${ri},this.value)" placeholder="SKU번호"></td>
+        <td><span class="muted">${r.barcode||'-'}</span></td>
+        <td>${r.name||'<span class="muted">-</span>'}</td>
+        <td>${r.opt||'<span class="muted">-</span>'}</td>
+        <td class="num"><input type="number" min="0" class="m-in num ${over?'m-err':''}" value="${r.qty}" onchange="spoRowQty(${bi},${ri},this.value)"></td>
+        <td class="num">${r.avail}</td>
+        <td class="num">${r.sellable}</td>
+        <td class="center"><button class="btn sm" onclick="delSpoRow(${bi},${ri})">🗑</button></td></tr>`; });
+    const bpcs=b.rows.reduce((s,r)=>s+(r.qty||0),0), bcnt=b.rows.filter(r=>r.sku).length;
+    wrap.insertAdjacentHTML('beforeend',`<div class="rf-block">
+      <div class="rf-block-head">
+        <span class="fld">요청명 <input class="m-in" style="width:130px" value="${b.reqName||''}" onchange="spoBlockField(${bi},'reqName',this.value)" placeholder="요청명"></span>
+        <span class="fld">출고유형 <select class="m-sel" onchange="spoBlockType(${bi},this.value)">${SPO_TYPES.map(x=>`<option value="${x.key}" ${x.key===b.type?'selected':''}>${x.label}</option>`).join('')}</select></span>
+        <span class="fld">출발지 <select class="m-sel ${!b.from?'m-err':''}" onchange="spoBlockField(${bi},'from',this.value)">${optSel(SPO_ORIGINS,b.from)}</select></span>
+        <span class="fld">출고예정일 <span class="tip">i<span class="tipbox">먼 미래로 지정하더라도 가용재고는 출고 지시 즉시 차감됩니다. 실 출고는 출고예정일에 이루어집니다.</span></span>
+          <input type="date" class="m-in ${!b.outDate?'m-err':''}" value="${b.outDate||''}" onchange="spoBlockField(${bi},'outDate',this.value)"></span>
+        <span class="fld" style="${t.recall?'':'opacity:.45;'}">회수예정일 ${t.recall?'<span class="tip">i<span class="tipbox">회수형(촬영·협찬)만 입력합니다. 회수예정일이 지나도 회수되지 않으면 목록에서 <b>미회수</b>로 전환되어 알림 대상이 됩니다.</span></span>':''}
+          <input type="date" class="m-in ${(t.recall&&(!b.backDate||badBack))?'m-err':''}" value="${b.backDate||''}" ${t.recall?'':'disabled'} onchange="spoBlockField(${bi},'backDate',this.value)"></span>
+        <span class="fld">ERP 계정과목 <select class="m-sel ${!b.acc?'m-err':''}" style="min-width:215px" onchange="spoBlockField(${bi},'acc',this.value)">${optSel(SPO_ACCOUNTS,b.acc)}</select></span>
+        <span class="fld">메모 <input class="m-in" style="width:160px" value="${b.memo||''}" onchange="spoBlockField(${bi},'memo',this.value)" placeholder="메모"></span>
+        ${t.recall?'':'<span class="muted" style="font-size:11px;">회수 없는 유형 — 회수예정일 입력 불가</span>'}
+        ${badBack?'<span class="muted" style="color:#dc2626;font-size:11px;">회수예정일은 출고예정일 이후여야 합니다</span>':''}
+        <button class="btn sm del" onclick="delSpoBlock(${bi})">🗑 블록 삭제</button>
+      </div>
+      <div class="rf-block-tools">
+        <button class="btn sm" onclick="addSpoRow(${bi})">+ SKU 행 추가</button>
+        <span class="muted" style="font-size:11px;">재고처리: <b>${t.stock}</b></span>
+      </div>
+      <div class="rf-block-body"><table><thead><tr>
+        <th>SKU번호</th><th>바코드</th><th>SKU명</th><th>옵션명</th><th class="num">출고 수량</th><th class="num">정상 가용 재고</th><th class="num">판매가능재고</th><th class="center">삭제</th>
+      </tr></thead><tbody>${rowsHtml}</tbody></table></div>
+      <div class="rf-block-sum">${t.label} · ${b.from||'<span style="color:#dc2626">출발지?</span>'} · ${b.acc||'<span style="color:#dc2626">계정과목?</span>'} · ${bcnt}건 / ${bpcs}pcs${t.recall&&b.backDate?` · 회수예정 ${b.backDate}`:''}</div>
+    </div>`);
+  });
+  const totPcs=spoBlocks.reduce((s,b)=>s+b.rows.reduce((a,r)=>a+(r.qty||0),0),0);
+  const totCnt=spoBlocks.reduce((s,b)=>s+b.rows.filter(r=>r.sku).length,0);
+  document.getElementById('spo-summary').textContent=`블록 ${spoBlocks.length}개 · 총 ${totCnt}건 / ${totPcs}pcs`;
+}
+function submitSpoForm(){
+  const errs=[]; let total=0;
+  spoBlocks.forEach((b,bi)=>{ const t=spoType(b.type); const valid=b.rows.filter(r=>r.sku||r.qty);
+    if(!b.from) errs.push(`블록${bi+1}: 출발지 필수`);
+    if(!b.outDate) errs.push(`블록${bi+1}: 출고예정일 필수`);
+    if(t.recall){ if(!b.backDate) errs.push(`블록${bi+1}: 회수형은 회수예정일 필수`);
+      else if(b.outDate&&b.backDate<b.outDate) errs.push(`블록${bi+1}: 회수예정일은 출고예정일 이후`); }
+    if(!b.acc) errs.push(`블록${bi+1}: ERP 계정과목 필수`);
+    if(!valid.length) errs.push(`블록${bi+1}: SKU를 1건 이상 추가`);
+    valid.forEach((r,ri)=>{ if(!r.sku||!r.qty) errs.push(`블록${bi+1}-${ri+1}행: SKU/수량 필수`);
+      else if(!skuLookup(r.sku)) errs.push(`블록${bi+1}-${ri+1}행: SKU번호를 찾을 수 없음`);
+      else if(r.qty>r.avail) errs.push(`블록${bi+1}-${ri+1}행: 출고수량 > 정상 가용 재고`); else total++; }); });
+  if(errs.length){ toast('⚠ '+errs[0]+(errs.length>1?` 외 ${errs.length-1}건`:'')); return; }
+  const pcs=spoBlocks.reduce((s,b)=>s+b.rows.reduce((a,r)=>a+(r.qty||0),0),0);
+  if(!confirm(`총 ${total}건 / ${pcs}pcs 특수출고를 지시하시겠습니까?\n(ERP 계정과목별 전표가 함께 생성됩니다)`)) return;
+  let seq=14;
+  spoBlocks.forEach(b=>{ const t=spoType(b.type); const valid=b.rows.filter(r=>r.sku&&r.qty); if(!valid.length) return;
+    const q=valid.reduce((a,r)=>a+r.qty,0);
+    spoData.unshift({no:'SO26080300000'+(seq++),type:b.type,status:'출고대기',from:b.from,
+      acc:b.acc,outDate:b.outDate,backDate:t.recall?b.backDate:'',qty:q,backQty:0,
+      rep:valid[0].name,more:valid.length-1,amount:q*25000,regAt:'26.08.03 09:30',regBy:'taehwan.yeom@musinsa.com',cancelable:true,
+      skus:valid.map(r=>({sku:r.sku,barcode:r.barcode,name:r.name,opt:r.opt,qty:r.qty}))}); });
+  spoBlocks.length=0; renderSpoList(); closeSpoForm();
+  toast(`✅ ${total}건 특수출고 지시 → MWMS 출고지시 / ERP 전표 생성 (mock)`);
+}
+function spoFormHTML(){
+  return `<div id="spo-formview" style="display:none;">
+    <div class="rf-back" onclick="closeSpoForm()">← 목록으로</div>
+    <div class="gridhead"><div class="left"><span class="total">특수출고 신규 등록</span>
+      <span class="muted" style="font-size:11px;">블록마다 출고유형·출발지·출고예정일·ERP 계정과목을 지정하세요 · 회수형(촬영·협찬)만 회수예정일이 활성화됩니다</span></div>
+      <div class="right"><button class="btn" onclick="toast('엑셀 양식: 출고유형,출발지,출고예정일,회수예정일,ERP계정과목,SKU번호,출고수량 (mock)')">⬆ 엑셀 일괄 업로드</button></div></div>
+    <div id="spo-blocks"></div>
+    <button class="btn" onclick="addSpoBlock()" style="margin-bottom:14px;">＋ 출고 블록 추가</button>
+    <div class="rf-foot">
+      <span class="total" id="spo-summary" style="font-size:13px;">블록 0개</span>
+      <span style="margin-left:auto;"></span>
+      <button class="btn" onclick="closeSpoForm()">취소</button>
+      <button class="btn primary" onclick="submitSpoForm()">특수출고 지시</button>
+    </div>
+  </div>`;
+}
+
 // ================= init =================
 document.getElementById('page-mt-request').innerHTML=requestPageHTML('mt','무탠');
 document.getElementById('page-mt-status').innerHTML=statusPageHTML('mt','무탠');
@@ -1959,7 +2190,7 @@ document.getElementById('page-po-buy-asn').innerHTML=placeholderHTML('발주/입
 document.getElementById('page-inv-move').innerHTML=invMovePageHTML(); renderImvList();
 document.getElementById('page-inv-partner-return').innerHTML=partnerReturnPageHTML(); renderPartnerReturn();
 document.getElementById('page-inv-convert').innerHTML=invConvertPageHTML(); renderConvert();
-document.getElementById('page-inv-special-out').innerHTML=placeholderHTML('재고 관리 › 특수출고','특수출고');
+document.getElementById('page-inv-special-out').innerHTML=specialOutPageHTML(); renderSpoList();
 document.getElementById('page-inv-disposal').innerHTML=placeholderHTML('재고 관리 › 폐기 관리','폐기 관리');
 document.getElementById('page-inv-adjust').innerHTML=placeholderHTML('재고 관리 › 재고조정 관리','재고조정 관리');
 ['mt','ep'].forEach(sc=>{ renderReq(sc); renderAppr(sc); renderStatus(sc); renderReturn(sc); });
